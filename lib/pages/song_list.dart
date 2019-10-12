@@ -11,9 +11,12 @@ class _SongListState extends State<SongList> {
   Widget build(BuildContext context) {
     return ListView(
        children: <Widget>[         // 列表组件数组，这里有三个子Widget
-              new Container(        // 子元素
-                width:180.0,
-                color: Colors.lightBlue,
+              new ListTile(   // ListItem控件，一个图标一个title
+                leading:new Icon(Icons.access_time),
+                title:new Text('access_time')
+                )
+              , new Image.network(
+                'http://jspang.com/static/upload/20181111/G-wj-ZQuocWlYOHM6MT2Hbh5.jpg'
                 )
               , new Image.network(
                 'http://jspang.com/static/upload/20181111/G-wj-ZQuocWlYOHM6MT2Hbh5.jpg'

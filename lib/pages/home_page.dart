@@ -18,10 +18,7 @@ class _HomePageState extends State<HomePage> {
           child:Text(
           "Pages 1"
         )))
-        ..add(Center(
-          child:Text(
-          "Pages 2"))
-          )
+        ..add(SongList())
         ..add(Center(
           child:Text(
           "Pages 3"
