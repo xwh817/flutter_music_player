@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './tabs_bottom.dart';
 import './song_list.dart';
 import './play_list.dart';
+import './recommend_page.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -18,7 +19,7 @@ class _HomePageState extends State<HomePage> {
     pages
       ..add(SongList())
       ..add(PlayList())
-      ..add(Center(child: Text("Pages 3")))
+      ..add(RecommendPage())
       ..add(Center(child: Text("Pages 4")));
 
     super.initState();

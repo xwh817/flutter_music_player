@@ -49,10 +49,14 @@ class _SongListState extends State<SongList> {
 
   @override
   Widget build(BuildContext context) {
-    mWidget = ListView.builder(
-      itemCount: this._songs.length,
-      itemBuilder: (context, index) => _bulidItem(context, index),
-    );
+    if (_songs.length == 0) { // 显示进度条
+      mWidget = Center(child: CircularProgressIndicator());
+    } else {
+      mWidget = ListView.builder(
+        itemCount: this._songs.length,
+        itemBuilder: (context, index) => _bulidItem(context, index),
+      );
+    }
     return mWidget;
   }
 
@@ -67,8 +71,8 @@ class _SongListState extends State<SongList> {
         child: new Image.network("${song['al']['picUrl']}?param=100y100"),
       ),
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
       },
     );
   }

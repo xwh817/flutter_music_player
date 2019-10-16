@@ -49,18 +49,24 @@ class _PlayListState extends State<PlayList> {
 
   @override
   Widget build(BuildContext context) {
-    mWidget = GridView.builder(
-      itemCount: this._playlist.length,
-      padding: EdgeInsets.all(6.0), // 四周边距，注意Card也有默认的边距
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          // 网格样式
-          crossAxisCount: 2, // 列数
-          mainAxisSpacing: 2.0, // 主轴的间距
-          crossAxisSpacing: 2.0, // cross轴间距
-          childAspectRatio: 1 // item横竖比
-          ),
-      itemBuilder: (context, index) => _bulidItem(context, index),
-    );
+    if (_playlist.length == 0) {
+      // 显示进度条
+      mWidget = Center(child: CircularProgressIndicator());
+    } else {
+      mWidget = GridView.builder(
+        itemCount: this._playlist.length,
+        padding: EdgeInsets.all(6.0), // 四周边距，注意Card也有默认的边距
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            // 网格样式
+            crossAxisCount: 2, // 列数
+            mainAxisSpacing: 2.0, // 主轴的间距
+            crossAxisSpacing: 2.0, // cross轴间距
+            childAspectRatio: 1 // item横竖比
+            ),
+        itemBuilder: (context, index) => _bulidItem(context, index),
+      );
+    }
+
     return mWidget;
   }
 
@@ -93,15 +99,14 @@ class _PlayListState extends State<PlayList> {
           Positioned.fill(
             child: Material(
               color: Colors.transparent,
-              child: InkWell( // 水波纹
-                splashColor: Colors.white.withOpacity(0.3),
-                highlightColor: Colors.white.withOpacity(0.1),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => PlayListPage(playlist: play))
-                  );
-                }
-              ),
+              child: InkWell(
+                  // 水波纹
+                  splashColor: Colors.white.withOpacity(0.3),
+                  highlightColor: Colors.white.withOpacity(0.1),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PlayListPage(playlist: play)));
+                  }),
             ),
           ),
         ],
