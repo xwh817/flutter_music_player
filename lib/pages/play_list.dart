@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
+import '../dao/music_163.dart';
 import './play_list_page.dart';
 
 class PlayList extends StatefulWidget {
@@ -11,42 +10,57 @@ class PlayList extends StatefulWidget {
 
 class _PlayListState extends State<PlayList> {
   List _playlist = List();
-
   _getPlaylists() async {
-    var url = 'http://music.turingmao.com/top/playlist/highquality';
-    var httpClient = new HttpClient();
-    List playlist;
-    try {
-      print("http request: $url");
-      var request = await httpClient.getUrl(Uri.parse(url));
-      var response = await request.close();
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(json);
-        playlist = data['playlists'];
-      } else {
-        print('Error: Http status ${response.statusCode}');
-      }
-
+    await MusicDao.getPlayList().then((result) {
       // 界面未加载，返回。
       if (!mounted) return;
 
       setState(() {
-        _playlist = playlist;
+        _playlist = result;
       });
-    } catch (exception) {
-      print('Failed: ${exception.message}');
-    }
+    }).catchError((e) {
+      print('Failed: ${e.toString()}');
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    print("PlayList: initState");
     _getPlaylists();
   }
 
-  Widget mWidget;
+  @override
+  void r(PlayList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print("PlayList: didUpdateWidget");
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print("PlayList: didChangeDependencies");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    print("PlayList: dispose");
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    print("PlayList: reassemble");
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    print("PlayList: deactivate");
+  }
+
+  Widget mWidget;
   @override
   Widget build(BuildContext context) {
     if (_playlist.length == 0) {

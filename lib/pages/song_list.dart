@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
 import './player_page.dart';
+import '../dao/music_163.dart';
 
 class SongList extends StatefulWidget {
   SongList({Key key}) : super(key: key);
@@ -13,30 +12,16 @@ class _SongListState extends State<SongList> {
   List _songs = List();
 
   _getSongs() async {
-    var url = 'http://music.turingmao.com/top/list?idx=0';
-    var httpClient = new HttpClient();
-    List songs;
-    try {
-      print("http request: $url");
-      var request = await httpClient.getUrl(Uri.parse(url));
-      var response = await request.close();
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(json);
-        songs = data['playlist']['tracks'];
-      } else {
-        print('Error: Http status ${response.statusCode}');
-      }
-
+    await MusicDao.getTopSongs(0).then((result) {
       // 界面未加载，返回。
       if (!mounted) return;
 
       setState(() {
-        _songs = songs;
+        _songs = result;
       });
-    } catch (exception) {
-      print('Failed: ${exception.message}');
-    }
+    }).catchError((e) {
+      print('Failed: ${e.toString()}');
+    });
   }
 
   @override
@@ -49,11 +34,13 @@ class _SongListState extends State<SongList> {
 
   @override
   Widget build(BuildContext context) {
-    if (_songs.length == 0) { // 显示进度条
+    if (_songs.length == 0) {
+      // 显示进度条
       mWidget = Center(child: CircularProgressIndicator());
     } else {
       mWidget = ListView.builder(
         itemCount: this._songs.length,
+        itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
         itemBuilder: (context, index) => _bulidItem(context, index),
       );
     }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'dart:convert';
-import 'dart:io';
+import '../dao/music_163.dart';
 
 class RecommendPage extends StatefulWidget {
   RecommendPage({Key key}) : super(key: key);
@@ -22,7 +21,7 @@ class _RecommendPageState extends State<RecommendPage> {
         Map song = _songList[index];
         return new Image.network(
           song['song']['album']['picUrl'] + "?param=600y300",
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
         );
       },
       itemCount: _songList.length,
@@ -33,30 +32,16 @@ class _RecommendPageState extends State<RecommendPage> {
 
   
   _getNewSongs() async {
-    var url = 'http://music.turingmao.com/personalized/newsong';
-    var httpClient = new HttpClient();
-    List songList;
-    try {
-      print("http request: $url");
-      var request = await httpClient.getUrl(Uri.parse(url));
-      var response = await request.close();
-      if (response.statusCode == HttpStatus.OK) {
-        var json = await response.transform(utf8.decoder).join();
-        var data = jsonDecode(json);
-        songList = data['result'];
-      } else {
-        print('Error: Http status ${response.statusCode}');
-      }
-
+    await MusicDao.getNewSongs().then((result) {
       // 界面未加载，返回。
       if (!mounted) return;
 
       setState(() {
-        _songList = songList;
+        _songList = result;
       });
-    } catch (exception) {
-      print('Failed: ${exception.message}');
-    }
+    }).catchError((e) {
+      print('Failed: ${e.toString()}');
+    });
   }
 
   @override
