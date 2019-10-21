@@ -5,12 +5,20 @@ import 'dart:convert';
 class MusicDao {
   static const URL_ROOT = 'http://music.turingmao.com';
   static const URL_PLAY_LIST = '$URL_ROOT/top/playlist/highquality';
+  static const URL_PLAY_LIST_DETAIL = '$URL_ROOT/playlist/detail?id=';
   static const URL_NEW_SONGS = '$URL_ROOT/personalized/newsong';
   static const URL_TOP_SONGS = '$URL_ROOT/top/list?idx=';
 
   static Future<List> getPlayList() async {
     var data = await getJsonData(URL_PLAY_LIST);
     List playlist = data['playlists'];
+    return playlist;
+  }
+
+  
+  static Future<List> getPlayListDetail(int listId) async {
+    var data = await getJsonData('$URL_PLAY_LIST_DETAIL$listId');
+    List playlist = data['playlist']['tracks'];
     return playlist;
   }
   

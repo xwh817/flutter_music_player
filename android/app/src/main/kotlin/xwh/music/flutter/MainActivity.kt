@@ -1,4 +1,4 @@
-package com.example.flutter_music_player
+package xwh.music.flutter
 
 import android.os.Bundle
 

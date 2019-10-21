@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
 
   _tapCallback(int index) {
     setState(() {
+      print("HomePage: on page selected: $index");
       _currentIndex = index;
     });
   }

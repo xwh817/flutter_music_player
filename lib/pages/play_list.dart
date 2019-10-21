@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../dao/music_163.dart';
-import './play_list_page.dart';
+import './play_list_detail.dart';
 
 class PlayList extends StatefulWidget {
   PlayList({Key key}) : super(key: key);
