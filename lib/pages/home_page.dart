@@ -14,6 +14,10 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   List<Widget> pages = List();
 
+  final PageController _controller = PageController(
+    initialPage: 0,
+  );
+
   @override
   void initState() {
     pages
@@ -26,8 +30,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   _tapCallback(int index) {
+    print("HomePage: on page selected: $index");
+    _controller.jumpToPage(index);
     setState(() {
-      print("HomePage: on page selected: $index");
       _currentIndex = index;
     });
   }
@@ -35,10 +40,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        /* appBar: AppBar(
           title: Text('Flutter Music Player'),
+        ), */
+        body: PageView(
+          controller: _controller,
+          children: pages,
+          physics: NeverScrollableScrollPhysics(),  // 设置为不能滚动
         ),
-        body: IndexedStack(children: pages, index: _currentIndex),
         bottomNavigationBar: BottomTabs(this._currentIndex, this._tapCallback));
   }
 }

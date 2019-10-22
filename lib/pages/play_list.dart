@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../dao/music_163.dart';
-import './play_list_detail.dart';
+import 'package:flutter_music_player/pages/play_list_tab_page.dart';
 
 class PlayList extends StatefulWidget {
   PlayList({Key key}) : super(key: key);
@@ -8,123 +7,72 @@ class PlayList extends StatefulWidget {
   _PlayListState createState() => _PlayListState();
 }
 
-class _PlayListState extends State<PlayList> {
-  List _playlist = List();
-  _getPlaylists() async {
-    await MusicDao.getPlayList().then((result) {
-      // 界面未加载，返回。
-      if (!mounted) return;
+const List<String> types = [
+  "全部",
+  "流行",
+  "华语",
+  "民谣",
+  "摇滚",
+  "古风",
+  "欧美",
+  "影视原声",
+  "清新",
+  "儿童",
+  "浪漫",
+  "电子",  
+  "校园",
+  "放松"
+];
 
-      setState(() {
-        _playlist = result;
-      });
-    }).catchError((e) {
-      print('Failed: ${e.toString()}');
-    });
-  }
+class _PlayListState extends State<PlayList>
+    with SingleTickerProviderStateMixin {
+  TabController tabController; //tab控制器
 
   @override
   void initState() {
     super.initState();
-    print("PlayList: initState");
-    _getPlaylists();
+    //初始化controller并添加监听
+    tabController = TabController(length: types.length, vsync: this);
+    tabController.addListener(() => _onTabChanged());
   }
 
-  @override
-  void r(PlayList oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print("PlayList: didUpdateWidget");
-  }
+  state
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    print("PlayList: didChangeDependencies");
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    print("PlayList: dispose");
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    print("PlayList: reassemble");
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    print("PlayList: deactivate");
+  void _onTabChanged() {
+    if (tabController.index.toDouble() == tabController.animation.value) {
+    }
   }
 
   Widget mWidget;
   @override
   Widget build(BuildContext context) {
-    if (_playlist.length == 0) {
-      // 显示进度条
-      mWidget = Center(child: CircularProgressIndicator());
-    } else {
-      mWidget = GridView.builder(
-        itemCount: this._playlist.length,
-        padding: EdgeInsets.all(6.0), // 四周边距，注意Card也有默认的边距
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            // 网格样式
-            crossAxisCount: 2, // 列数
-            mainAxisSpacing: 2.0, // 主轴的间距
-            crossAxisSpacing: 2.0, // cross轴间距
-            childAspectRatio: 1 // item横竖比
-            ),
-        itemBuilder: (context, index) => _bulidItem(context, index),
-      );
-    }
-
-    return mWidget;
-  }
-
-  _bulidItem(BuildContext context, int index) {
-    Map play = _playlist[index];
-
-    return new Card(
-      elevation: 4.0,
-      child: new Stack(
-        alignment: AlignmentDirectional.bottomStart,
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-            child: new Image.network("${play['coverImgUrl']}?param=300y300"),
+    return DefaultTabController(
+        length: types.length,
+        child: SafeArea(child:Scaffold(
+          appBar: TabBar(
+            controller: tabController, //控制器
+            labelColor: Colors.green,
+            unselectedLabelColor: Colors.black45,
+            labelStyle: TextStyle(fontSize: 16), //选中的样式
+            unselectedLabelStyle: TextStyle(fontSize: 14), //未选中的样式
+            isScrollable: true, //是否可滑动
+            //tab标签
+            tabs: types.map((item) {
+              return new Tab(
+                text: item,
+              );
+            }).toList(),
+            //点击事件
+            onTap: (int i) {
+              tabController.animateTo(i);
+            },
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(4.0),
-                bottomRight: Radius.circular(4.0)),
-            child: Container(
-                width: double.infinity,
-                color: Color.fromARGB(80, 0, 0, 0),
-                padding: EdgeInsets.all(6.0),
-                child: Text(
-                  play['name'],
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12.0, color: Colors.white),
-                )),
+          body: new TabBarView(
+            controller: tabController,
+            children: types.map((item) {
+              return PlayListTabPage(type: item);
+            }).toList(),
           ),
-          Positioned.fill(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                  // 水波纹
-                  splashColor: Colors.white.withOpacity(0.3),
-                  highlightColor: Colors.white.withOpacity(0.1),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PlayListPage(playlist: play)));
-                  }),
-            ),
-          ),
-        ],
-      ),
-    );
+        )));
   }
 }
