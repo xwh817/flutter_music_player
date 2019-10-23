@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import '../dao/music_163.dart';
 
@@ -8,48 +9,113 @@ class RecommendPage extends StatefulWidget {
   _RecommendPageState createState() => _RecommendPageState();
 }
 
+enum AppBarBehavior { normal, pinned, floating, snapping }
+
 class _RecommendPageState extends State<RecommendPage> {
-  List _songList = List();
+  List _newSongs = List();
+  List _topSongs = List();
+  final double _appBarHeight = 200.0;
+  static final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
+  AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      child: new Swiper(
-      autoplay: true,
-      itemBuilder: (BuildContext context, int index) {
-        Map song = _songList[index];
-        return new Image.network(
-          song['song']['album']['picUrl'] + "?param=600y300",
-          fit: BoxFit.cover,
-        );
-      },
-      itemCount: _songList.length,
-      pagination: new SwiperPagination(),
-      control: new SwiperControl(),
-    ),);
-  }
-
-  
-  _getNewSongs() async {
-    await MusicDao.getNewSongs().then((result) {
-      // 界面未加载，返回。
-      if (!mounted) return;
-
-      setState(() {
-        _songList = result;
-      });
-    }).catchError((e) {
-      print('Failed: ${e.toString()}');
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    _getNewSongs();
+
+    // 等待两个异步任务
+    Future.wait([
+      MusicDao.getNewSongs(),
+      MusicDao.getTopSongs(0),
+    ]).then((results){
+      setState(() {
+        _newSongs = results[0].sublist(0, 5);
+        _topSongs = results[1];
+      });
+    });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        key: _scaffoldKey,
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              expandedHeight: _appBarHeight,
+              pinned: false,
+              //pinned: _appBarBehavior == AppBarBehavior.pinned,
+              floating: _appBarBehavior == AppBarBehavior.floating ||
+                  _appBarBehavior == AppBarBehavior.snapping,
+              snap: _appBarBehavior == AppBarBehavior.snapping,
+              
+              flexibleSpace: FlexibleSpaceBar(
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    new Swiper(
+                      autoplay: true,
+                      itemHeight: 200,
+                      autoplayDisableOnInteraction: false,
+                      itemBuilder: (BuildContext context, int index) {
+                        Map song = _newSongs[index];
+                        String picUrl = song['song']['album']['picUrl'];
+                        //song['al']['picUrl'] = picUrl;
+                        return GestureDetector(
+                          onTap: () => _onItemTap(song),
+                          child: Image.network(picUrl+ "?param=600y300", fit: BoxFit.cover, ),);
+                      },
+                      itemCount: _newSongs.length,
+                      pagination: new SwiperPagination(),
+                    ),
+                    // This gradient ensures that the toolbar icons are distinct
+                    // against the background image.
+                    /* const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(0.0, -1.0),
+                          end: Alignment(0.0, -0.4),
+                          colors: <Color>[Color(0x60000000), Color(0x00000000)],
+                        ),
+                      ),
+                    ), */
+                  ],
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return _buildItem(context, index);
+                },
+                childCount: _topSongs.length,
+              ),
+            ),
+          ],
+        ),
+      );
+  }
 
+  Widget _buildItem(BuildContext context, index) {
+    Map song = _topSongs[index];
+    return new ListTile(
+      title: new Text(
+        "$index ${song['name']}",
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: new Text(song['ar'][0]['name']),
+      leading: new ClipRRect(
+        borderRadius: BorderRadius.circular(6.0),
+        child: new Image.network("${song['al']['picUrl']}?param=100y100"),
+      ),
+      onTap: () => _onItemTap(song),
+    );
+  }
 
+  void _onItemTap(Map song) {
+    Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
+  }
 }
