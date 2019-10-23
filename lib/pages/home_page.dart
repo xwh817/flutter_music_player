@@ -21,9 +21,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     pages
-      ..add(SongList())
-      ..add(PlayList())
       ..add(RecommendPage())
+      ..add(PlayList())
+      ..add(SongList())
       ..add(Center(child: Text("Pages 4")));
 
     super.initState();

@@ -1,10 +1,17 @@
 class SongUtil {
   static String getArtistNames(Map song) {
     String names = '';
+    List arList;
+
     if (song.containsKey('ar')) {
-      List arList = song['ar'];
+      arList = song['ar'];
+    } else {
+      arList = song['song']['artists'];
+    }
+
+    if (arList != null) {
       bool isFirst = true;
-      arList.forEach((ar){
+      arList.forEach((ar) {
         if (isFirst) {
           isFirst = false;
           names = ar['name'];
@@ -13,6 +20,15 @@ class SongUtil {
         }
       });
     }
+
     return names;
+  }
+
+  static String getSongImage(Map song) {
+    if (song.containsKey('ar')) {
+      return song['al']['picUrl'];
+    } else {
+      return song['song']['album']['picUrl'];
+    }
   }
 }

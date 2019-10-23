@@ -19,15 +19,19 @@ class _PlayListPageState extends State<PlayListPage> {
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
   final double _appBarHeight = 256.0;
-
   AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
-
   List _songs = List();
+  bool _imageLoaded = true;
 
   @override
   void initState() {
     _getPlayListSongs();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   _getPlayListSongs() async {
@@ -43,7 +47,7 @@ class _PlayListPageState extends State<PlayListPage> {
     return Theme(
       data: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.green,
+        primarySwatch: _imageLoaded ? Colors.green : Colors.grey,
         platform: Theme.of(context).platform,
       ),
       child: Scaffold(
@@ -70,6 +74,34 @@ class _PlayListPageState extends State<PlayListPage> {
                   children: <Widget>[
                     new Image.network(
                       "${widget.playlist['coverImgUrl']}?param=900y600",
+                      /* frameBuilder: (BuildContext context, Widget child,
+                          int frame, bool wasSynchronouslyLoaded) {
+                        print(
+                            "frameBuilder: frame:$frame, wasSynchronouslyLoaded:$wasSynchronouslyLoaded");
+                        return child;
+                      }, */
+                     /*  loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent loadingProgress) {
+                        var progress = loadingProgress == null ? 0 : loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes;
+                        if (progress == 1.0) {
+                          _imageLoaded = true;
+                        }
+
+                        print(
+                            "loadingBuilder: child is null:${child == null}, process:${loadingProgress == null ? 0 : loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes}");
+                        return child;
+                      }, */
+                      /* frameBuilder: (BuildContext context, Widget child,  // fadeIn渐变效果
+                          int frame, bool wasSynchronouslyLoaded) {
+                            print("frameBuilder: frame:$frame, wasSynchronouslyLoaded:$wasSynchronouslyLoaded");
+                        if (wasSynchronouslyLoaded) {
+                             animFinished = true; 
+                          return child;
+                        }
+                        
+                        _animController.forward(); 
+                        return FadeTransition(opacity: _animController, child: child);
+                      }, */
                       fit: BoxFit.cover,
                       height: _appBarHeight,
                     ),

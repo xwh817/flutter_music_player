@@ -12,7 +12,7 @@ class PlayerPage extends StatefulWidget {
   _PlayerPageState createState() => _PlayerPageState();
 }
 
-enum PlayerState { stopped, playing, paused }
+enum PlayerState { loading, stopped, playing, paused }
 
 class _PlayerPageState extends State<PlayerPage>
     with SingleTickerProviderStateMixin {
@@ -22,10 +22,11 @@ class _PlayerPageState extends State<PlayerPage>
   int duration = 0;
   int position = 0;
   bool isMuted = false;
-  PlayerState playerState = PlayerState.stopped;
+  PlayerState playerState;
   StreamSubscription _positionSubscription;
   StreamSubscription _audioPlayerStateSubscription;
-  bool isTaping = false;
+  bool isTaping = false;  // 是否在手动拖动（拖动的时候进度条不要自己动）
+  String songImage;
 
   @override
   void initState() {
@@ -40,6 +41,9 @@ class _PlayerPageState extends State<PlayerPage>
         //_animController.forward();
       }
     });
+
+    // 不要把函数调用放在build之中，不然每次刷新都会调用！！
+    songImage = SongUtil.getSongImage(widget.song) + "?param=300y300";
 
     initAudioPlayer();
 
@@ -60,9 +64,12 @@ class _PlayerPageState extends State<PlayerPage>
           setState(() => duration = audioPlayer.duration.inSeconds);
           print("AudioPlayer start, duration:$duration");
         }
+        if (playerState != PlayerState.playing) {
+          setState(() => playerState = PlayerState.playing);
+          print("AudioPlayer playing");
+        }
       } else if (s == AudioPlayerState.STOPPED) {
         onComplete();
-        setState(() => position = duration);
       }
       print("AudioPlayer onPlayerStateChanged: $s");
     }, onError: (msg) {
@@ -92,7 +99,7 @@ class _PlayerPageState extends State<PlayerPage>
 
     await audioPlayer.play(this.url);
     setState(() {
-      playerState = PlayerState.playing;
+      playerState = PlayerState.loading;
     });
   }
 
@@ -124,7 +131,10 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   void onComplete() {
-    setState(() => playerState = PlayerState.stopped);
+    setState(() {
+      playerState = PlayerState.stopped;
+      position = 0;
+    });
   }
 
   @override
@@ -146,7 +156,7 @@ class _PlayerPageState extends State<PlayerPage>
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Image.network(
-            "${widget.song['al']['picUrl']}?param=300y300",
+            songImage,
             fit: BoxFit.fill,
           ),
         ),
@@ -180,8 +190,7 @@ class _PlayerPageState extends State<PlayerPage>
                       onTap: () => {
                         playerState == PlayerState.playing ? pause() : play()
                       },
-                      child: Image.network(
-                          "${widget.song['al']['picUrl']}?param=300y300"),
+                      child: Image.network(songImage),
                     )))),
             Container(
                 padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
@@ -190,11 +199,14 @@ class _PlayerPageState extends State<PlayerPage>
                   style: TextStyle(fontSize: 16.0, color: Colors.white),
                 )),
             Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 40.0),
+                padding: EdgeInsets.fromLTRB(40.0, 10.0, 30.0, 30.0),
                 child: Text(
                   SongUtil.getArtistNames(widget.song),
                   style: TextStyle(fontSize: 12.0, color: Colors.white60),
                 )),
+            playerState == PlayerState.loading
+                ? CircularProgressIndicator()
+                : Container(),
           ],
         ))),
         Positioned(

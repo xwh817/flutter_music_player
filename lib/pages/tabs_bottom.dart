@@ -18,7 +18,7 @@ class BottomTabs extends StatelessWidget {
 
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.comment),
+            icon: Icon(Icons.whatshot),
             title: Text('推荐'),
           ),
           BottomNavigationBarItem(
