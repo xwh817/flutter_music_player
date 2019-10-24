@@ -21,6 +21,8 @@ class SongUtil {
       });
     }
 
+    // 测试，不要在build里面调用相同的函数，会频繁执行。
+    print("getAritistNames: $names");
     return names;
   }
 

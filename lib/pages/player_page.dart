@@ -3,7 +3,10 @@ import 'dart:ui';
 
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/model/Lyric.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/widget/lyric_widget.dart';
 
 class PlayerPage extends StatefulWidget {
   final Map song;
@@ -25,8 +28,10 @@ class _PlayerPageState extends State<PlayerPage>
   PlayerState playerState;
   StreamSubscription _positionSubscription;
   StreamSubscription _audioPlayerStateSubscription;
-  bool isTaping = false;  // 是否在手动拖动（拖动的时候进度条不要自己动）
+  bool isTaping = false; // 是否在手动拖动（拖动的时候进度条不要自己动）
   String songImage;
+  String artistNames;
+  Lyric lyric;
 
   @override
   void initState() {
@@ -44,12 +49,20 @@ class _PlayerPageState extends State<PlayerPage>
 
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
     songImage = SongUtil.getSongImage(widget.song) + "?param=300y300";
+    artistNames = SongUtil.getArtistNames(widget.song);
 
     initAudioPlayer();
 
     url =
         "https://music.163.com/song/media/outer/url?id=${widget.song['id']}.mp3 ";
     play(url: url);
+
+    MusicDao.getLyric(widget.song['id']).then((result){
+      //print(result.getItemsString());
+      setState(() {
+        this.lyric = result;
+      });
+    });
   }
 
   void initAudioPlayer() {
@@ -59,6 +72,7 @@ class _PlayerPageState extends State<PlayerPage>
         });
     _audioPlayerStateSubscription =
         audioPlayer.onPlayerStateChanged.listen((s) {
+      print("AudioPlayer onPlayerStateChanged, last state: $playerState");
       if (s == AudioPlayerState.PLAYING) {
         if (duration == 0) {
           setState(() => duration = audioPlayer.duration.inSeconds);
@@ -97,10 +111,11 @@ class _PlayerPageState extends State<PlayerPage>
       this.url = url;
     }
 
-    await audioPlayer.play(this.url);
     setState(() {
       playerState = PlayerState.loading;
     });
+
+    await audioPlayer.play(this.url);
   }
 
   Future pause() async {
@@ -139,11 +154,16 @@ class _PlayerPageState extends State<PlayerPage>
 
   @override
   Widget build(BuildContext context) {
+    print("Widget build: state: $playerState");
     if (playerState == PlayerState.playing) {
-      _animController.forward();
-      _animController.repeat();
+      if (!_animController.isAnimating) {
+        _animController.forward();
+        _animController.repeat();
+      }
     } else {
-      _animController.stop();
+      if (_animController.isAnimating) {
+        _animController.stop();
+      }
     }
 
     return Scaffold(
@@ -173,42 +193,51 @@ class _PlayerPageState extends State<PlayerPage>
           ),
         ),
         SafeArea(
-            child: Center(
-                child: Column(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.arrow_back, color: Colors.white,),
+                  SizedBox(width: 10.0,),
+                  Text(
+                    widget.song['name'],
+                    style: TextStyle(fontSize: 16.0, color: Colors.white),
+                  ),
+                ],
+            ),),
             Container(
-                margin: EdgeInsets.only(top: 30.0, bottom: 20.0),
-                child: RotationTransition(
-                    //设置动画的旋转中心
-                    alignment: Alignment.center,
-                    //动画控制器
-                    turns: _animController,
-                    //将要执行动画的子view
-                    child: ClipOval(
-                        child: GestureDetector(
-                      onTap: () => {
-                        playerState == PlayerState.playing ? pause() : play()
-                      },
-                      child: Image.network(songImage),
-                    )))),
+              margin: EdgeInsets.only(top: 30.0, bottom: 20.0),
+              child: RotationTransition(
+                  //设置动画的旋转中心
+                  alignment: Alignment.center,
+                  //动画控制器
+                  turns: _animController,
+                  //将要执行动画的子view
+                  child: ClipOval(
+                      child: GestureDetector(
+                    onTap: () => {
+                      playerState == PlayerState.playing ? pause() : play()
+                    },
+                    child: Image.network(songImage),
+                  )))
+            ),
             Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
+                padding: EdgeInsets.fromLTRB(40.0, 10.0, 30.0, 6.0),
                 child: Text(
-                  widget.song['name'],
-                  style: TextStyle(fontSize: 16.0, color: Colors.white),
-                )),
-            Container(
-                padding: EdgeInsets.fromLTRB(40.0, 10.0, 30.0, 30.0),
-                child: Text(
-                  SongUtil.getArtistNames(widget.song),
-                  style: TextStyle(fontSize: 12.0, color: Colors.white60),
+                  "${widget.song['name']} - $artistNames",
+                  style: TextStyle(fontSize: 14.0, color: Colors.white70),
                 )),
             playerState == PlayerState.loading
                 ? CircularProgressIndicator()
-                : Container(),
+                : Container(
+                    height: 200,
+                    child: LyricPage(lyric:this.lyric, position: position),
+                  )
           ],
-        ))),
+        )),
         Positioned(
           bottom: 30.0,
           left: 20.0,
