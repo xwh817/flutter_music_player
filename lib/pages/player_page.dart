@@ -31,7 +31,7 @@ class _PlayerPageState extends State<PlayerPage>
   bool isTaping = false; // 是否在手动拖动（拖动的时候进度条不要自己动）
   String songImage;
   String artistNames;
-  Lyric lyric;
+  LyricPage lyricPage;
 
   @override
   void initState() {
@@ -50,6 +50,7 @@ class _PlayerPageState extends State<PlayerPage>
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
     songImage = SongUtil.getSongImage(widget.song) + "?param=300y300";
     artistNames = SongUtil.getArtistNames(widget.song);
+    //lyricPage = LyricPage();
 
     initAudioPlayer();
 
@@ -59,9 +60,10 @@ class _PlayerPageState extends State<PlayerPage>
 
     MusicDao.getLyric(widget.song['id']).then((result){
       //print(result.getItemsString());
-      setState(() {
-        this.lyric = result;
-      });
+        //lyricPage.updateLyric(result);
+        setState(() {
+          lyricPage = LyricPage(lyric:result);
+        });
     });
   }
 
@@ -200,7 +202,9 @@ class _PlayerPageState extends State<PlayerPage>
               padding: EdgeInsets.all(12.0),
               child: Row(
                 children: <Widget>[
-                  Icon(Icons.arrow_back, color: Colors.white,),
+                  IconButton(icon:Icon(Icons.arrow_back, color: Colors.white,), onPressed: (){
+                    Navigator.pop(context);
+                  },),
                   SizedBox(width: 10.0,),
                   Text(
                     widget.song['name'],
@@ -230,15 +234,13 @@ class _PlayerPageState extends State<PlayerPage>
                   "${widget.song['name']} - $artistNames",
                   style: TextStyle(fontSize: 14.0, color: Colors.white70),
                 )),
-            playerState == PlayerState.loading
-                ? CircularProgressIndicator()
-                : Container(
-                    height: 200,
-                    child: LyricPage(lyric:this.lyric, position: position),
-                  )
+            Container(
+                height: 200,
+                child: lyricPage,
+              )
           ],
         )),
-        Positioned(
+         Positioned(
           bottom: 30.0,
           left: 20.0,
           right: 20.0,

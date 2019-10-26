@@ -21,13 +21,15 @@ class Lyric {
     }
 
     List<String> strItems = lyric.split('\n');
+    int index = 0;
     strItems.forEach((str){
       List<String> strs = str.split(']');
       if (strs.length ==2) {
         String time = strs[0].replaceAll('[', '');
         int positin = _getPositon(time);
         String content = strs[1];
-        this.items.add(new LyricItem(positin, content));
+        this.items.add(new LyricItem(index, positin, content));
+        index++;
       }
     });
 
@@ -52,8 +54,9 @@ class Lyric {
 }
 
 class LyricItem {
+  int index;
   int position;
   String content;
 
-  LyricItem(this.position, this.content);
+  LyricItem(this.index, this.position, this.content);
 }
