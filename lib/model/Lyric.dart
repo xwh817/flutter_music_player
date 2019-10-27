@@ -6,6 +6,10 @@ class Lyric {
     build();
   }
 
+  Lyric.test(){
+    items = List.generate(50, (index)=>LyricItem(index, index*1000, index.toString()*10));
+  }
+
   String getItemsString(){
     StringBuffer stringBuffer = new StringBuffer();
     items.forEach((LyricItem item){

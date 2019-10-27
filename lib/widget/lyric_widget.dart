@@ -23,7 +23,7 @@ class LyricPage extends StatefulWidget {
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
-  final int visibleItemSize = 5;
+  final int visibleItemSize = 7;
 
   ScrollController _controller;
   int _currentIndex = 0;
@@ -89,14 +89,14 @@ class _LyricPageState extends State<LyricPage> {
     return index;
   }
 
-  void _scroll(int index) {
+  void scrollTo(int index) {
     int itemSize = widget.lyric.items.length;
     // 选中的Index是否超出边界
     if (index < 0 || index >= itemSize) {
       return;
     }
 
-    int offset = visibleItemSize ~/ 2;
+    int offset = (visibleItemSize-1) ~/ 2;
     int topIndex = index - offset; // 选中元素居中时,top的Index
     int bottomIndex = index + offset;
 
@@ -117,7 +117,7 @@ class _LyricPageState extends State<LyricPage> {
         duration: Duration(seconds: 1), curve: Curves.easeInOut);
   }
 
-  void scrollTo(int position) {
+  /* void scrollTo(int position) {
     double offset = position * itemHeight;
     _controller.animateTo(offset,
         duration: Duration(seconds: 1), curve: Curves.easeInOut);
@@ -126,7 +126,7 @@ class _LyricPageState extends State<LyricPage> {
   void scrollBy(int by) {
     int position = _currentIndex + by;
     scrollTo(position);
-  }
+  } */
 
   // 根据歌曲播放的位置确定滚动的位置
   void updatePosition(int position) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/pages/test_lyric_page.dart';
+import 'package:flutter_music_player/pages/test_positioned_1.dart';
 import 'package:flutter_music_player/pages/test_scroll_position.dart';
 import 'pages/home_page.dart';
 
@@ -10,11 +12,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green
-      ),
+      theme: ThemeData(primarySwatch: Colors.green),
       home: HomePage(),
-      //home: TestScrollPosition(),
+      //home: TestLyricPage(),
+      //home: TestPage(),
     );
   }
 }
