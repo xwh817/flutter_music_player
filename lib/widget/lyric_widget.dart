@@ -23,7 +23,7 @@ class LyricPage extends StatefulWidget {
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
-  final int visibleItemSize = 7;
+  final int visibleItemSize = 5;
 
   ScrollController _controller;
   int _currentIndex = 0;

@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/model/Lyric.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 
@@ -196,88 +195,89 @@ class _PlayerPageState extends State<PlayerPage>
         ),
         SafeArea(
             child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Row(
-                children: <Widget>[
-                  IconButton(icon:Icon(Icons.arrow_back, color: Colors.white,), onPressed: (){
-                    Navigator.pop(context);
-                  },),
-                  SizedBox(width: 10.0,),
-                  Text(
-                    widget.song['name'],
-                    style: TextStyle(fontSize: 16.0, color: Colors.white),
-                  ),
-                ],
-            ),),
-            Container(
-              margin: EdgeInsets.only(top: 30.0, bottom: 20.0),
-              child: RotationTransition(
-                  //设置动画的旋转中心
-                  alignment: Alignment.center,
-                  //动画控制器
-                  turns: _animController,
-                  //将要执行动画的子view
-                  child: ClipOval(
-                      child: GestureDetector(
-                    onTap: () => {
-                      playerState == PlayerState.playing ? pause() : play()
-                    },
-                    child: Image.network(songImage),
-                  )))
-            ),
-            Container(
-                padding: EdgeInsets.fromLTRB(40.0, 10.0, 30.0, 6.0),
-                child: Text(
-                  "${widget.song['name']} - $artistNames",
-                  style: TextStyle(fontSize: 14.0, color: Colors.white70),
-                )),
-            Container(
-                height: 200,
-                child: lyricPage,
-              )
-          ],
-        )),
-         Positioned(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Row(
+                  children: <Widget>[
+                    IconButton(icon:Icon(Icons.arrow_back, color: Colors.white,), onPressed: (){
+                      Navigator.pop(context);
+                    },),
+                    SizedBox(width: 10.0,),
+                    Text(
+                      widget.song['name'],
+                      style: TextStyle(fontSize: 16.0, color: Colors.white),
+                    ),
+                  ],
+              ),),
+              Container(
+                margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
+                child: RotationTransition(
+                    //设置动画的旋转中心
+                    alignment: Alignment.center,
+                    //动画控制器
+                    turns: _animController,
+                    //将要执行动画的子view
+                    child: ClipOval(
+                        child: GestureDetector(
+                      onTap: () => {
+                        playerState == PlayerState.playing ? pause() : play()
+                      },
+                      child: Image.network(songImage),
+                    )))
+              ),
+              Container(
+                  padding: EdgeInsets.fromLTRB(40.0, 10.0, 30.0, 6.0),
+                  child: Text(
+                    "${widget.song['name']} - $artistNames",
+                    style: TextStyle(fontSize: 14.0, color: Colors.white70),
+                  )),
+              lyricPage,
+              Container(
+                padding: EdgeInsets.only(top:16.0),
+                child:Row(
+                  children: <Widget>[
+                    Text(_getFormatTime(position),
+                        style: TextStyle(color: Colors.white, fontSize: 12)),
+                    Expanded(
+                      child: Slider.adaptive(
+                        value: position.toDouble(),
+                        min: 0.0,
+                        max: duration == 0 ? 1.0 : duration.toDouble(),
+                        onChanged: (double value) {
+                          setState(() {
+                            position = value.toInt();
+                          });
+                        },
+                        onChangeStart: (double value) {
+                          isTaping = true;
+                        },
+                        onChangeEnd: (double value) {
+                          double seekPosition = value;
+                          seek(seekPosition);
+                          isTaping = false;
+                          setState(() {
+                            position = seekPosition.toInt();
+                          });
+                        },
+                      ),
+                    ),
+                    Text(
+                      _getFormatTime(duration),
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ],
+                )
+              ),
+            ],
+          )),
+         /* Positioned(
           bottom: 30.0,
           left: 20.0,
           right: 20.0,
-          child: Row(
-            children: <Widget>[
-              Text(_getFormatTime(position),
-                  style: TextStyle(color: Colors.white, fontSize: 12)),
-              Expanded(
-                child: Slider.adaptive(
-                  value: position.toDouble(),
-                  min: 0.0,
-                  max: duration.toDouble(),
-                  onChanged: (double value) {
-                    setState(() {
-                      position = value.toInt();
-                    });
-                  },
-                  onChangeStart: (double value) {
-                    isTaping = true;
-                  },
-                  onChangeEnd: (double value) {
-                    double seekPosition = value;
-                    seek(seekPosition);
-                    isTaping = false;
-                    setState(() {
-                      position = seekPosition.toInt();
-                    });
-                  },
-                ),
-              ),
-              Text(
-                _getFormatTime(duration),
-                style: TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ],
-          ),
-        )
+          child: ,
+        ) */
       ]),
     );
   }
