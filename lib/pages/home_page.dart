@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/utils/screen_util.dart';
 import './tabs_bottom.dart';
 import './song_list.dart';
 import './play_list.dart';
@@ -39,6 +40,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    
+    // 获取屏幕大小,用于界面适配
+    final size = MediaQuery.of(context).size;
+    ScreenUtil.screenWidth = size.width;
+    ScreenUtil.screenHeight = size.height;
+    print('屏幕宽高: ${size.width} * ${size.height}');
+
     return Scaffold(
         /* appBar: AppBar(
           title: Text('Flutter Music Player'),

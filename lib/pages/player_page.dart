@@ -5,6 +5,7 @@ import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 
 class PlayerPage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _PlayerPageState extends State<PlayerPage>
   PlayerState playerState;
   StreamSubscription _positionSubscription;
   StreamSubscription _audioPlayerStateSubscription;
-  bool isTaping = false; // 是否在手动拖动（拖动的时候进度条不要自己动）
+  bool isTaping = false; // 是否在手动拖动进度条（拖动的时候播放进度条不要自己动）
   String songImage;
   String artistNames;
   LyricPage lyricPage;
@@ -46,8 +47,9 @@ class _PlayerPageState extends State<PlayerPage>
       }
     });
 
+    int imageSize = ScreenUtil.screenWidth * 2 ~/3;
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
-    songImage = SongUtil.getSongImage(widget.song) + "?param=300y300";
+    songImage = SongUtil.getSongImage(widget.song) + "?param=${imageSize}y$imageSize";
     artistNames = SongUtil.getArtistNames(widget.song);
     //lyricPage = LyricPage();
 
@@ -57,20 +59,24 @@ class _PlayerPageState extends State<PlayerPage>
         "https://music.163.com/song/media/outer/url?id=${widget.song['id']}.mp3 ";
     play(url: url);
 
-    MusicDao.getLyric(widget.song['id']).then((result){
+    MusicDao.getLyric(widget.song['id']).then((result) {
       //print(result.getItemsString());
-        //lyricPage.updateLyric(result);
-        setState(() {
-          lyricPage = LyricPage(lyric:result);
-        });
+      //lyricPage.updateLyric(result);
+      setState(() {
+        lyricPage = LyricPage(lyric: result);
+      });
     });
   }
 
   void initAudioPlayer() {
     audioPlayer = new AudioPlayer();
-    _positionSubscription = audioPlayer.onAudioPositionChanged.listen((p) => {
-          if (!isTaping) {setState(() => position = p.inSeconds)}
-        });
+    _positionSubscription = audioPlayer.onAudioPositionChanged.listen((p) {
+      int seconds = p.inSeconds;
+      if (!isTaping) {
+        setState(() => position = seconds);
+      }
+      lyricPage?.updatePosition(seconds);
+    });
     _audioPlayerStateSubscription =
         audioPlayer.onPlayerStateChanged.listen((s) {
       print("AudioPlayer onPlayerStateChanged, last state: $playerState");
@@ -155,7 +161,9 @@ class _PlayerPageState extends State<PlayerPage>
 
   @override
   Widget build(BuildContext context) {
-    print("Widget build: state: $playerState");
+    final ThemeData theme = Theme.of(context);
+
+    //print("Widget build: state: $playerState");
     if (playerState == PlayerState.playing) {
       if (!_animController.isAnimating) {
         _animController.forward();
@@ -194,91 +202,106 @@ class _PlayerPageState extends State<PlayerPage>
           ),
         ),
         SafeArea(
-            child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(12.0),
+          child: Column(
+          children: <Widget>[
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              title: Text(
+                widget.song['name'],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 16.0, color: Colors.white),
+              ),
+              subtitle: Text(
+                artistNames,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14.0, color: Colors.white60),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
+              child: RotationTransition(
+                //设置动画的旋转中心
+                alignment: Alignment.center,
+                //动画控制器
+                turns: _animController,
+                //将要执行动画的子view
+                child: ClipOval(
+                  child: GestureDetector(
+                    onTap: () => {
+                      playerState == PlayerState.playing ? pause() : play()
+                    },
+                    child: Image.network(songImage),
+                )
+              ))
+            ),
+            Expanded(
+              child: lyricPage ??
+                  Text('歌词加载中...',
+                      style: TextStyle(color: Colors.white30, fontSize: 13.0)),
+            ),
+            Container(
+                padding: EdgeInsets.fromLTRB(24.0, 36.0, 24.0, 48.0),
                 child: Row(
                   children: <Widget>[
-                    IconButton(icon:Icon(Icons.arrow_back, color: Colors.white,), onPressed: (){
-                      Navigator.pop(context);
-                    },),
-                    SizedBox(width: 10.0,),
-                    Text(
-                      widget.song['name'],
-                      style: TextStyle(fontSize: 16.0, color: Colors.white),
-                    ),
-                  ],
-              ),),
-              Container(
-                margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
-                child: RotationTransition(
-                    //设置动画的旋转中心
-                    alignment: Alignment.center,
-                    //动画控制器
-                    turns: _animController,
-                    //将要执行动画的子view
-                    child: ClipOval(
-                        child: GestureDetector(
-                      onTap: () => {
-                        playerState == PlayerState.playing ? pause() : play()
-                      },
-                      child: Image.network(songImage),
-                    )))
-              ),
-              Container(
-                  padding: EdgeInsets.fromLTRB(40.0, 10.0, 30.0, 6.0),
-                  child: Text(
-                    "${widget.song['name']} - $artistNames",
-                    style: TextStyle(fontSize: 14.0, color: Colors.white70),
-                  )),
-              lyricPage,
-              Container(
-                padding: EdgeInsets.only(top:16.0),
-                child:Row(
-                  children: <Widget>[
-                    Text(_getFormatTime(position),
-                        style: TextStyle(color: Colors.white, fontSize: 12)),
+                    _getTimeText(position),
                     Expanded(
-                      child: Slider.adaptive(
-                        value: position.toDouble(),
-                        min: 0.0,
-                        max: duration == 0 ? 1.0 : duration.toDouble(),
-                        onChanged: (double value) {
-                          setState(() {
-                            position = value.toInt();
-                          });
-                        },
-                        onChangeStart: (double value) {
-                          isTaping = true;
-                        },
-                        onChangeEnd: (double value) {
-                          double seekPosition = value;
-                          seek(seekPosition);
-                          isTaping = false;
-                          setState(() {
-                            position = seekPosition.toInt();
-                          });
-                        },
+                      child: SliderTheme(
+                        data: theme.sliderTheme.copyWith(
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                          overlayShape:
+                              RoundSliderOverlayShape(overlayRadius: 18.0),
+                        ),
+                        child: Slider.adaptive(
+                          value: position.toDouble(),
+                          min: 0.0,
+                          max: duration == 0 ? 1.0 : duration.toDouble(),
+                          onChanged: (double value) {
+                            setState(() {
+                              position = value.toInt();
+                            });
+                          },
+                          onChangeStart: (double value) {
+                            isTaping = true;
+                          },
+                          onChangeEnd: (double value) {
+                            double seekPosition = value;
+                            seek(seekPosition);
+                            isTaping = false;
+                            setState(() {
+                              position = seekPosition.toInt();
+                            });
+                          },
+                        ),
                       ),
                     ),
-                    Text(
-                      _getFormatTime(duration),
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
+                    _getTimeText(duration),
                   ],
-                )
-              ),
-            ],
-          )),
-         /* Positioned(
-          bottom: 30.0,
-          left: 20.0,
-          right: 20.0,
-          child: ,
-        ) */
+                )),
+          ],
+        )),
       ]),
+    );
+  }
+
+  Widget _getTimeText(int seconds) {
+    return Container(
+      width: 38.0, // 定宽，防止拖动时候字符长度变化引起抖动
+      child: Text(
+        _getFormatTime(seconds),
+        maxLines: 1,
+        style: TextStyle(color: Colors.white, fontSize: 12)),
     );
   }
 

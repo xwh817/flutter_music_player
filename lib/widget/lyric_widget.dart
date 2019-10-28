@@ -23,10 +23,11 @@ class LyricPage extends StatefulWidget {
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
-  final int visibleItemSize = 5;
+  int visibleItemSize = 7;
 
   ScrollController _controller;
   int _currentIndex = 0;
+  bool isTaping = false;
 
   @override
   void initState() {
@@ -34,6 +35,9 @@ class _LyricPageState extends State<LyricPage> {
     print('LyricPage initState');
 
     _controller = ScrollController();
+    _controller.addListener(() {
+      //print('ScrollController');
+    });
   }
 
   @override
@@ -45,19 +49,22 @@ class _LyricPageState extends State<LyricPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.lyric == null) {
-      return Text('歌词加载中...');
+      return Text('...无歌词...',
+          style: TextStyle(color: Colors.white30, fontSize: 13.0));
     }
 
     //_style.color =
     return Container(
-      height: itemHeight * visibleItemSize,
-      child: CustomScrollView(controller: _controller, slivers: <Widget>[
-        SliverList(
-          delegate: SliverChildListDelegate(
-              widget.lyric.items.map((item) => _getItem(item)).toList()),
-        ),
-      ]),
-    );
+      alignment: Alignment.center,
+      child:ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: itemHeight * 7),
+        child: CustomScrollView(controller: _controller, slivers: <Widget>[
+          SliverList(
+            delegate: SliverChildListDelegate(
+                widget.lyric.items.map((item) => _getItem(item)).toList()),
+          ),
+        ]),
+    ));
   }
 
   Widget _getItem(LyricItem item) {
@@ -96,13 +103,18 @@ class _LyricPageState extends State<LyricPage> {
       return;
     }
 
-    int offset = (visibleItemSize-1) ~/ 2;
+    int offset = (visibleItemSize - 1) ~/ 2;
     int topIndex = index - offset; // 选中元素居中时,top的Index
     int bottomIndex = index + offset;
 
     setState(() {
       _currentIndex = index;
     });
+
+    if (isTaping) {
+      // 如果手指按着就不滚动
+      return;
+    }
 
     // 是否需要滚动(top和bottom到边界时不滚动了)
     if (topIndex < 0 && _controller.offset <= 0) {
@@ -116,17 +128,6 @@ class _LyricPageState extends State<LyricPage> {
     _controller.animateTo(topIndex * itemHeight,
         duration: Duration(seconds: 1), curve: Curves.easeInOut);
   }
-
-  /* void scrollTo(int position) {
-    double offset = position * itemHeight;
-    _controller.animateTo(offset,
-        duration: Duration(seconds: 1), curve: Curves.easeInOut);
-  }
-
-  void scrollBy(int by) {
-    int position = _currentIndex + by;
-    scrollTo(position);
-  } */
 
   // 根据歌曲播放的位置确定滚动的位置
   void updatePosition(int position) {
