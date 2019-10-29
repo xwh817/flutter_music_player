@@ -4,7 +4,6 @@ import 'package:flutter_music_player/pages/play_list_detail.dart';
 import 'package:flutter_music_player/widget/loading_container.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 class PlayListTabPage extends StatefulWidget {
   final String type;
   PlayListTabPage({Key key, @required this.type}) : super(key: key);
@@ -40,29 +39,26 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
   @override
   void dispose() {
     super.dispose();
-
   }
-
 
   @override
   Widget build(BuildContext context) {
     return LoadingContainer(
-      isLoading: this._playlist.length == 0,
-       child: GridView.builder(
-                itemCount: this._playlist.length,
-                padding: EdgeInsets.all(6.0), // 四周边距，注意Card也有默认的边距
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    // 网格样式
-                    crossAxisCount: 2, // 列数
-                    mainAxisSpacing: 2.0, // 主轴的间距
-                    crossAxisSpacing: 2.0, // cross轴间距
-                    childAspectRatio: 1 // item横竖比
-                    ),
-                itemBuilder: (context, index) => _bulidItem(context, index),
-              ));
+        isLoading: this._playlist.length == 0,
+        child: GridView.builder(
+          itemCount: this._playlist.length,
+          padding: EdgeInsets.all(6.0), // 四周边距，注意Card也有默认的边距
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              // 网格样式
+              crossAxisCount: 2, // 列数
+              mainAxisSpacing: 2.0, // 主轴的间距
+              crossAxisSpacing: 2.0, // cross轴间距
+              childAspectRatio: 1 // item横竖比
+              ),
+          itemBuilder: (context, index) => _bulidItem(context, index),
+        ));
   }
 
-  
   _bulidItem(BuildContext context, int index) {
     Map play = _playlist[index];
 
@@ -72,12 +68,11 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-            child: CachedNetworkImage(
-            //placeholder: new CircularProgressIndicator(),
-            imageUrl: '${play['coverImgUrl']}?param=300y300',
-          )
-          ),
+              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              child: CachedNetworkImage(
+                //placeholder: new CircularProgressIndicator(),
+                imageUrl: '${play['coverImgUrl']}?param=300y300',
+              )),
           ClipRRect(
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(4.0),

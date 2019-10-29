@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
+import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 
 /// 歌单页
@@ -19,13 +21,16 @@ enum AppBarBehavior { normal, pinned, floating, snapping }
 class _PlayListPageState extends State<PlayListPage> {
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
-  final double _appBarHeight = 256.0;
+
+  double _appBarHeight = 256.0;
   AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
   List _songs = List();
   bool _imageLoaded = true;
 
   @override
   void initState() {
+    // appBar和图片宽高比相同
+     _appBarHeight = ScreenUtil.screenWidth * 4 / 6;
     _getPlayListSongs();
     super.initState();
   }
@@ -66,46 +71,15 @@ class _PlayListPageState extends State<PlayListPage> {
                   "${widget.playlist['name']}",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 14.0),
+                  style: TextStyle(fontSize: 16.0),
                 ),
                 centerTitle: false,
                 titlePadding: EdgeInsetsDirectional.only(start: 42, bottom: 16),
                 background: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
-                    new Image.network(
-                      "${widget.playlist['coverImgUrl']}?param=900y600",
-                      /* frameBuilder: (BuildContext context, Widget child,
-                          int frame, bool wasSynchronouslyLoaded) {
-                        print(
-                            "frameBuilder: frame:$frame, wasSynchronouslyLoaded:$wasSynchronouslyLoaded");
-                        return child;
-                      }, */
-                     /*  loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
-                        var progress = loadingProgress == null ? 0 : loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes;
-                        if (progress == 1.0) {
-                          _imageLoaded = true;
-                        }
-
-                        print(
-                            "loadingBuilder: child is null:${child == null}, process:${loadingProgress == null ? 0 : loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes}");
-                        return child;
-                      }, */
-                      /* frameBuilder: (BuildContext context, Widget child,  // fadeIn渐变效果
-                          int frame, bool wasSynchronouslyLoaded) {
-                            print("frameBuilder: frame:$frame, wasSynchronouslyLoaded:$wasSynchronouslyLoaded");
-                        if (wasSynchronouslyLoaded) {
-                             animFinished = true; 
-                          return child;
-                        }
-                        
-                        _animController.forward(); 
-                        return FadeTransition(opacity: _animController, child: child);
-                      }, */
-                      fit: BoxFit.cover,
-                      height: _appBarHeight,
-                    ),
+                    CachedNetworkImage(imageUrl: "${widget.playlist['coverImgUrl']}?param=600y400", fit: BoxFit.cover,
+                      height: _appBarHeight),
                     // This gradient ensures that the toolbar icons are distinct
                     // against the background image.
                     const DecoratedBox(

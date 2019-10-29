@@ -5,6 +5,8 @@ class SongUtil {
 
     if (song.containsKey('ar')) {
       arList = song['ar'];
+    } else if (song.containsKey('artists')) {
+      arList = song['artists'];
     } else {
       arList = song['song']['artists'];
     }
@@ -33,4 +35,6 @@ class SongUtil {
       return song['song']['album']['picUrl'];
     }
   }
+
+
 }

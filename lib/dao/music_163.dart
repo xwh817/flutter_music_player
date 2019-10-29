@@ -11,6 +11,8 @@ class MusicDao {
   static const URL_NEW_SONGS = '$URL_ROOT/personalized/newsong';
   static const URL_TOP_SONGS = '$URL_ROOT/top/list?idx=';
   static const URL_GET_LYRIC = '$URL_ROOT/lyric?id=';
+  static const URL_MV_LIST = '$URL_ROOT/mv/first';
+  static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
 
 
   static Future getJsonData(String url) async {
@@ -62,5 +64,17 @@ class MusicDao {
     return Lyric(str);
   }
 
+  static Future<List> getMVList() async {
+    var data = await getJsonData(URL_MV_LIST);
+    List mvList = data['data'];
+    return mvList;
+  }
+
+  
+  static Future<String> getMVDetail(int id) async {
+    var data = await getJsonData('$URL_MV_DETAIL$id');
+    String url = data['data']['brs']['480'];
+    return url;
+  }
 
 }

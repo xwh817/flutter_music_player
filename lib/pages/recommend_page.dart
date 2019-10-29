@@ -40,7 +40,9 @@ class _RecommendPageState extends State<RecommendPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+    _topSongs.length == 0 ? Center(child: CircularProgressIndicator()) :
+    Scaffold(
         key: _scaffoldKey,
         body: CustomScrollView(
           slivers: <Widget>[

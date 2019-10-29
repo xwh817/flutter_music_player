@@ -26,8 +26,8 @@ class BottomTabs extends StatelessWidget {
             title: Text('歌单'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            title: Text('搜索'),
+            icon: Icon(Icons.movie),
+            title: Text('MV'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),

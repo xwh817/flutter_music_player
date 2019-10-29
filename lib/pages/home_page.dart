@@ -4,6 +4,7 @@ import './tabs_bottom.dart';
 import './song_list.dart';
 import './play_list.dart';
 import './recommend_page.dart';
+import 'mv_page.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -24,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     pages
       ..add(RecommendPage())
       ..add(PlayList())
-      ..add(SongList())
+      ..add(MVPage())
       ..add(Center(child: Text("Pages 4")));
 
     super.initState();
