@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/widget/song_item_tile.dart';
 import './player_page.dart';
 import '../dao/music_163.dart';
 import '../model/song_util.dart';
@@ -42,32 +43,10 @@ class _SongListState extends State<SongList> {
       mWidget = ListView.builder(
         itemCount: this._songs.length,
         itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-        itemBuilder: (context, index) => _bulidItem(context, index),
+        itemBuilder: (context, index) => SongItemTile(this._songs[index]),
       );
     }
     return mWidget;
   }
 
-  _bulidItem(BuildContext context, int index) {
-    Map song = _songs[index];
-
-    return new ListTile(
-      title: new Text(
-        "$index ${song['name']}",
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: new Text(SongUtil.getArtistNames(song),
-          maxLines: 1, 
-          overflow: TextOverflow.ellipsis),
-      leading: new ClipRRect(
-        borderRadius: BorderRadius.circular(6.0),
-        child: new Image.network("${song['al']['picUrl']}?param=100y100"),
-      ),
-      onTap: () {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
-      },
-    );
-  }
 }

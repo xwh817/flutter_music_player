@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/Lyric.dart';
+import 'package:flutter_music_player/utils/screen_util.dart';
 
 class LyricPage extends StatefulWidget {
   final Lyric lyric;
@@ -37,6 +38,8 @@ class _LyricPageState extends State<LyricPage> {
     _controller = ScrollController();
     _controller.addListener(() {
       //print('ScrollController');
+
+    visibleItemSize = ScreenUtil.screenHeight <700 ? 5 : 7;
     });
   }
 
@@ -60,8 +63,14 @@ class _LyricPageState extends State<LyricPage> {
         constraints: BoxConstraints(maxHeight: itemHeight * 7),
         child: CustomScrollView(controller: _controller, slivers: <Widget>[
           SliverList(
-            delegate: SliverChildListDelegate(
-                widget.lyric.items.map((item) => _getItem(item)).toList()),
+            delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                return _getItem(widget.lyric.items[index]);
+              },
+              childCount: widget.lyric.items.length,
+            )
+            /* delegate: SliverChildListDelegate(
+                widget.lyric.items.map((item) => _getItem(item)).toList()), */
           ),
         ]),
     ));

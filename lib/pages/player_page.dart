@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:audioplayer/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/song_util.dart';
@@ -47,9 +48,10 @@ class _PlayerPageState extends State<PlayerPage>
       }
     });
 
-    int imageSize = ScreenUtil.screenWidth * 2 ~/3;
+    int imageSize = ScreenUtil.screenWidth * 2 ~/ 3;
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
-    songImage = SongUtil.getSongImage(widget.song) + "?param=${imageSize}y$imageSize";
+    songImage =
+        SongUtil.getSongImage(widget.song) + "?param=${imageSize}y$imageSize";
     artistNames = SongUtil.getArtistNames(widget.song);
     //lyricPage = LyricPage();
 
@@ -184,8 +186,8 @@ class _PlayerPageState extends State<PlayerPage>
           // 背景图片
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: Image.network(
-            songImage,
+          child: CachedNetworkImage(
+            imageUrl: songImage,
             fit: BoxFit.fill,
           ),
         ),
@@ -205,46 +207,52 @@ class _PlayerPageState extends State<PlayerPage>
           child: Column(
           children: <Widget>[
             ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
+                contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              title: Text(
-                widget.song['name'],
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 16.0, color: Colors.white),
-              ),
-              subtitle: Text(
-                artistNames,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 14.0, color: Colors.white60),
-              ),
-            ),
+                title: Text(
+                  widget.song['name'],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16.0, color: Colors.white),
+                ),
+                subtitle: Text(
+                  artistNames,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 14.0, color: Colors.white60),
+                ),
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.favorite,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    print("${context.size.height}");
+                  },
+              )),
             Container(
               margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
               child: RotationTransition(
-                //设置动画的旋转中心
-                alignment: Alignment.center,
-                //动画控制器
-                turns: _animController,
-                //将要执行动画的子view
-                child: ClipOval(
-                  child: GestureDetector(
+                  //设置动画的旋转中心
+                  alignment: Alignment.center,
+                  //动画控制器
+                  turns: _animController,
+                  //将要执行动画的子view
+                  child: ClipOval(
+                      child: GestureDetector(
                     onTap: () => {
                       playerState == PlayerState.playing ? pause() : play()
                     },
-                    child: Image.network(songImage),
-                )
-              ))
-            ),
+                    child: CachedNetworkImage(imageUrl: songImage),
+                  )))),
             Expanded(
               child: lyricPage ??
                   Text('歌词加载中...',
@@ -298,10 +306,8 @@ class _PlayerPageState extends State<PlayerPage>
   Widget _getTimeText(int seconds) {
     return Container(
       width: 38.0, // 定宽，防止拖动时候字符长度变化引起抖动
-      child: Text(
-        _getFormatTime(seconds),
-        maxLines: 1,
-        style: TextStyle(color: Colors.white, fontSize: 12)),
+      child: Text(_getFormatTime(seconds),
+          maxLines: 1, style: TextStyle(color: Colors.white, fontSize: 12)),
     );
   }
 

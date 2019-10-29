@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
+import 'package:flutter_music_player/widget/song_item_tile.dart';
 
 /// 歌单页
 /// 笔记：在state里面获取widget中定义的变量使用widget.playlist
@@ -123,7 +124,7 @@ class _PlayListPageState extends State<PlayListPage> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  return _buildItem(context, index);
+                  return SongItemTile(this._songs[index]);
                 },
                 childCount: _songs.length,
               ),
@@ -134,23 +135,4 @@ class _PlayListPageState extends State<PlayListPage> {
     );
   }
 
-  Widget _buildItem(BuildContext context, index) {
-    Map song = _songs[index];
-    return new ListTile(
-      title: new Text(
-        "$index ${song['name']}",
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: new Text(song['ar'][0]['name']),
-      leading: new ClipRRect(
-        borderRadius: BorderRadius.circular(6.0),
-        child: new Image.network("${song['al']['picUrl']}?param=100y100"),
-      ),
-      onTap: () {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
-      },
-    );
-  }
 }

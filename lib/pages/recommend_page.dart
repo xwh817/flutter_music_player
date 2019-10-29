@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
+import 'package:flutter_music_player/widget/song_item_tile.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import '../dao/music_163.dart';
 
@@ -64,7 +66,8 @@ class _RecommendPageState extends State<RecommendPage> {
                         //song['al']['picUrl'] = picUrl;
                         return GestureDetector(
                           onTap: () => _onItemTap(song),
-                          child: Image.network(picUrl+ "?param=600y300", fit: BoxFit.cover, ),);
+                          child: CachedNetworkImage(imageUrl: picUrl+ "?param=600y300", fit: BoxFit.cover,),
+                        );
                       },
                       itemCount: _newSongs.length,
                       pagination: new SwiperPagination(),
@@ -87,7 +90,7 @@ class _RecommendPageState extends State<RecommendPage> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  return _buildItem(context, index);
+                  return SongItemTile(this._topSongs[index]);
                 },
                 childCount: _topSongs.length,
               ),
@@ -97,25 +100,10 @@ class _RecommendPageState extends State<RecommendPage> {
       );
   }
 
-  Widget _buildItem(BuildContext context, index) {
-    Map song = _topSongs[index];
-    return new ListTile(
-      title: new Text(
-        "$index ${song['name']}",
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: new Text(song['ar'][0]['name']),
-      leading: new ClipRRect(
-        borderRadius: BorderRadius.circular(6.0),
-        child: new Image.network("${song['al']['picUrl']}?param=100y100"),
-      ),
-      onTap: () => _onItemTap(song),
-    );
-  }
-
+  
   void _onItemTap(Map song) {
     Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
   }
+
 }

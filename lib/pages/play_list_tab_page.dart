@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/pages/play_list_detail.dart';
 import 'package:flutter_music_player/widget/loading_container.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 class PlayListTabPage extends StatefulWidget {
@@ -72,7 +73,10 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
-            child: new Image.network("${play['coverImgUrl']}?param=300y300"),
+            child: CachedNetworkImage(
+            //placeholder: new CircularProgressIndicator(),
+            imageUrl: '${play['coverImgUrl']}?param=300y300',
+          )
           ),
           ClipRRect(
             borderRadius: BorderRadius.only(
