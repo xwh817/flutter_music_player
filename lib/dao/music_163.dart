@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:flutter_music_player/dao/api_cache.dart';
 import 'package:flutter_music_player/model/Lyric.dart';
 
 class MusicDao {
@@ -17,17 +18,25 @@ class MusicDao {
 
   static Future getJsonData(String url) async {
     var data;
-    var httpClient = new HttpClient();
-    print("http request: $url");
-    var request = await httpClient.getUrl(Uri.parse(url));
-    var response = await request.close();
-    if (response.statusCode == HttpStatus.ok) {
-      var json = await response.transform(utf8.decoder).join();
-      data = jsonDecode(json);
+    String cache = await APICache.getCache(url);
+    if (cache != null) {
+      data = jsonDecode(cache);
     } else {
-      throw Exception(
-          'Request failed, errorCode: ${response.statusCode}');
+      var httpClient = new HttpClient();
+      print("http request: $url");
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      if (response.statusCode == HttpStatus.ok) {
+        String json = await response.transform(utf8.decoder).join();
+        bool re = await APICache.saveCache(url, json);
+        print('saveCache result: $re');
+        data = jsonDecode(json);
+      } else {
+        throw Exception(
+            'Request failed, errorCode: ${response.statusCode}');
+      }
     }
+    
     return data;
   }
 
