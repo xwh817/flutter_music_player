@@ -35,17 +35,30 @@ class _MVPageState extends State<MVPage> {
   Widget build(BuildContext context) {
     return _mvList.length == 0
         ? Center(child: CircularProgressIndicator())
-        : SafeArea(
-            child: ListView.separated(
-              itemCount: this._mvList.length,
-              //itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-              itemBuilder: (context, index) => MVItem(this._mvList[index]),
-              separatorBuilder: (context, index) => Divider(
-                color: Color(0x0f000000),
-                height: 8.0,    // 间隔的高度
-                thickness: 6.0, // 绘制的线的厚度
+        : CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                title: Text('MV'),
               ),
-            ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    (context, index) => MVItem(this._mvList[index]),
+                    childCount: _mvList.length),
+              )
+            ],
           );
+
+    /* SafeArea(
+      child: ListView.separated(
+        itemCount: this._mvList.length,
+        //itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
+        itemBuilder: (context, index) => MVItem(this._mvList[index]),
+        separatorBuilder: (context, index) => Divider(
+          color: Color(0x0f000000),
+          height: 8.0, // 间隔的高度
+          thickness: 6.0, // 绘制的线的厚度
+        ),
+      ),
+    ); */
   }
 }
