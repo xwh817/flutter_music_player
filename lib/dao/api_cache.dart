@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class APICache {
   static const String dirName = 'cache';
-  static const Duration CACHE_TIMEOUT = Duration(hours: 1);  // 缓存超时时长。1小时
+  static const Duration CACHE_TIMEOUT = Duration(hours: 6);  // 缓存超时时长。
 
 
   static Future<Directory> _getCacheDir() async {

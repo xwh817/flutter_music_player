@@ -82,6 +82,7 @@ class MusicDao {
   
   static Future<String> getMVDetail(int id) async {
     var data = await getJsonData('$URL_MV_DETAIL$id');
+    // 视频 240 480 720 1080
     String url = data['data']['brs']['480'];
     return url;
   }

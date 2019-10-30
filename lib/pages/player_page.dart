@@ -8,6 +8,7 @@ import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
+import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
 
 class PlayerPage extends StatefulWidget {
   final Map song;
@@ -232,7 +233,7 @@ class _PlayerPageState extends State<PlayerPage>
                 trailing: IconButton(
                   icon: Icon(
                     Icons.favorite,
-                    color: Colors.white,
+                    color: Colors.white60,
                   ),
                   onPressed: () {
                     print("${context.size.height}");
@@ -260,65 +261,25 @@ class _PlayerPageState extends State<PlayerPage>
             ),
             Container(
                 padding: EdgeInsets.fromLTRB(24.0, 36.0, 24.0, 48.0),
-                child: Row(
-                  children: <Widget>[
-                    _getTimeText(position),
-                    Expanded(
-                      child: SliderTheme(
-                        data: theme.sliderTheme.copyWith(
-                          thumbShape:
-                              RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                          overlayShape:
-                              RoundSliderOverlayShape(overlayRadius: 18.0),
-                        ),
-                        child: Slider.adaptive(
-                          value: position.toDouble(),
-                          min: 0.0,
-                          max: duration == 0 ? 1.0 : duration.toDouble(),
-                          onChanged: (double value) {
-                            setState(() {
-                              position = value.toInt();
-                            });
-                          },
-                          onChangeStart: (double value) {
-                            isTaping = true;
-                          },
-                          onChangeEnd: (double value) {
-                            double seekPosition = value;
-                            seek(seekPosition);
-                            isTaping = false;
-                            setState(() {
-                              position = seekPosition.toInt();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    _getTimeText(duration),
-                  ],
-                )),
+                child: MyProgressBar(
+                duration: duration,
+                position: position,
+                onChanged: (double value) {
+                  setState(() {
+                  position = value.toInt(); 
+                  });
+                },
+                onChangeStart: (double value) {isTaping = true;},
+                onChangeEnd: (double value) {
+                  isTaping = false;
+                  seek(value);
+                }
+              )
+            ),
           ],
         )),
       ]),
     );
   }
 
-  Widget _getTimeText(int seconds) {
-    return Container(
-      width: 38.0, // 定宽，防止拖动时候字符长度变化引起抖动
-      child: Text(_getFormatTime(seconds),
-          maxLines: 1, style: TextStyle(color: Colors.white, fontSize: 12)),
-    );
-  }
-
-  String _getFormatTime(int seconds) {
-    int minute = seconds ~/ 60;
-    int hour = minute ~/ 60;
-    String strHour = hour == 0 ? '' : '$hour:';
-    return "$strHour${_getTimeString(minute % 60)}:${_getTimeString(seconds % 60)}";
-  }
-
-  String _getTimeString(int value) {
-    return value > 9 ? "$value" : "0$value";
-  }
 }

@@ -1,58 +1,28 @@
 import 'package:flutter/material.dart';
 
-class MusicProgressBar extends StatefulWidget {
-  
-  _MusicProgressBarState _state;
+class MyProgressBar extends StatefulWidget {
   Function onChanged;
   Function onChangeStart;
   Function onChangeEnd;
 
-  MusicProgressBar({Key key, this.onChanged, this.onChangeStart, this.onChangeEnd}): super(key: key);
+  int duration = 0;
+  int position = 0;
 
-  _MusicProgressBarState createState(){
-    _state = _MusicProgressBarState();
-    return _state;
-  }
+  MyProgressBar({Key key, this.duration, this.position, this.onChanged, this.onChangeStart, this.onChangeEnd}): super(key: key);
 
-  void setDuration(int duration){
-    _state?.setDuration(duration);
-  }
-
-  void updatePosition(int position){
-    _state?.setPosition(position);
-  }
-
+  _MyProgressBarState createState() => _MyProgressBarState();
 
 }
 
-class _MusicProgressBarState extends State<MusicProgressBar> {
-  int duration = 0;
-  int position = 0;
-  bool isTaping = false; // 是否在手动拖动（拖动的时候进度条不要自己动
-
-  void setDuration(int duration){
-    setState(() {
-     this.duration = duration; 
-    });
-  }
-
-  void setPosition(int position, {bool byHander:false}){
-    if (isTaping && !byHander) {
-      return;
-    }
-    setState(() {
-     this.position = position; 
-    });
-  }
-
-
+class _MyProgressBarState extends State<MyProgressBar> {
+  
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text(_getFormatTime(position),
+        Text(_getFormatTime(widget.position),
             style: TextStyle(color: Colors.white, fontSize: 12)),
         Expanded(
           child: SliderTheme(
@@ -61,26 +31,23 @@ class _MusicProgressBarState extends State<MusicProgressBar> {
               overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
             ),
             child: Slider.adaptive(
-              value: position.toDouble(),
+              value: widget.position.toDouble(),
               min: 0.0,
-              max: duration == 0 ? 1.0 : duration.toDouble(),
+              max: widget.duration == 0 ? 1.0 : widget.duration.toDouble(),
               onChanged: (double value) {
-                setPosition(value.toInt(), byHander: true);
                 widget.onChanged(value);
               },
               onChangeStart: (double value) {
-                isTaping = true;
                 widget.onChangeStart(value);
               },
               onChangeEnd: (double value) {
-                isTaping = false;
                 widget.onChangeEnd(value);
               },
             ),
           )
         ),
         Text(
-          _getFormatTime(duration),
+          _getFormatTime(widget.duration),
           style: TextStyle(color: Colors.white, fontSize: 12),
         ),
       ],
