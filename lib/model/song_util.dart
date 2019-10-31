@@ -1,5 +1,9 @@
 class SongUtil {
   static String getArtistNames(Map song) {
+    if (song.containsKey('artistNames')) {
+      return song['artistNames'];
+    }
+
     String names = '';
     List arList;
 
@@ -22,6 +26,9 @@ class SongUtil {
         }
       });
     }
+    
+    // 取了之后存下来，不用重复取了。
+    song['artistNames'] = names;
 
     // 测试，不要在build里面调用相同的函数，会频繁执行。
     print("getAritistNames: $names");

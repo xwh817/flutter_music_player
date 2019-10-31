@@ -68,11 +68,12 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget>[
           ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-              child: CachedNetworkImage(
-                //placeholder: new CircularProgressIndicator(),
-                imageUrl: '${play['coverImgUrl']}?param=300y300',
-              )),
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            child: Hero(
+              tag: "playListImage_${play['id']}", // 一个页面中tag名需唯一，所以list中要加上id
+              child: CachedNetworkImage(imageUrl: '${play['coverImgUrl']}?param=300y300'),
+            )
+          ),
           ClipRRect(
             borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(4.0),

@@ -78,8 +78,11 @@ class _PlayListPageState extends State<PlayListPage> {
                 background: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
-                    CachedNetworkImage(imageUrl: "${widget.playlist['coverImgUrl']}?param=600y400", fit: BoxFit.cover,
-                      height: _appBarHeight),
+                    Hero(
+                      tag: "playListImage_${widget.playlist['id']}",
+                      child:CachedNetworkImage(imageUrl: "${widget.playlist['coverImgUrl']}?param=600y400", fit: BoxFit.cover,
+                      height: _appBarHeight)
+                    ),
                     // This gradient ensures that the toolbar icons are distinct
                     // against the background image.
                     const DecoratedBox(

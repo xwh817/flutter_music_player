@@ -16,12 +16,16 @@ class MusicDao {
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
 
 
-  static Future getJsonData(String url) async {
+  static Future getJsonData(String url, {bool useCache: true}) async {
     var data;
-    String cache = await APICache.getCache(url);
-    if (cache != null) {
-      data = jsonDecode(cache);
-    } else {
+    if (useCache) { // 有些资源是动态的,如播放地址，会过期不能使用缓存。
+      String cache = await APICache.getCache(url);
+      if (cache != null) {
+        data = jsonDecode(cache);
+      }
+    }
+    // 缓存没取到，就请求网络。
+    if (data == null) {
       var httpClient = new HttpClient();
       print("http request: $url");
       var request = await httpClient.getUrl(Uri.parse(url));
@@ -81,7 +85,7 @@ class MusicDao {
 
   
   static Future<String> getMVDetail(int id) async {
-    var data = await getJsonData('$URL_MV_DETAIL$id');
+    var data = await getJsonData('$URL_MV_DETAIL$id', useCache: false);
     // 视频 240 480 720 1080
     String url = data['data']['brs']['480'];
     return url;

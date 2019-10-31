@@ -12,25 +12,24 @@ class MVPlayer extends StatefulWidget {
 
 class _MVPlayerState extends State<MVPlayer> {
   VideoPlayerController _controller;
-@override
+  @override
   void initState() {
     super.initState();
 
-    MusicDao.getMVDetail(widget.mv['id']).then((url){
-       _controller = VideoPlayerController.network(url)
-      ..initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {
+    MusicDao.getMVDetail(widget.mv['id']).then((url) {
+      _controller = VideoPlayerController.network(url)
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+          setState(() {});
+          _controller.play();
         });
-        _controller.play();
-      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    bool initialized = _controller!= null && _controller.value.initialized;
-    bool playing = _controller!= null && _controller.value.isPlaying;
+    bool initialized = _controller != null && _controller.value.initialized;
+    bool playing = _controller != null && _controller.value.isPlaying;
 
     return MaterialApp(
       title: 'Video Demo',
@@ -39,16 +38,16 @@ class _MVPlayerState extends State<MVPlayer> {
           child: initialized
               ? AspectRatio(
                   aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                )
+                  child: Hero(
+                    tag: widget.mv,
+                    child: VideoPlayer(_controller),
+                  ))
               : Center(child: CircularProgressIndicator()),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
-              playing
-                  ? _controller.pause()
-                  : _controller.play();
+              playing ? _controller.pause() : _controller.play();
             });
           },
           child: Icon(
