@@ -32,8 +32,11 @@ class MusicDao {
       var response = await request.close();
       if (response.statusCode == HttpStatus.ok) {
         String json = await response.transform(utf8.decoder).join();
-        bool re = await APICache.saveCache(url, json);
-        print('saveCache result: $re');
+        if (useCache) {
+          bool re = await APICache.saveCache(url, json);
+          print('saveCache $url result: $re');
+        }
+        
         data = jsonDecode(json);
       } else {
         throw Exception(

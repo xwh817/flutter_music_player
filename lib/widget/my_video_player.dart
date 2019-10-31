@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/widget/fullscreen_video_player.dart';
 import 'package:video_player/video_player.dart';
 
 import 'music_progress_bar_2.dart';
@@ -33,6 +34,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     if (_controller != null) {
       _setControllerListener();
     }
+
+   print('initState ${widget.mv["name"]}, controller: ${_controller==null ?'null':_controller.hashCode}');
+
   }
 
   void _setControllerListener() {
@@ -71,14 +75,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
       _controller.dispose();
       _controller = null;
     }
-    print('MyVideoPlayer dispose');
+    //print('MyVideoPlayer dispose ${widget.mv["name"]}, controller: ${_controller.hashCode}');
   }
 
-  @override
+  /* @override
   void deactivate() {
     super.deactivate();
     print('MyVideoPlayer deactivate');
-  }
+  } */
 
   
   _getMVDetail() {
@@ -121,10 +125,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
             _pause();
           }
         },
-        child: Hero(
-          tag: _controller,
-          child: VideoPlayer(_controller),
-        ),
+        child: VideoPlayer(_controller),
       ));
 
       // 全屏按钮
@@ -209,29 +210,29 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   // 全屏
   Widget _buildFullScreenVideo() {
+    //OrientationPlugin.forceOrientation(DeviceOrientation.landscapeLeft);
     return Material(
       child: AspectRatio(
         aspectRatio: _controller.value.aspectRatio,
         child: Stack(children: <Widget>[
-          Hero(
-            tag: _controller,
-            //child: MyVideoPlayer(controller: _controller, mv:widget.mv, playerState:this._playerState),
-            child: VideoPlayer(_controller),
-          ),
+          //FullScreenVideoPlayer(_controller),
+          VideoPlayer(_controller),
+          //MyVideoPlayer(mv:widget.mv, controller:_controller, playerState: this._playerState,),
           //_buildResizeButton(),
           //_buildProgressBar(),
           //_bulidPlayButton(),
         ],) 
     ));
+
   }
 
   void pushFullScreenWidget(context) {
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    //SystemChrome.setPreferredOrientations(
+       // [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
 
     final TransitionRoute<void> route = PageRouteBuilder<void>(
         settings: RouteSettings(name: "Test", isInitialRoute: false),
-        pageBuilder: (context, animation, secondaryAnimation) => _buildFullScreenVideo(),
+        pageBuilder: (context, animation, secondaryAnimation) => FullScreenVideoPlayer(_controller),
         /* transitionsBuilder: (
           BuildContext context,
           Animation<double> animation1,
@@ -251,8 +252,8 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
     route.completed.then((void value) {
       //controller.setVolume(0.0);
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      //SystemChrome.setPreferredOrientations(
+      //    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     });
 
     //controller.setVolume(1.0);

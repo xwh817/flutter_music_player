@@ -47,7 +47,7 @@ class APICache {
 
   static Future<bool> saveCache(String url, String cache) async{
     File file = await _getLocalFile(url);
-    print('saveCache: ${file.path}');
+    print('saveCache to: ${file.path}');
     File fileCached = await file.writeAsString(cache);
     return fileCached.exists();
   }
