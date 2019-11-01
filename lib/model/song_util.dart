@@ -35,13 +35,29 @@ class SongUtil {
     return names;
   }
 
-  static String getSongImage(Map song) {
-    if (song.containsKey('ar')) {
-      return song['al']['picUrl'];
+  static String getSongImage(Map song, {int size:100}) {
+    String imgUrl;
+    if (song.containsKey('imageUrl')) {
+      imgUrl = song['imageUrl'];
     } else {
-      return song['song']['album']['picUrl'];
+      try {
+        if (song.containsKey('ar')) {
+          imgUrl = song['al']['picUrl'];
+        } else {
+          imgUrl = song['song']['album']['picUrl'];
+        }
+        song['imageUrl'] = imgUrl;  // 取一次之后存下来，不用后面计算。
+      } catch(e) {
+        print(e);
+        return '';
+      } 
     }
+    return '$imgUrl?param=${size}y$size';
   }
 
+
+  static String getSongUrl(Map song) {
+    return "https://music.163.com/song/media/outer/url?id=${song['id']}.mp3";
+  }
 
 }

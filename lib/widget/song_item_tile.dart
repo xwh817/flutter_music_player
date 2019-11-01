@@ -23,7 +23,7 @@ class SongItemTile extends StatelessWidget {
       ),
       leading: new ClipRRect(
         borderRadius: BorderRadius.circular(6.0),
-        child: CachedNetworkImage(imageUrl: "${song['al']['picUrl']}?param=100y100"),
+        child: CachedNetworkImage(imageUrl: "${SongUtil.getSongImage(song)}"),
       ),
       onTap: () {
         Navigator.of(context).push(

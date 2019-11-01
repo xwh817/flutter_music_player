@@ -5,6 +5,7 @@ import 'package:audioplayer/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/dao/music_db.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
@@ -34,6 +35,7 @@ class _PlayerPageState extends State<PlayerPage>
   String songImage;
   String artistNames;
   LyricPage lyricPage;
+  bool isFavorited = false;
 
   @override
   void initState() {
@@ -42,31 +44,27 @@ class _PlayerPageState extends State<PlayerPage>
         AnimationController(duration: const Duration(seconds: 16), vsync: this);
     _animController.addStatusListener((status) {
       print("RotationTransition: $status");
-      if (status == AnimationStatus.completed) {
-        //动画执行结束时反向执行动画
-        //_animController.reset();
-        //_animController.forward();
-      }
     });
 
     int imageSize = ScreenUtil.screenWidth * 2 ~/ 3;
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
-    songImage =
-        SongUtil.getSongImage(widget.song) + "?param=${imageSize}y$imageSize";
+    songImage = SongUtil.getSongImage(widget.song, size:imageSize);
     artistNames = SongUtil.getArtistNames(widget.song);
-    //lyricPage = LyricPage();
+    url = SongUtil.getSongUrl(widget.song);
 
     initAudioPlayer();
 
-    url =
-        "https://music.163.com/song/media/outer/url?id=${widget.song['id']}.mp3 ";
     play(url: url);
 
     MusicDao.getLyric(widget.song['id']).then((result) {
-      //print(result.getItemsString());
-      //lyricPage.updateLyric(result);
       setState(() {
         lyricPage = LyricPage(lyric: result);
+      });
+    });
+
+    MusicDB().getFavoriteById(widget.song['id']).then((fav) {
+      setState(() {
+       isFavorited = fav != null; 
       });
     });
   }
@@ -164,7 +162,7 @@ class _PlayerPageState extends State<PlayerPage>
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    //final ThemeData theme = Theme.of(context);
 
     //print("Widget build: state: $playerState");
     if (playerState == PlayerState.playing) {
@@ -182,7 +180,8 @@ class _PlayerPageState extends State<PlayerPage>
       /* appBar: AppBar(
         title: Text('Flutter Music Player'),
       ), */
-      body: Stack(children: <Widget>[
+      body: Builder(builder: (BuildContext context) {
+        return       Stack(children: <Widget>[
         Container(
           // 背景图片
           width: MediaQuery.of(context).size.width,
@@ -233,10 +232,29 @@ class _PlayerPageState extends State<PlayerPage>
                 trailing: IconButton(
                   icon: Icon(
                     Icons.favorite,
-                    color: Colors.white60,
+                    color: isFavorited ? Colors.pink : Colors.white60,
                   ),
                   onPressed: () {
-                    print("${context.size.height}");
+                    setState(() {
+                      isFavorited = !isFavorited;
+                    });
+                    String snack='';
+                    if (isFavorited) {
+                      MusicDB().addFavorite(widget.song).then((re){
+                        snack = '已添加收藏';
+                      }).catchError((error){
+                        snack = '添加收藏失败';
+                      });
+                    } else {
+                      MusicDB().deleteFavorite(widget.song).then((re){
+                        snack = '已取消收藏';
+                      }).catchError((error){
+                        snack = '取消收藏失败';
+                      });
+                    }
+
+                    Scaffold.of(context).showSnackBar(SnackBar(content: Text(snack)));
+                    //print("${context.size.height}");
                   },
               )),
             Container(
@@ -278,7 +296,8 @@ class _PlayerPageState extends State<PlayerPage>
             ),
           ],
         )),
-      ]),
+      ]);
+      }),
     );
   }
 
