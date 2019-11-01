@@ -75,7 +75,10 @@ class MusicDao {
 
   // 获取歌词
   static Future<Lyric> getLyric(int songId) async {
-    var data = await getJsonData('$URL_GET_LYRIC$songId');
+    Map data = await getJsonData('$URL_GET_LYRIC$songId');
+    if (data.containsKey('nolyric')) {  // 无歌词
+      return Lyric.empty();
+    }
     String str = data['lrc']['lyric'];
     return Lyric(str);
   }
@@ -91,6 +94,7 @@ class MusicDao {
     var data = await getJsonData('$URL_MV_DETAIL$id', useCache: false);
     // 视频 240 480 720 1080
     String url = data['data']['brs']['480'];
+    print('getMVDetail result: $url');
     return url;
   }
 

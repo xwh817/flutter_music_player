@@ -39,7 +39,7 @@ class _LyricPageState extends State<LyricPage> {
     _controller.addListener(() {
       //print('ScrollController');
 
-    visibleItemSize = ScreenUtil.screenHeight <700 ? 5 : 7;
+      visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
     });
   }
 
@@ -51,29 +51,33 @@ class _LyricPageState extends State<LyricPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.lyric == null) {
-      return Text('...无歌词...',
-          style: TextStyle(color: Colors.white30, fontSize: 13.0));
+    if (widget.lyric.items.length == 0) {
+      return Text('...纯音乐，无歌词...',
+          style: TextStyle(
+            color: Colors.white30,
+            fontSize: 13.0,
+            height: 3,
+          ));
     }
 
     //_style.color =
     return Container(
-      alignment: Alignment.center,
-      child:ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: itemHeight * 7),
-        child: CustomScrollView(controller: _controller, slivers: <Widget>[
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
+        alignment: Alignment.center,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: itemHeight * 7),
+          child: CustomScrollView(controller: _controller, slivers: <Widget>[
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
                 return _getItem(widget.lyric.items[index]);
               },
               childCount: widget.lyric.items.length,
             )
-            /* delegate: SliverChildListDelegate(
+                /* delegate: SliverChildListDelegate(
                 widget.lyric.items.map((item) => _getItem(item)).toList()), */
-          ),
-        ]),
-    ));
+                ),
+          ]),
+        ));
   }
 
   Widget _getItem(LyricItem item) {

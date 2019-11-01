@@ -6,7 +6,9 @@ class Lyric {
     build();
   }
 
-  Lyric.test() {
+  Lyric.empty();  // 空的构造函数
+
+  Lyric.test() {  // test数据的构造函数
     items = List.generate(
         50, (index) => LyricItem(index, index * 1000, index.toString() * 10));
   }
