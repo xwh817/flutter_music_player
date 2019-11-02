@@ -24,6 +24,7 @@ class LyricPage extends StatefulWidget {
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
+  final int lyricOffset = 1000; // 可能歌词出现的时间慢了一点，这儿加一个偏移时间。
   int visibleItemSize = 7;
 
   ScrollController _controller;
@@ -94,10 +95,12 @@ class _LyricPageState extends State<LyricPage> {
         ));
   }
 
+  /// 比较播放位置和歌词时间戳，获取当前是哪条歌词。
+  /// position 当前播放位置，单位：秒
   int getIndexOfPosition(int position) {
     int index = 0;
     for (LyricItem item in widget.lyric.items) {
-      if (position * 1000 <= item.position) {
+      if (position * 1000 + lyricOffset <= item.position) {
         index = index - 1;
         if (index < 0) {
           index = 0;

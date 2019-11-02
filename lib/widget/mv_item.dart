@@ -1,14 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/song_util.dart';
-import 'package:flutter_music_player/pages/mv_player_page.dart';
-import 'package:flutter_music_player/test/video_demo.dart';
 import 'package:flutter_music_player/widget/my_video_player.dart';
-import 'package:video_player/video_player.dart';
-import 'music_progress_bar_2.dart';
-
 class MVItem extends StatefulWidget {
   final Map mv;
   MVItem(this.mv, {Key key}) : super(key: key);

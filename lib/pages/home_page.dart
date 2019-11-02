@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_music_player/pages/favorite_page.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import './tabs_bottom.dart';
-import './song_list.dart';
 import './play_list.dart';
 import './recommend_page.dart';
 import 'mv_page.dart';

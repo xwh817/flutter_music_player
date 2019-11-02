@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
-import './player_page.dart';
 import '../dao/music_163.dart';
-import '../model/song_util.dart';
 
 class SongList extends StatefulWidget {
   SongList({Key key}) : super(key: key);

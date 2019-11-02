@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/utils/file_util.dart';
+import 'package:flutter_music_player/utils/http_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
@@ -50,12 +52,13 @@ class _PlayerPageState extends State<PlayerPage>
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
     songImage = SongUtil.getSongImage(widget.song, size:imageSize);
     artistNames = SongUtil.getArtistNames(widget.song);
-    url = SongUtil.getSongUrl(widget.song);
 
     initAudioPlayer();
 
-    play(url: url);
-
+    SongUtil.getPlayPath(widget.song).then((playPath){
+      play(url: playPath);
+    });
+    
     MusicDao.getLyric(widget.song['id']).then((result) {
       setState(() {
         lyricPage = LyricPage(lyric: result);
@@ -120,11 +123,13 @@ class _PlayerPageState extends State<PlayerPage>
       this.url = url;
     }
 
-    setState(() {
-      playerState = PlayerState.loading;
+    bool isLocal = !url.startsWith('http');
+    await audioPlayer.play(this.url, isLocal: isLocal).then((_){
+      print('play: isLocal:$isLocal url: $url');
+      setState(() {
+        playerState = PlayerState.loading;
+      });
     });
-
-    await audioPlayer.play(this.url);
   }
 
   Future pause() async {
@@ -297,6 +302,12 @@ class _PlayerPageState extends State<PlayerPage>
     } else {
       future = MusicDB().addFavorite(widget.song).then((re){
         print('addFavorite re: $re , song: ${widget.song}');
+      }).then((_){
+        return FileUtil.getSongLocalPath(widget.song);
+      }).then((savePath){
+        HttpUtil.download(
+          SongUtil.getSongUrl(widget.song), 
+          savePath);
         return '已添加收藏';
       }).catchError((error){
         print('addFavorite error: $error');

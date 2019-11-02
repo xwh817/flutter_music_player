@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:flutter_music_player/utils/file_util.dart';
+
 class SongUtil {
   static String getArtistNames(Map song) {
     if (song.containsKey('artistNames')) {
@@ -64,6 +68,17 @@ class SongUtil {
 
   static String getSongUrl(Map song) {
     return "https://music.163.com/song/media/outer/url?id=${song['id']}.mp3";
+  }
+
+
+  static Future<String> getPlayPath(Map song) async{
+    String localPath = await FileUtil.getSongLocalPath(song);
+    if (await FileUtil.isFileExists(localPath)) {
+      return localPath;
+    } else {
+      return getSongUrl(song);
+    }
+
   }
 
 }
