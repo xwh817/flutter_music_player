@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/pages/favorite_page.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import './tabs_bottom.dart';
 import './song_list.dart';
@@ -26,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       ..add(RecommendPage())
       ..add(PlayList())
       ..add(MVPage())
-      ..add(Center(child: Text("Pages 4")));
+      ..add(FavoritePage());
 
     super.initState();
   }

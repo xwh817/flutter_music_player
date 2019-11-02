@@ -63,6 +63,7 @@ class _PlayerPageState extends State<PlayerPage>
     });
 
     MusicDB().getFavoriteById(widget.song['id']).then((fav) {
+      print('getFavoriteById : $fav');
       setState(() {
        isFavorited = fav != null; 
       });
@@ -235,26 +236,7 @@ class _PlayerPageState extends State<PlayerPage>
                     color: isFavorited ? Colors.pink : Colors.white60,
                   ),
                   onPressed: () {
-                    setState(() {
-                      isFavorited = !isFavorited;
-                    });
-                    String snack='';
-                    if (isFavorited) {
-                      MusicDB().addFavorite(widget.song).then((re){
-                        snack = '已添加收藏';
-                      }).catchError((error){
-                        snack = '添加收藏失败';
-                      });
-                    } else {
-                      MusicDB().deleteFavorite(widget.song).then((re){
-                        snack = '已取消收藏';
-                      }).catchError((error){
-                        snack = '取消收藏失败';
-                      });
-                    }
-
-                    Scaffold.of(context).showSnackBar(SnackBar(content: Text(snack)));
-                    //print("${context.size.height}");
+                    _favorite(context);
                   },
               )),
             Container(
@@ -299,6 +281,38 @@ class _PlayerPageState extends State<PlayerPage>
       ]);
       }),
     );
+  }
+
+
+  void _favorite(context){
+    Future future;                    
+    if (isFavorited) {
+      future = MusicDB().deleteFavorite(widget.song['id']).then((re){
+        print('deleteFavorite re: $re');
+        return '已取消收藏';
+      }).catchError((error){
+        print('deleteFavorite error: $error');
+        throw Exception('取消收藏失败');
+      });
+    } else {
+      future = MusicDB().addFavorite(widget.song).then((re){
+        print('addFavorite re: $re , song: ${widget.song}');
+        return '已添加收藏';
+      }).catchError((error){
+        print('addFavorite error: $error');
+        throw Exception('添加收藏失败');
+      });
+    }
+
+    future.then((re){
+      print('snack: $re');
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(re), duration: Duration(seconds: 1),));
+      setState(() {
+        isFavorited = !isFavorited;
+      });
+    }).catchError((error){
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text(error.toString()), duration: Duration(seconds: 1),));
+    });
   }
 
 }

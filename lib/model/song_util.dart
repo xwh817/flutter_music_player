@@ -52,7 +52,13 @@ class SongUtil {
         return '';
       } 
     }
-    return '$imgUrl?param=${size}y$size';
+
+    if (size > 0) {
+      imgUrl += '?param=${size}y$size';
+    }
+
+    print('imageUrl: $imgUrl');
+    return imgUrl;
   }
 
 

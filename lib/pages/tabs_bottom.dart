@@ -30,8 +30,8 @@ class BottomTabs extends StatelessWidget {
             title: Text('MV'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            title: Text('历史'),
+            icon: Icon(Icons.favorite),
+            title: Text('收藏'),
           ),
         ],
       );
