@@ -42,5 +42,11 @@ class FileUtil{
   }
 
 
+  /// 判断文件是否超时
+  static Future<bool> isFileTimeout(File file, Duration time) async {
+    DateTime lastModified = await file.lastModified();
+    DateTime now = DateTime.now();
+    return now.isAfter(lastModified.add(time));
+  }
 
 }

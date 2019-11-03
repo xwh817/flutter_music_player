@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/pages/favorite_page.dart';
+import 'package:flutter_music_player/utils/network_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import './tabs_bottom.dart';
 import './play_list.dart';
@@ -15,6 +16,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   List<Widget> pages = List();
+  final NetworkUtil networkUtil = NetworkUtil();
+
 
   final PageController _controller = PageController(
     initialPage: 0,
@@ -22,14 +25,23 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
+
     pages
       ..add(RecommendPage())
       ..add(PlayList())
       ..add(MVPage())
       ..add(FavoritePage());
 
-    super.initState();
+    networkUtil.initNetworkListener();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    networkUtil.dispose();
+  }
+  
 
   _tapCallback(int index) {
     print("HomePage: on page selected: $index");

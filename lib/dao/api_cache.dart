@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_music_player/utils/file_util.dart';
+import 'package:flutter_music_player/utils/network_util.dart';
 
 class APICache {
   static const String dirName = 'cache';
@@ -14,22 +15,19 @@ class APICache {
     return new File('$dir/$fileName');
   }
 
-  static Future<String> getCache(String url) async{
+  static Future<String> getCache(String url, {checkTime:true}) async{
     String cache;
     File file = await _getLocalFile(url);
     if (await file.exists()) {
-      DateTime lastModified = await file.lastModified();
-      DateTime now = DateTime.now();
-      
-      // 比较时间
-      if (now.isAfter(lastModified.add(CACHE_TIMEOUT))) {  // 缓存超时了，丢掉。
+      // 判断网络和缓存时间
+      if (checkTime && NetworkUtil().isNetworkAvailable()
+          && await FileUtil.isFileTimeout(file, CACHE_TIMEOUT)) {  // 缓存超时了，并且网络可用，丢掉之前的。
         file.delete();
         print('缓存超时：$url');
       } else {
         cache = await file.readAsString();
-        print('缓存未超时，获取成功：$url');
+        print('从缓存获取：$url');
       }
-      
     }
     return cache;
   }
