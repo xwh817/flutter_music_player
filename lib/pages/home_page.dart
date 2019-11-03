@@ -55,11 +55,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     
     // 获取屏幕大小,用于界面适配
-    final size = MediaQuery.of(context).size;
-    ScreenUtil.screenWidth = size.width;
-    ScreenUtil.screenHeight = size.height;
-    print('屏幕宽高: ${size.width} * ${size.height}');
-
+    if(ScreenUtil.screenWidth == null) {
+      ScreenUtil.getScreenSize(context);
+    }
+  
     return Scaffold(
         /* appBar: AppBar(
           title: Text('Flutter Music Player'),

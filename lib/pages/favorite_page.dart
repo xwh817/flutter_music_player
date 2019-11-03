@@ -9,7 +9,7 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  List _songs = List();
+  List _songs;
 
   _getSongs() async {
     MusicDB().getFavoriteList().then((result) {
@@ -30,26 +30,25 @@ class _FavoritePageState extends State<FavoritePage> {
     _getSongs();
   }
 
-  Widget mWidget;
-
   @override
   Widget build(BuildContext context) {
+    if (_songs == null) {
+      return Container();
+    }
     if (_songs.length == 0) {
-      // 显示进度条
-      mWidget = Center(
+      return Center(
           child: Text(
             '您还没有收藏歌曲\n可点击播放页右上角进行收藏。',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Colors.grey, height: 1.2),
       ));
     } else {
-      mWidget = ListView.builder(
+      return ListView.builder(
         itemCount: this._songs.length,
         itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
         itemBuilder: (context, index) => _buildItem(index),
       );
     }
-    return mWidget;
   }
 
   Widget _buildItem(index) {

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_music_player/utils/file_util.dart';
 
 class SongUtil {
@@ -61,7 +59,7 @@ class SongUtil {
       imgUrl += '?param=${size}y$size';
     }
 
-    print('imageUrl: $imgUrl');
+    //print('imageUrl: $imgUrl');
     return imgUrl;
   }
 

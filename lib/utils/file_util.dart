@@ -40,6 +40,24 @@ class FileUtil{
     String filePath = '$dir/$fileName';
     return filePath;
   }
+  /// 删除文件
+  static Future<bool> deleteLocalSong(Map song) async {
+    String path = await getSongLocalPath(song);
+    File file = File(path);
+    if (await file.exists()) {
+      await file.delete(recursive: true);
+    }
+    return true;
+  }
+
+  /// 删除文件
+  static Future<bool> deleteFile(String path) async {
+    File file = File(path);
+    if (await file.exists()) {
+      await file.delete(recursive: true);
+    }
+    return true;
+  }
 
 
   /// 判断文件是否超时

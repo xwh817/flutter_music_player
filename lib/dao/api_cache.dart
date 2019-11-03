@@ -15,12 +15,12 @@ class APICache {
     return new File('$dir/$fileName');
   }
 
-  static Future<String> getCache(String url, {checkTime:true}) async{
+  static Future<String> getCache(String url, {checkCacheTimeout:true}) async{
     String cache;
     File file = await _getLocalFile(url);
     if (await file.exists()) {
       // 判断网络和缓存时间
-      if (checkTime && NetworkUtil().isNetworkAvailable()
+      if (checkCacheTimeout && NetworkUtil().isNetworkAvailable()
           && await FileUtil.isFileTimeout(file, CACHE_TIMEOUT)) {  // 缓存超时了，并且网络可用，丢掉之前的。
         file.delete();
         print('缓存超时：$url');

@@ -41,7 +41,7 @@ class MusicDao {
 
   // 获取歌词
   static Future<Lyric> getLyric(int songId) async {
-    Map data = await HttpUtil.getJsonData('$URL_GET_LYRIC$songId');
+    Map data = await HttpUtil.getJsonData('$URL_GET_LYRIC$songId', checkCacheTimeout: false);
     if (data.containsKey('nolyric')) {  // 无歌词
       return Lyric.empty();
     }

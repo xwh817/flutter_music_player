@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/Lyric.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 
 class LyricPage extends StatefulWidget {
-  final Lyric lyric;
-  LyricPage({Key key, this.lyric}) : super(key: key);
+  final Map song;
   _LyricPageState _state;
+
+  LyricPage(this.song, {Key key}) : super(key: key);
 
   @override
   _LyricPageState createState() {
@@ -13,19 +15,18 @@ class LyricPage extends StatefulWidget {
     return _state;
   }
 
+  // 对比发现，从外面调用触发build的次数要少，而不是从父控件传入position。
   void updatePosition(int position) {
     _state?.updatePosition(position);
   }
 
-  void updateLyric(Lyric result) {
-    //_state?.updateLyric(result);
-  }
 }
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
   final int lyricOffset = 1000; // 可能歌词出现的时间慢了一点，这儿加一个偏移时间。
   int visibleItemSize = 7;
+  Lyric lyric;
 
   ScrollController _controller;
   int _currentIndex = 0;
@@ -34,14 +35,16 @@ class _LyricPageState extends State<LyricPage> {
   @override
   void initState() {
     super.initState();
-    print('LyricPage initState');
 
+    visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
     _controller = ScrollController();
-    _controller.addListener(() {
-      //print('ScrollController');
 
-      visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
+    MusicDao.getLyric(widget.song['id']).then((result) {
+      setState(() {
+        lyric = result;
+      });
     });
+    print('LyricPage initState');
   }
 
   @override
@@ -50,9 +53,16 @@ class _LyricPageState extends State<LyricPage> {
     _controller.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
-    if (widget.lyric.items.length == 0) {
+    print('LyricPage build');
+    
+    if (lyric == null) {
+      return Text('歌词加载中...',
+          style: TextStyle(color: Colors.white30, fontSize: 13.0));
+    }
+    if (lyric.items.length == 0) {
       return Text('...纯音乐，无歌词...',
           style: TextStyle(
             color: Colors.white30,
@@ -61,7 +71,6 @@ class _LyricPageState extends State<LyricPage> {
           ));
     }
 
-    //_style.color =
     return Container(
         alignment: Alignment.center,
         child: ConstrainedBox(
@@ -70,13 +79,10 @@ class _LyricPageState extends State<LyricPage> {
             SliverList(
                 delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return _getItem(widget.lyric.items[index]);
+                return _getItem(lyric.items[index]);
               },
-              childCount: widget.lyric.items.length,
-            )
-                /* delegate: SliverChildListDelegate(
-                widget.lyric.items.map((item) => _getItem(item)).toList()), */
-                ),
+              childCount: lyric.items.length,
+            )),
           ]),
         ));
   }
@@ -87,6 +93,8 @@ class _LyricPageState extends State<LyricPage> {
         height: itemHeight,
         child: Text(
           item.content,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
               fontSize: 13.0,
               color: (item.index == _currentIndex)
@@ -97,23 +105,38 @@ class _LyricPageState extends State<LyricPage> {
 
   /// 比较播放位置和歌词时间戳，获取当前是哪条歌词。
   /// position 当前播放位置，单位：秒
-  int getIndexOfPosition(int position) {
-    int index = 0;
-    for (LyricItem item in widget.lyric.items) {
-      if (position * 1000 + lyricOffset <= item.position) {
+  int getIndexByTime(int seconds) {
+    int start;
+    int end;
+    if (_currentIndex == 0 ||
+        _getPositionByTime(seconds) >= lyric.items[_currentIndex - 1].position) {
+      start = _currentIndex;
+      end = lyric.items.length;
+    } else {
+      start = 0;
+      end = _currentIndex;
+    }
+
+    int index = start;
+    for (; index < end; index++) {
+      LyricItem item = lyric.items[index];
+      if (_getPositionByTime(seconds) <= item.position) {
         index = index - 1;
         if (index < 0) {
           index = 0;
         }
         break;
       }
-      index++;
     }
     return index;
   }
 
+  int _getPositionByTime(int seconds) {
+    return seconds * 1000 + lyricOffset;
+  }
+
   void scrollTo(int index) {
-    int itemSize = widget.lyric.items.length;
+    int itemSize = lyric.items.length;
     // 选中的Index是否超出边界
     if (index < 0 || index >= itemSize) {
       return;
@@ -146,20 +169,11 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   // 根据歌曲播放的位置确定滚动的位置
-  void updatePosition(int position) {
-    int _index = getIndexOfPosition(position);
+  void updatePosition(int seconds) {
+    int _index = getIndexByTime(seconds);
     if (_index != _currentIndex) {
-      /* setState(() {
-        _currentIndex = _index;
-      }); */
       _currentIndex = _index;
       scrollTo(_currentIndex);
     }
   }
-
-/*   void updateLyric(Lyric lyric) {
-    setState(() {
-      widget.lyric = lyric;
-    });
-  } */
 }

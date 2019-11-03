@@ -6,10 +6,13 @@ import 'package:flutter_music_player/dao/api_cache.dart';
 
 class HttpUtil {
 
-  static Future getJsonData(String url, {bool useCache: true}) async {
+  /// 获取api接口json数据
+  /// useCache：是否使用缓存，默认使用。但对于经常变化和容易过期的资源，例如视频播放地址，不要使用。
+  /// checkCacheTimeout：是否检查缓存过期，默认检查，如果过期重新获取。对于不变的资源例如歌词，可以设置false，减少不必要的请求。
+  static Future getJsonData(String url, {bool useCache: true, checkCacheTimeout: true}) async {
     var data;
     if (useCache) { // 有些资源是动态的,如播放地址，会过期不能使用缓存。
-      String cache = await APICache.getCache(url);
+      String cache = await APICache.getCache(url, checkCacheTimeout: checkCacheTimeout);
       if (cache != null) {
         try {
           data = jsonDecode(cache);
@@ -44,7 +47,7 @@ class HttpUtil {
       } */
 
       // options:请求参数
-      // 这儿文本要缓存，所以ResponseType不用默认的json
+      // 这儿文本要缓存处理，所以ResponseType不用默认的json
       BaseOptions options = new BaseOptions();
       options.responseType = ResponseType.plain;  
       Response response = await Dio(options).get(url);
