@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class MyProgressBar extends StatefulWidget {
-  Function onChanged;
-  Function onChangeStart;
-  Function onChangeEnd;
+  final Function onChanged;
+  final Function onChangeStart;
+  final Function onChangeEnd;
 
-  int duration = 0;
-  int position = 0;
+  final int duration;
+  final int position;
 
   MyProgressBar({Key key, this.duration, this.position, this.onChanged, this.onChangeStart, this.onChangeEnd}): super(key: key);
 
@@ -15,6 +15,12 @@ class MyProgressBar extends StatefulWidget {
 }
 
 class _MyProgressBarState extends State<MyProgressBar> {
+
+  @override
+  void initState() {
+    super.initState();
+    print('MyProgressBar initState');
+  }
   
   @override
   Widget build(BuildContext context) {

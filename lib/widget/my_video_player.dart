@@ -42,7 +42,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
       _controller.addListener((){
       if (!isTaping) {
         setState(() {
-          position = _controller.value.position.inSeconds;
+          position = _controller.value.position.inMilliseconds;
         });
       }
     });
@@ -189,17 +189,17 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         height: 36.0,
         padding: EdgeInsets.all(8.0),
         child: MyProgressBar(
-          duration: _controller.value.duration.inSeconds,
+          duration: _controller.value.duration.inMilliseconds,
           position: position,
           onChanged: (double value) {
             setState(() {
-            position = value.toInt(); 
+              position = value.toInt(); 
             });
           },
           onChangeStart: (double value) {isTaping = true;},
           onChangeEnd: (double value) {
             isTaping = false;
-            _controller.seekTo(Duration(seconds: value.toInt()));
+            _controller.seekTo(Duration(milliseconds: value.toInt()));
           }
         ),
       )

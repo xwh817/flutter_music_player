@@ -37,7 +37,7 @@ class _MVItemState extends State<MVItem> {
                 aspectRatio: 16 / 9,
                 child: ClipRRect(
                   // 圆角
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(8.0),
                   child: MyVideoPlayer(
                     mv: widget.mv,
                   ),

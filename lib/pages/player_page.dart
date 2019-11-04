@@ -49,6 +49,8 @@ class _PlayerPageState extends State<PlayerPage>
     songImage = SongUtil.getSongImage(widget.song, size:imageSize);
     artistNames = SongUtil.getArtistNames(widget.song);
 
+    print("imageSize of Song: $imageSize");
+
     initAudioPlayer();
 
     SongUtil.getPlayPath(widget.song).then((playPath){

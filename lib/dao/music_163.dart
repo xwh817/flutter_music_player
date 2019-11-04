@@ -9,9 +9,11 @@ class MusicDao {
   static const URL_PLAY_LIST_DETAIL = '$URL_ROOT/playlist/detail?id=';
   static const URL_NEW_SONGS = '$URL_ROOT/personalized/newsong';
   static const URL_TOP_SONGS = '$URL_ROOT/top/list?idx=';
+  static const URL_SONG_DETAIL = '$URL_ROOT/song/detail?ids=';
   static const URL_GET_LYRIC = '$URL_ROOT/lyric?id=';
   static const URL_MV_LIST = '$URL_ROOT/mv/first';
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
+  static const URL_SEARCH = '$URL_ROOT/search?keywords=';
 
 
   static Future<List> getPlayList(String cat) async {
@@ -62,6 +64,19 @@ class MusicDao {
     String url = data['data']['brs']['480'];
     print('getMVDetail result: $url');
     return url;
+  }
+
+  
+  static Future<List> search(String keywords) async {
+    var data = await HttpUtil.getJsonData('$URL_SEARCH$keywords', useCache: false);
+    List songList = data['result']['songs'];
+    return songList;
+  }
+
+  static Future<List> getSongDetail(String ids) async {
+    var data = await HttpUtil.getJsonData('$URL_SONG_DETAIL$ids', useCache: false);
+    List songList = data['result']['songs'];
+    return songList;
   }
 
 }
