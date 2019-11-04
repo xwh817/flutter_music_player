@@ -11,7 +11,7 @@ class APICache {
 
   static Future<File> _getLocalFile(String url) async {
     String fileName = md5.convert(utf8.encode(url)).toString();
-    String dir = await FileUtil.getSubDirPath(dirName);
+    String dir = (await FileUtil.createLocalDir(dirName)).path;
     return new File('$dir/$fileName');
   }
 
@@ -35,8 +35,13 @@ class APICache {
   static Future<bool> saveCache(String url, String cache) async{
     File file = await _getLocalFile(url);
     print('saveCache to: ${file.path}');
-    File fileCached = await file.writeAsString(cache);
-    return fileCached.exists();
+    File fileCached;
+    try {
+      fileCached = await file.writeAsString(cache);
+    } catch (e) {
+      print(e);
+    }
+    return fileCached?.exists();
   }
 
 

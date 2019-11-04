@@ -24,7 +24,7 @@ class LyricPage extends StatefulWidget {
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
-  final int lyricOffset = 1000; // 可能歌词出现的时间慢了一点，这儿加一个偏移时间。
+  final int lyricOffset = 0; // 可能歌词出现的时间慢了一点，这儿加一个偏移时间。
   int visibleItemSize = 7;
   Lyric lyric;
 
@@ -105,11 +105,10 @@ class _LyricPageState extends State<LyricPage> {
 
   /// 比较播放位置和歌词时间戳，获取当前是哪条歌词。
   /// position 当前播放位置，单位：秒
-  int getIndexByTime(int seconds) {
+  int getIndexByTime(int milliseconds) {
     int start;
     int end;
-    if (_currentIndex == 0 ||
-        _getPositionByTime(seconds) >= lyric.items[_currentIndex - 1].position) {
+    if (_currentIndex == 0 || milliseconds >= lyric.items[_currentIndex - 1].position) {
       start = _currentIndex;
       end = lyric.items.length;
     } else {
@@ -118,22 +117,17 @@ class _LyricPageState extends State<LyricPage> {
     }
 
     int index = start;
-    for (; index < end; index++) {
-      LyricItem item = lyric.items[index];
-      if (_getPositionByTime(seconds) <= item.position) {
-        index = index - 1;
-        if (index < 0) {
-          index = 0;
-        }
+    for (; index < end-1; index++) {
+      if (lyric.items[index+1].position >= milliseconds) {
         break;
       }
     }
     return index;
   }
 
-  int _getPositionByTime(int seconds) {
-    return seconds * 1000 + lyricOffset;
-  }
+/*   int _getPositionByTime(int milliseconds) {
+    return milliseconds + lyricOffset;
+  } */
 
   void scrollTo(int index) {
     int itemSize = lyric.items.length;
@@ -169,8 +163,8 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   // 根据歌曲播放的位置确定滚动的位置
-  void updatePosition(int seconds) {
-    int _index = getIndexByTime(seconds);
+  void updatePosition(int milliseconds) {
+    int _index = getIndexByTime(milliseconds);
     if (_index != _currentIndex) {
       _currentIndex = _index;
       scrollTo(_currentIndex);

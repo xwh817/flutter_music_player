@@ -54,7 +54,8 @@ class _MyProgressBarState extends State<MyProgressBar> {
     );
   }
 
-  String _getFormatTime(int seconds) {
+  String _getFormatTime(int milliseconds) {
+    int seconds = milliseconds ~/ 1000;
     int minute = seconds ~/ 60;
     int hour = minute ~/ 60;
     String strHour = hour == 0 ? '' : '$hour:';

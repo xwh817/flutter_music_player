@@ -40,7 +40,7 @@ class _FavoritePageState extends State<FavoritePage> {
           child: Text(
             '您还没有收藏歌曲\n可点击播放页右上角进行收藏。',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, height: 1.2),
+            style: TextStyle(color: Colors.grey, height: 1.5),
       ));
     } else {
       return ListView.builder(

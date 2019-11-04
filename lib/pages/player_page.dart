@@ -25,7 +25,7 @@ class _PlayerPageState extends State<PlayerPage>
   AudioPlayer audioPlayer;
   String url;
   int duration = 0;
-  int position = 0;
+  int position = 0;   // 单位：毫秒
   bool isMuted = false;
   PlayerState playerState = PlayerState.loading;
   StreamSubscription _positionSubscription;
@@ -62,10 +62,10 @@ class _PlayerPageState extends State<PlayerPage>
   void initAudioPlayer() {
     audioPlayer = new AudioPlayer();
     _positionSubscription = audioPlayer.onAudioPositionChanged.listen((p) {
-      int seconds = p.inSeconds;
-      _lyricPage.updatePosition(seconds);
-      if (!isTaping) {
-        setState(() => position = seconds);
+      int milliseconds = p.inMilliseconds;
+      if (!isTaping && milliseconds <= duration) {
+        _lyricPage.updatePosition(milliseconds);
+        setState(() => position = milliseconds);
       }
     });
     _audioPlayerStateSubscription =
@@ -73,7 +73,7 @@ class _PlayerPageState extends State<PlayerPage>
       print("AudioPlayer onPlayerStateChanged, last state: $playerState");
       if (s == AudioPlayerState.PLAYING) {
         if (duration == 0) {
-          setState(() => duration = audioPlayer.duration.inSeconds);
+          setState(() => duration = audioPlayer.duration.inMilliseconds);
           print("AudioPlayer start, duration:$duration");
         }
         if (playerState != PlayerState.playing) {
@@ -128,8 +128,8 @@ class _PlayerPageState extends State<PlayerPage>
     setState(() => playerState = PlayerState.paused);
   }
 
-  Future seek(double seconds) async {
-    await audioPlayer.seek(seconds);
+  Future seek(double millseconds) async {
+    await audioPlayer.seek(millseconds/1000);
     if (playerState == PlayerState.paused) {
       play();
     }
@@ -248,8 +248,9 @@ class _PlayerPageState extends State<PlayerPage>
                 position: position,
                 onChanged: (double value) {
                   setState(() {
-                  position = value.toInt(); 
+                    position = value.toInt(); 
                   });
+                  _lyricPage.updatePosition(position);
                 },
                 onChangeStart: (double value) {isTaping = true;},
                 onChangeEnd: (double value) {

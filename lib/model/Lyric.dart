@@ -33,10 +33,10 @@ class Lyric {
       List<String> strs = str.split(']');
       if (strs.length == 2) {
         String time = strs[0].replaceAll('[', '');
-        int positin = _getPositon(time);
+        int position = _getPositon(time);
         String content = strs[1];
-        if(positin>=0) {
-          this.items.add(new LyricItem(index, positin, content));
+        if(position>=0) {
+          this.items.add(new LyricItem(index, position, content));
           index++;
         }
       }
