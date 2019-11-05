@@ -16,18 +16,7 @@ class SearchBar extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBar> {
-  
   bool showClear = false;
-
-  @override
-  void initState() {
-    /* if (widget.defaultText != null) {
-      setState(() {
-        widget.controller.text = widget.defaultText;
-      });
-    } */
-    super.initState();
-  }
   
   @override
   Widget build(BuildContext context) {
@@ -43,10 +32,11 @@ class _SearchBarState extends State<SearchBar> {
           Icon(Icons.search, size: 22.0, color: Colors.green),
           Expanded(
             child: TextField(
-                enabled: widget.enable,
                 controller: widget.controller,
                 onChanged: _onChanged,
                 maxLines: 1,
+                enabled: widget.enable,
+                autofocus: widget.enable,
                 textAlignVertical: TextAlignVertical.bottom,
                 style: TextStyle(
                     fontSize: 16.0,

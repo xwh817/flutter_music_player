@@ -22,13 +22,14 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         //leading: IconButton(icon:Icon(Icons.arrow_back), onPressed: (){},),
+        titleSpacing: 0.0,
         title: SearchBar(
           controller: _controller,
           onChanged: (text) => keywords = text,
         ),
         actions: [
           MaterialButton(
-            minWidth: 60,
+            minWidth: 68,
             padding: EdgeInsets.all(0.0),
             textColor: Colors.white,
             child: Text('搜索'),
@@ -67,6 +68,7 @@ class _SearchPageState extends State<SearchPage> {
       isSearching = true;
     });
     MusicDao.search(keywords).then((result) {
+      FocusScope.of(context).requestFocus(new FocusNode());
       setState(() {
         isSearching = false;
         _songs = result;

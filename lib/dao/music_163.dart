@@ -73,10 +73,20 @@ class MusicDao {
     return songList;
   }
 
-  static Future<List> getSongDetail(String ids) async {
+  static Future<List> getSongDetails(String ids) async {
     var data = await HttpUtil.getJsonData('$URL_SONG_DETAIL$ids', useCache: false);
-    List songList = data['result']['songs'];
+    List songList = data['songs'];
     return songList;
+  }
+
+  
+  static Future<Map> getSongDetail(String id) async {
+    List songList = await getSongDetails(id);
+    Map song;
+    if (songList.length > 0) {
+      song = songList[0];
+    }
+    return song;
   }
 
 }

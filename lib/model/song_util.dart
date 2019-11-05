@@ -43,7 +43,7 @@ class SongUtil {
       imgUrl = song['imageUrl'];
     } else {
       try {
-        if (song.containsKey('ar')) {
+        if (song.containsKey('al')) {
           imgUrl = song['al']['picUrl'];
         } else {
           imgUrl = song['song']['album']['picUrl'];
@@ -53,6 +53,10 @@ class SongUtil {
         print(e);
         return '';
       } 
+    }
+
+    if (imgUrl == null || imgUrl.length == 0) {
+      return '';
     }
 
     if (size > 0) {

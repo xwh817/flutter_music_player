@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     
     // 获取屏幕大小,用于界面适配
-    if(ScreenUtil.screenWidth == null) {
+    if(ScreenUtil.screenWidth == null || ScreenUtil.screenWidth == 0) {
       ScreenUtil.getScreenSize(context);
     }
   

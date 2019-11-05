@@ -50,13 +50,12 @@ class _RecommendPageState extends State<RecommendPage> {
                 SliverAppBar(
                   expandedHeight: _appBarHeight,
                   pinned: true,
-                  //pinned: _appBarBehavior == AppBarBehavior.pinned,
-                  floating: _appBarBehavior == AppBarBehavior.floating ||
-                      _appBarBehavior == AppBarBehavior.snapping,
-                  snap: _appBarBehavior == AppBarBehavior.snapping,
+                  floating: true,
+                  titleSpacing: 36.0,
+                  snap: false,
                   title: InkWell(
                     onTap: (){
-                      NavigatorUtil.push(context, SearchPage());
+                      NavigatorUtil.pushFade(context, SearchPage());
                     },
                     child: SearchBar(enable: false),
                   ),
@@ -68,7 +67,6 @@ class _RecommendPageState extends State<RecommendPage> {
                           itemBuilder: (BuildContext context, int index) {
                             Map song = _newSongs[index];
                             String picUrl = song['song']['album']['picUrl'];
-                            //song['al']['picUrl'] = picUrl;
                             return GestureDetector(
                               onTap: () => _onItemTap(song),
                               child: CachedNetworkImage(

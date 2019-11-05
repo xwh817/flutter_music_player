@@ -9,21 +9,29 @@ class SongItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String image = SongUtil.getSongImage(song);
     return new ListTile(
+      leading: image.isEmpty
+        ? Image.asset(
+          'images/music_2.jpg',
+          fit: BoxFit.cover,
+        )
+        : ClipRRect(
+            borderRadius: BorderRadius.circular(6.0),
+            child: CachedNetworkImage(
+                imageUrl: "${SongUtil.getSongImage(song)}"),
+          ),
       title: new Text(
         "${song['name']}",
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(fontSize: 14.0),
       ),
-      subtitle: new Text(SongUtil.getArtistNames(song),
-        maxLines: 1, 
+      subtitle: new Text(
+        SongUtil.getArtistNames(song),
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(fontSize: 12.0),
-      ),
-      leading: new ClipRRect(
-        borderRadius: BorderRadius.circular(6.0),
-        child: CachedNetworkImage(imageUrl: "${SongUtil.getSongImage(song)}"),
       ),
       onTap: () {
         Navigator.of(context).push(
