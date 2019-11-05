@@ -3,7 +3,7 @@ import 'package:flutter_music_player/pages/favorite_page.dart';
 import 'package:flutter_music_player/utils/network_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import './tabs_bottom.dart';
-import './play_list.dart';
+import './play_list_page.dart';
 import './recommend_page.dart';
 import 'mv_page.dart';
 
@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
     pages
       ..add(RecommendPage())
-      ..add(PlayList())
+      ..add(PlayListPage())
       ..add(MVPage())
       ..add(FavoritePage());
 

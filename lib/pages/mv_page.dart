@@ -1,64 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/widget/mv_item.dart';
+import 'package:flutter_music_player/pages/mv_tab_page.dart';
 
 class MVPage extends StatefulWidget {
-  MVPage({Key key}) : super(key: key);
+   MVPage({Key key}) : super(key: key);
 
-  @override
   _MVPageState createState() => _MVPageState();
 }
 
-class _MVPageState extends State<MVPage> {
-  List _mvList = List();
+const types = {
+  "最新": MusicDao.URL_MV_FIRST,
+  "Top": MusicDao.URL_MV_TOP,
+};
 
-  _getMVList() async {
-    await MusicDao.getMVList().then((result) {
-      // 界面未加载，返回。
-      if (!mounted) return;
-
-      setState(() {
-        _mvList = result;
-      });
-    }).catchError((e) {
-      print('Failed: ${e.toString()}');
-    });
-  }
+class _MVPageState extends State<MVPage>
+    with SingleTickerProviderStateMixin {
+  TabController tabController; //tab控制器
 
   @override
   void initState() {
     super.initState();
-    _getMVList();
+    //初始化controller并添加监听
+    tabController = TabController(length: types.length, vsync: this);
+    tabController.addListener(() => _onTabChanged());
   }
 
+
+  void _onTabChanged() {
+    if (tabController.index.toDouble() == tabController.animation.value) {}
+  }
+
+  Widget mWidget;
   @override
   Widget build(BuildContext context) {
-    return _mvList.length == 0
-        ? Center(child: CircularProgressIndicator())
-        : CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                title: Text('MV'),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    (context, index) => MVItem(this._mvList[index]),
-                    childCount: _mvList.length),
-              )
-            ],
-          );
-
-    /* SafeArea(
-      child: ListView.separated(
-        itemCount: this._mvList.length,
-        //itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-        itemBuilder: (context, index) => MVItem(this._mvList[index]),
-        separatorBuilder: (context, index) => Divider(
-          color: Color(0x0f000000),
-          height: 8.0, // 间隔的高度
-          thickness: 6.0, // 绘制的线的厚度
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0x07000000),
+        elevation: 0,
+        title: TabBar(
+          controller: tabController, //控制器
+          indicatorColor: Colors.orange,
+          labelColor: Colors.green,
+          unselectedLabelColor: Colors.black45,
+          labelStyle: TextStyle(fontWeight: FontWeight.w600), //选中的样式
+          unselectedLabelStyle: TextStyle(fontSize: 14), //未选中的样式
+          isScrollable: true, //是否可滑动
+          //tab标签
+          tabs: types.keys.map((name) {
+            return Tab(
+              text: name,
+            );
+          }).toList(),
+          //点击事件
+          onTap: (int i) {
+            tabController.animateTo(i);
+          },
         ),
       ),
-    ); */
+      body: TabBarView(
+        controller: tabController,
+        children: types.values.map((url) {
+          return  MVTabPage(url: url);
+        }).toList(),
+      ),
+    );
   }
 }

@@ -64,9 +64,7 @@ class _MVItemState extends State<MVItem> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               )
-            ),
-            Divider(height: 20.0, thickness: 8.0, color: Colors.grey[200],)
-
+            )
           ],
         );
   }

@@ -71,6 +71,16 @@ class MusicDB {
     return await db.insert(t_favorite, fav);
   }
 
+  
+  Future<int> updateFavorite(Map song) async {
+    var fav = {
+      'cover': song['imageUrl'],
+    };
+
+    db = await getDB();
+    return await db.update(t_favorite, fav, where: 'id = ${song['id']}');
+  }
+
   Future<List<Map<String, dynamic>>> getFavoriteList() async {
     db = await getDB();
     return db.query(t_favorite);

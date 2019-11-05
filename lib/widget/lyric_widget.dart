@@ -16,21 +16,17 @@ class LyricPage extends StatefulWidget {
   }
 
   // 对比发现，从外面调用触发build的次数要少，而不是从父控件传入position。
-  void updatePosition(int position) {
-    _state?.updatePosition(position);
+  void updatePosition(int position, {isTaping: false}) {
+    _state?.updatePosition(position, isTaping: isTaping);
   }
-
 }
 
 class _LyricPageState extends State<LyricPage> {
   final double itemHeight = 30.0;
-  final int lyricOffset = 0; // 可能歌词出现的时间慢了一点，这儿加一个偏移时间。
   int visibleItemSize = 7;
   Lyric lyric;
-
   ScrollController _controller;
-  int _currentIndex = 0;
-  bool isTaping = false;
+  int _currentIndex = -1;
 
   @override
   void initState() {
@@ -40,9 +36,11 @@ class _LyricPageState extends State<LyricPage> {
     _controller = ScrollController();
 
     MusicDao.getLyric(widget.song['id']).then((result) {
-      setState(() {
-        lyric = result;
-      });
+      if (mounted && result != null) {
+        setState(() {
+          lyric = result;
+        });
+      }
     });
     print('LyricPage initState');
   }
@@ -53,11 +51,10 @@ class _LyricPageState extends State<LyricPage> {
     _controller.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    print('LyricPage build');
-    
+    //print('LyricPage build $_currentIndex');
+
     if (lyric == null) {
       return Text('歌词加载中...',
           style: TextStyle(color: Colors.white30, fontSize: 13.0));
@@ -104,11 +101,22 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   /// 比较播放位置和歌词时间戳，获取当前是哪条歌词。
-  /// position 当前播放位置，单位：秒
+  /// milliseconds 当前播放位置，单位：毫秒
   int getIndexByTime(int milliseconds) {
+    if (lyric == null ||
+        lyric.items.length == 0 ||
+        lyric.items[0].position > milliseconds) {
+      // 刚开始未选中的情况。
+      return -1;
+    }
+
+    // 选取比较的范围，不用每次都从头遍历。
     int start;
     int end;
-    if (_currentIndex == 0 || milliseconds >= lyric.items[_currentIndex - 1].position) {
+    if (_currentIndex <= 1) {
+      start = 0;
+      end = lyric.items.length;
+    } else if (milliseconds >= lyric.items[_currentIndex - 1].position) {
       start = _currentIndex;
       end = lyric.items.length;
     } else {
@@ -117,17 +125,13 @@ class _LyricPageState extends State<LyricPage> {
     }
 
     int index = start;
-    for (; index < end-1; index++) {
-      if (lyric.items[index+1].position >= milliseconds) {
+    for (; index < end - 1; index++) {
+      if (lyric.items[index + 1].position >= milliseconds) {
         break;
       }
     }
     return index;
   }
-
-/*   int _getPositionByTime(int milliseconds) {
-    return milliseconds + lyricOffset;
-  } */
 
   void scrollTo(int index) {
     int itemSize = lyric.items.length;
@@ -144,11 +148,6 @@ class _LyricPageState extends State<LyricPage> {
       _currentIndex = index;
     });
 
-    if (isTaping) {
-      // 如果手指按着就不滚动
-      return;
-    }
-
     // 是否需要滚动(top和bottom到边界时不滚动了)
     if (topIndex < 0 && _controller.offset <= 0) {
       return;
@@ -163,11 +162,34 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   // 根据歌曲播放的位置确定滚动的位置
-  void updatePosition(int milliseconds) {
+  void updatePosition(int milliseconds, {isTaping: false}) {
+    //print('updatePosition $milliseconds , isScrolling: $isScrolling , isTaping: $isTaping ');
+    if (isScrolling) {
+      lastScrollPosition = milliseconds;
+      return;
+    }
     int _index = getIndexByTime(milliseconds);
     if (_index != _currentIndex) {
       _currentIndex = _index;
       scrollTo(_currentIndex);
+
+      if (isTaping) {
+        // 如果是手动拖动，就要控制滚动的频率。
+        delayNextScroll();
+      }
     }
+  }
+
+  bool isScrolling = false;
+  int lastScrollPosition = -1;
+  void delayNextScroll() {
+    isScrolling = true;
+    Future.delayed(Duration(milliseconds: 200)).then((re) {
+      isScrolling = false;
+      if (lastScrollPosition != -1) {
+        updatePosition(lastScrollPosition, isTaping: true);
+        lastScrollPosition = -1;
+      }
+    });
   }
 }

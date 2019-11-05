@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/pages/play_list_tab_page.dart';
 
-class PlayList extends StatefulWidget {
-  PlayList({Key key}) : super(key: key);
+class PlayListPage extends StatefulWidget {
+  PlayListPage({Key key}) : super(key: key);
 
-  _PlayListState createState() => _PlayListState();
+  _PlayListPageState createState() => _PlayListPageState();
 }
 
 const List<String> types = [
@@ -24,7 +24,7 @@ const List<String> types = [
   "放松"
 ];
 
-class _PlayListState extends State<PlayList>
+class _PlayListPageState extends State<PlayListPage>
     with SingleTickerProviderStateMixin {
   TabController tabController; //tab控制器
 

@@ -5,6 +5,7 @@ import 'package:audioplayer/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/dao/music_db.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
@@ -46,10 +47,13 @@ class _PlayerPageState extends State<PlayerPage>
       print("RotationTransition: $status");
     });
 
-   /*  if (ScreenUtil.screenWidth== null || ScreenUtil.screenWidth == 0) {
+    /*  if (ScreenUtil.screenWidth== null || ScreenUtil.screenWidth == 0) {
       ScreenUtil.getScreenSize(context);
     } */
     imageSize = ScreenUtil.screenWidth * 2 ~/ 3;
+    if (imageSize == 0) {
+      imageSize = 250;
+    }
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
     songImage = SongUtil.getSongImage(widget.song, size: imageSize);
     artistNames = SongUtil.getArtistNames(widget.song);
@@ -64,16 +68,17 @@ class _PlayerPageState extends State<PlayerPage>
     });
 
     if (songImage.isEmpty) {
-      MusicDao.getSongDetail(widget.song['id'].toString()).then((song){
-        if (song != null) {
+      MusicDao.getSongDetail(widget.song['id'].toString()).then((song) {
+        if (mounted && song != null) {
+          // 异步任务要判断mouted，可能结果返回，但是界面关闭了。
           setState(() {
-            songImage = SongUtil.getSongImage(song, size: imageSize); 
+            songImage = SongUtil.getSongImage(song, size: imageSize);
           });
-          print('getSongDetail: $songImage');
+          print('getSongDetail: ${song['imageUrl']}');
+          MusicDB().updateFavorite(song);
         }
       });
     }
-
   }
 
   void initAudioPlayer() {
@@ -149,7 +154,7 @@ class _PlayerPageState extends State<PlayerPage>
   Future seek(double millseconds) async {
     await audioPlayer.seek(millseconds / 1000);
     if (playerState == PlayerState.paused) {
-      play();
+      //play();
     }
   }
 
@@ -175,8 +180,120 @@ class _PlayerPageState extends State<PlayerPage>
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _getSongImage(BoxFit fit) {
+    return songImage.isEmpty
+        ? Image.asset(
+            'images/music_1.jpg',
+            width: imageSize.toDouble(),
+            height: imageSize.toDouble(),
+            fit: fit,
+          )
+        : CachedNetworkImage(
+            width: imageSize.toDouble(),
+            height: imageSize.toDouble(),
+            imageUrl: songImage,
+            fit: fit,
+          );
+  }
+
+  Widget _buildTitle() {
+    return ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          widget.song['name'],
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 16.0, color: Colors.white),
+        ),
+        subtitle: Text(
+          artistNames,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 14.0, color: Colors.white60),
+        ),
+        trailing: FavoriteIcon(widget.song) // 收藏按钮
+        );
+  }
+
+  Widget _buildMusicCover() {
+    return Container(
+        margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
+        child: RotationTransition(
+            //设置动画的旋转中心
+            alignment: Alignment.center,
+            //动画控制器
+            turns: _animController,
+            //将要执行动画的子view
+            child: ClipOval(
+                child: GestureDetector(
+              onTap: () =>
+                  {playerState == PlayerState.playing ? pause() : play()},
+              child: _getSongImage(BoxFit.cover),
+            ))));
+  }
+
+  // 进度条
+  Widget _buildProgressBar() {
+    return Container(
+        padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
+        child: MyProgressBar(
+            duration: duration,
+            position: position,
+            onChanged: (double value) {
+              setState(() {
+                position = value.toInt();
+              });
+              _lyricPage.updatePosition(position, isTaping: true);
+            },
+            onChangeStart: (double value) {
+              isTaping = true;
+            },
+            onChangeEnd: (double value) {
+              isTaping = false;
+              seek(value);
+            }));
+  }
+
+  Widget _buildControllerBar() {
+    return Material(
+      color: Colors.transparent,
+      child:Ink(child:Container(
+        padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.skip_previous, size: 40, color: Colors.white70),
+            SizedBox(width: 24.0),
+            playerState == PlayerState.loading
+                ? CircularProgressIndicator(
+                    strokeWidth: 2.0,
+                  )
+                : InkWell(
+                    onTap: () {
+                      playerState == PlayerState.playing ? pause() : play();
+                    },
+                    child: Icon(
+                        playerState == PlayerState.playing
+                            ? Icons.pause
+                            : Icons.play_arrow,
+                        size: 66,
+                        color: Colors.white70)),
+            SizedBox(width: 24.0),
+            Icon(Icons.skip_next, size: 40, color: Colors.white70),
+          ],
+        ))));
+  }
+
+  void _buildAnim() {
     if (playerState == PlayerState.playing) {
       if (!_animController.isAnimating) {
         _animController.forward();
@@ -187,18 +304,20 @@ class _PlayerPageState extends State<PlayerPage>
         _animController.stop();
       }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _buildAnim();
 
     return Scaffold(
       body: Builder(builder: (BuildContext context) {
         return Stack(children: <Widget>[
+          // 背景图片
           Container(
-            // 背景图片
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            child: CachedNetworkImage(
-              imageUrl: songImage,
-              fit: BoxFit.fill,
-            ),
+            child: _getSongImage(BoxFit.fill),
           ),
           // 高斯模糊遮罩层
           BackdropFilter(
@@ -215,73 +334,13 @@ class _PlayerPageState extends State<PlayerPage>
           SafeArea(
               child: Column(
             children: <Widget>[
-              ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                  leading: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  title: Text(
-                    widget.song['name'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 16.0, color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    artistNames,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 14.0, color: Colors.white60),
-                  ),
-                  trailing: FavoriteIcon(widget.song) // 收藏按钮
-                  ),
-              Container(
-                  margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
-                  child: RotationTransition(
-                      //设置动画的旋转中心
-                      alignment: Alignment.center,
-                      //动画控制器
-                      turns: _animController,
-                      //将要执行动画的子view
-                      child: ClipOval(
-                          child: GestureDetector(
-                        onTap: () => {
-                          playerState == PlayerState.playing ? pause() : play()
-                        },
-                        child: songImage.isEmpty ? Image.asset(
-                                  'images/music_1.jpg',
-                                  width: imageSize.toDouble(),
-                                  height: imageSize.toDouble(),
-                                  fit: BoxFit.cover,
-                                )
-                                :CachedNetworkImage(imageUrl: songImage),
-                      )))),
+              _buildTitle(),
+              _buildMusicCover(),
               Expanded(
                 child: _lyricPage, // 歌词
               ),
-              Container(
-                  padding: EdgeInsets.fromLTRB(24.0, 36.0, 24.0, 48.0),
-                  child: MyProgressBar(
-                      duration: duration,
-                      position: position,
-                      onChanged: (double value) {
-                        setState(() {
-                          position = value.toInt();
-                        });
-                        _lyricPage.updatePosition(position);
-                      },
-                      onChangeStart: (double value) {
-                        isTaping = true;
-                      },
-                      onChangeEnd: (double value) {
-                        isTaping = false;
-                        seek(value);
-                      })),
+              _buildProgressBar(),
+              _buildControllerBar(),
             ],
           )),
         ]);

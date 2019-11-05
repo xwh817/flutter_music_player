@@ -11,16 +11,12 @@ class SongItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     String image = SongUtil.getSongImage(song);
     return new ListTile(
-      leading: image.isEmpty
-        ? Image.asset(
-          'images/music_2.jpg',
-          fit: BoxFit.cover,
-        )
-        : ClipRRect(
-            borderRadius: BorderRadius.circular(6.0),
-            child: CachedNetworkImage(
-                imageUrl: "${SongUtil.getSongImage(song)}"),
-          ),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(6.0),
+        child: image.isEmpty
+          ? Image.asset('images/music_2.jpg',fit: BoxFit.cover)
+          : CachedNetworkImage(imageUrl: "${SongUtil.getSongImage(song)}"),
+      ),
       title: new Text(
         "${song['name']}",
         maxLines: 1,
