@@ -11,6 +11,7 @@ import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
+import 'package:flutter_music_player/widget/my_icon_button.dart';
 
 class PlayerPage extends StatefulWidget {
   final Map song;
@@ -131,17 +132,17 @@ class _PlayerPageState extends State<PlayerPage>
       return;
     }
 
-    if (path != null) {
-      // 如果参数url为空，说明是继续播放当前url
+    // 如果参数url为空，说明是继续播放当前url
+    bool isContinue = path == null;
+    if (!isContinue) {
       this.url = path;
+      setState(() {
+        playerState = PlayerState.loading;
+      });
     }
 
     bool isLocal = !this.url.startsWith('http');
     print("start play: $url , isLocal: $isLocal ");
-
-    setState(() {
-      playerState = PlayerState.loading;
-    });
 
     await audioPlayer.play(this.url, isLocal: isLocal);
   }
@@ -264,20 +265,34 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   Widget _buildControllerBar() {
-    return Material(
-      color: Colors.transparent,
-      child:Ink(child:Container(
+    return Container(
+        height: 120.0,
         padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.skip_previous, size: 40, color: Colors.white70),
+            MyIconButton(
+              icon:Icons.skip_previous, 
+              size: 40,
+              onTap: (){
+              
+            },),
+            //Icon(Icons.skip_previous, size: 40, color: Colors.white70),
             SizedBox(width: 24.0),
             playerState == PlayerState.loading
                 ? CircularProgressIndicator(
                     strokeWidth: 2.0,
                   )
-                : InkWell(
+                : MyIconButton(
+                  icon: playerState == PlayerState.playing
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                  size: 66,
+                  onTap: (){
+                     playerState == PlayerState.playing ? pause() : play();
+                },),
+                
+                /* InkWell(
                     onTap: () {
                       playerState == PlayerState.playing ? pause() : play();
                     },
@@ -286,11 +301,17 @@ class _PlayerPageState extends State<PlayerPage>
                             ? Icons.pause
                             : Icons.play_arrow,
                         size: 66,
-                        color: Colors.white70)),
+                        color: Colors.white70)), */
             SizedBox(width: 24.0),
-            Icon(Icons.skip_next, size: 40, color: Colors.white70),
+            //Icon(Icons.skip_next, size: 40, color: Colors.white70),
+            MyIconButton(
+              icon:Icons.skip_next, 
+              size: 40,
+              onTap: (){
+              
+            },)
           ],
-        ))));
+        ));
   }
 
   void _buildAnim() {
