@@ -4,10 +4,9 @@ import 'package:flutter_music_player/model/Lyric.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 
 class LyricPage extends StatefulWidget {
-  final Map song;
   _LyricPageState _state;
 
-  LyricPage(this.song, {Key key}) : super(key: key);
+  LyricPage({Key key}) : super(key: key);
 
   @override
   _LyricPageState createState() {
@@ -19,9 +18,14 @@ class LyricPage extends StatefulWidget {
   void updatePosition(int position, {isTaping: false}) {
     _state?.updatePosition(position, isTaping: isTaping);
   }
+
+  void updateSong(Map song) {
+    _state?.updateSong(song);
+  }
 }
 
 class _LyricPageState extends State<LyricPage> {
+  Map song;
   final double itemHeight = 30.0;
   int visibleItemSize = 7;
   Lyric lyric;
@@ -35,14 +39,19 @@ class _LyricPageState extends State<LyricPage> {
     visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
     _controller = ScrollController();
 
-    MusicDao.getLyric(widget.song['id']).then((result) {
+    //_getLyric();
+
+    print('LyricPage initState, 歌词可见行数：$visibleItemSize');
+  }
+
+  void _getLyric() {
+    MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {
           lyric = result;
         });
       }
     });
-    print('LyricPage initState');
   }
 
   @override
@@ -71,7 +80,7 @@ class _LyricPageState extends State<LyricPage> {
     return Container(
         alignment: Alignment.center,
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: itemHeight * 7),
+          constraints: BoxConstraints(maxHeight: itemHeight * visibleItemSize),
           child: CustomScrollView(controller: _controller, slivers: <Widget>[
             SliverList(
                 delegate: SliverChildBuilderDelegate(
@@ -136,9 +145,9 @@ class _LyricPageState extends State<LyricPage> {
   void scrollTo(int index) {
     int itemSize = lyric.items.length;
     // 选中的Index是否超出边界
-    if (index < 0 || index >= itemSize) {
+    /* if (index < 0 || index >= itemSize) {
       return;
-    }
+    } */
 
     int offset = (visibleItemSize - 1) ~/ 2;
     int topIndex = index - offset; // 选中元素居中时,top的Index
@@ -163,12 +172,12 @@ class _LyricPageState extends State<LyricPage> {
 
   // 根据歌曲播放的位置确定滚动的位置
   void updatePosition(int milliseconds, {isTaping: false}) {
-    //print('updatePosition $milliseconds , isScrolling: $isScrolling , isTaping: $isTaping ');
     if (isScrolling) {
       lastScrollPosition = milliseconds;
       return;
     }
     int _index = getIndexByTime(milliseconds);
+    //print("update index : $_index, currentIndex: $_currentIndex");
     if (_index != _currentIndex) {
       _currentIndex = _index;
       scrollTo(_currentIndex);
@@ -180,6 +189,7 @@ class _LyricPageState extends State<LyricPage> {
     }
   }
 
+  /// 在手动拖动时，控制滚动的频率。不然多次动画叠在一起界面卡顿。
   bool isScrolling = false;
   int lastScrollPosition = -1;
   void delayNextScroll() {
@@ -191,5 +201,12 @@ class _LyricPageState extends State<LyricPage> {
         lastScrollPosition = -1;
       }
     });
+  }
+
+  void updateSong(Map song) {
+    setState(() {
+     this.song = song; 
+    });
+    _getLyric();
   }
 }

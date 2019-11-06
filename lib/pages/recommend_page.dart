@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:provider/provider.dart';
 import '../dao/music_163.dart';
 
 class RecommendPage extends StatefulWidget {
@@ -17,8 +19,8 @@ class RecommendPage extends StatefulWidget {
 enum AppBarBehavior { normal, pinned, floating, snapping }
 
 class _RecommendPageState extends State<RecommendPage> {
-  List _newSongs = List();
-  List _topSongs = List();
+  List _newSongs = [];
+  List _topSongs = [];
   final double _appBarHeight = 200.0;
   static final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
@@ -68,7 +70,7 @@ class _RecommendPageState extends State<RecommendPage> {
                             Map song = _newSongs[index];
                             String picUrl = song['song']['album']['picUrl'];
                             return GestureDetector(
-                              onTap: () => _onItemTap(song),
+                              onTap: () => _onItemTap(_newSongs, index),
                               child: CachedNetworkImage(
                                 imageUrl: picUrl + "?param=600y300",
                                 fit: BoxFit.cover,
@@ -95,7 +97,9 @@ class _RecommendPageState extends State<RecommendPage> {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return SongItemTile(this._topSongs[index]);
+                      return SongItemTile(this._topSongs[index], onItemTap: (){
+                        Provider.of<PlayList>(context).setPlayList(_topSongs, index);
+                      },);
                     },
                     childCount: _topSongs.length,
                   ),
@@ -105,8 +109,9 @@ class _RecommendPageState extends State<RecommendPage> {
           );
   }
 
-  void _onItemTap(Map song) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
+  void _onItemTap(List<Map> songList, int index) {
+    Map song = songList[index];
+    Provider.of<PlayList>(context).setPlayList(songList, index);
+    NavigatorUtil.push(context, PlayerPage());
   }
 }

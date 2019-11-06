@@ -14,12 +14,16 @@ class FavoriteIcon extends StatefulWidget {
 
 class _FavoriteIconState extends State<FavoriteIcon> {
   bool isFavorited = false;
+  Map song;
 
   @override
   void initState() {
     super.initState();
+    //print('FavoriteIcon initState');
+  }
 
-    MusicDB().getFavoriteById(widget.song['id']).then((fav) {
+  void _checkFavorite() {
+    MusicDB().getFavoriteById(song['id']).then((fav) {
       print('getFavoriteById : $fav');
       setState(() {
        isFavorited = fav != null; 
@@ -29,6 +33,11 @@ class _FavoriteIconState extends State<FavoriteIcon> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.song != song) {
+      song = widget.song;
+      _checkFavorite();
+    }
+    //print('FavoriteIcon build');
     return IconButton(
         icon: Icon(
           Icons.favorite,
@@ -52,10 +61,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
       }).then((_){
         return FileUtil.getSongLocalPath(widget.song);
       }).then((savePath){
-        HttpUtil.download(
-          SongUtil.getSongUrl(widget.song), 
-          savePath);
-        
+        String url = SongUtil.getSongUrl(widget.song);
+        HttpUtil.download(url, savePath);
+        print('download: $url');
         setState(() {
           isFavorited = true;
         });

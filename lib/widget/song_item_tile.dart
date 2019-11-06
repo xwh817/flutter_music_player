@@ -5,7 +5,8 @@ import 'package:flutter_music_player/pages/player_page.dart';
 
 class SongItemTile extends StatelessWidget {
   final Map song;
-  const SongItemTile(this.song, {Key key}) : super(key: key);
+  final Function onItemTap;
+  const SongItemTile(this.song, {Key key, this.onItemTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class SongItemTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(6.0),
         child: image.isEmpty
           ? Image.asset('images/music_2.jpg',fit: BoxFit.cover)
-          : CachedNetworkImage(imageUrl: "${SongUtil.getSongImage(song)}"),
+          : CachedNetworkImage(imageUrl: image),
       ),
       title: new Text(
         "${song['name']}",
@@ -30,9 +31,13 @@ class SongItemTile extends StatelessWidget {
         style: TextStyle(fontSize: 12.0),
       ),
       onTap: () {
+        if (onItemTap != null) {
+          this.onItemTap();
+        }
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => PlayerPage(song: song)));
+            MaterialPageRoute(builder: (context) => PlayerPage()));
       },
     );
   }
+
 }

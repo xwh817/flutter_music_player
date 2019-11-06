@@ -83,7 +83,15 @@ class MusicDB {
 
   Future<List<Map<String, dynamic>>> getFavoriteList() async {
     db = await getDB();
-    return db.query(t_favorite);
+    List list = await db.query(t_favorite);
+    List songs = list.map((fav) => {
+      'id': fav['id'],
+      'name': fav['name'],
+      'artistNames': fav['artist'],
+      'imageUrl': fav['cover']
+    }).toList();
+
+    return songs;
   }
 
   Future<Map<String, dynamic>> getFavoriteById(var id) async {

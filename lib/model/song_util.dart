@@ -51,6 +51,7 @@ class SongUtil {
         song['imageUrl'] = imgUrl;  // 取一次之后存下来，不用后面计算。
       } catch(e) {
         print(e);
+        print(song.toString());
         return '';
       } 
     }

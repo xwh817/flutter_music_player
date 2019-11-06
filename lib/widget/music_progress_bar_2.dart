@@ -37,7 +37,8 @@ class _MyProgressBarState extends State<MyProgressBar> {
               overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
             ),
             child: Slider.adaptive(
-              value: widget.position.toDouble(),
+              // 歌曲切换的时候duration可能返回0，这儿要进行判断。
+              value: widget.duration == 0 ? 0.0 : widget.position.toDouble(),
               min: 0.0,
               max: widget.duration == 0 ? 1.0 : widget.duration.toDouble(),
               onChanged: (double value) {

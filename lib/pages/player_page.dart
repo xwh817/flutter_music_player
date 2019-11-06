@@ -6,16 +6,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class PlayerPage extends StatefulWidget {
-  final Map song;
-  PlayerPage({Key key, @required this.song}) : super(key: key);
+  PlayerPage({Key key}) : super(key: key);
 
   _PlayerPageState createState() => _PlayerPageState();
 }
@@ -26,6 +28,7 @@ class _PlayerPageState extends State<PlayerPage>
     with SingleTickerProviderStateMixin {
   AnimationController _animController;
   AudioPlayer audioPlayer;
+  Map song;
   String url;
   int duration = 0;
   int position = 0; // 单位：毫秒
@@ -48,38 +51,50 @@ class _PlayerPageState extends State<PlayerPage>
       print("RotationTransition: $status");
     });
 
-    /*  if (ScreenUtil.screenWidth== null || ScreenUtil.screenWidth == 0) {
-      ScreenUtil.getScreenSize(context);
-    } */
-    imageSize = ScreenUtil.screenWidth * 2 ~/ 3;
+    imageSize = ScreenUtil.screenHeight ~/ 3;
     if (imageSize == 0) {
       imageSize = 250;
     }
-    // 不要把函数调用放在build之中，不然每次刷新都会调用！！
-    songImage = SongUtil.getSongImage(widget.song, size: imageSize);
-    artistNames = SongUtil.getArtistNames(widget.song);
 
-    print("Song: $songImage， size: $imageSize");
+    _lyricPage = LyricPage();
 
-    _lyricPage = LyricPage(widget.song);
     initAudioPlayer();
+    startSong();
+  }
 
-    SongUtil.getPlayPath(widget.song).then((playPath) {
+  void startSong() {
+    song = Provider.of<PlayList>(context, listen: false).getCurrentSong();
+    if(song == null) {
+      return;
+    }
+
+    // 不要把函数调用放在build之中，不然每次刷新都会调用！！
+    songImage = SongUtil.getSongImage(song, size: imageSize);
+    artistNames = SongUtil.getArtistNames(song);
+
+    print("StartSong: $song， imageSize: $imageSize");
+
+    SongUtil.getPlayPath(song).then((playPath) {
       play(path: playPath);
+    }).then((_){
+      _lyricPage.updateSong(song);
     });
 
     if (songImage.isEmpty) {
-      MusicDao.getSongDetail(widget.song['id'].toString()).then((song) {
-        if (mounted && song != null) {
-          // 异步任务要判断mouted，可能结果返回，但是界面关闭了。
+      MusicDao.getSongDetail(song['id'].toString()).then((songDetail) {
+        // 异步任务要判断mouted，可能结果返回，但是界面关闭了。
+        if (mounted && songDetail != null) {
           setState(() {
-            songImage = SongUtil.getSongImage(song, size: imageSize);
+            songImage = SongUtil.getSongImage(songDetail, size: imageSize);
           });
-          print('getSongDetail: ${song['imageUrl']}');
+          song['imageUrl'] = SongUtil.getSongImage(songDetail, size: 0);
+          print('getSongDetail: $songImage');
           MusicDB().updateFavorite(song);
         }
       });
     }
+
+    setState(() {});
   }
 
   void initAudioPlayer() {
@@ -108,6 +123,14 @@ class _PlayerPageState extends State<PlayerPage>
       }
       print("AudioPlayer onPlayerStateChanged: $s");
     }, onError: (msg) {
+      Fluttertoast.showToast(
+        msg: "歌曲播放失败！",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 14.0);
+
       setState(() {
         playerState = PlayerState.stopped;
         duration = 0;
@@ -136,9 +159,13 @@ class _PlayerPageState extends State<PlayerPage>
     bool isContinue = path == null;
     if (!isContinue) {
       this.url = path;
-      setState(() {
-        playerState = PlayerState.loading;
-      });
+      if (playerState != PlayerState.loading){
+        audioPlayer.stop();
+        setState(() {
+          duration = 0;
+          playerState = PlayerState.loading;
+        });
+      }
     }
 
     bool isLocal = !this.url.startsWith('http');
@@ -174,27 +201,31 @@ class _PlayerPageState extends State<PlayerPage>
     });
   }
 
-  void onComplete() {
-    setState(() {
-      playerState = PlayerState.stopped;
-      position = 0;
-    });
+  Map next() {
+    Map next = Provider.of<PlayList>(context).next();
+    if (next != null) {
+      startSong();
+    }
+    return next;
   }
 
-  Widget _getSongImage(BoxFit fit) {
-    return songImage.isEmpty
-        ? Image.asset(
-            'images/music_1.jpg',
-            width: imageSize.toDouble(),
-            height: imageSize.toDouble(),
-            fit: fit,
-          )
-        : CachedNetworkImage(
-            width: imageSize.toDouble(),
-            height: imageSize.toDouble(),
-            imageUrl: songImage,
-            fit: fit,
-          );
+  Map previous() {
+    Map prev = Provider.of<PlayList>(context).previous();
+    if (prev != null) {
+      startSong();
+    }
+    return prev;
+  }
+
+  void onComplete() {
+    print('播放结束');
+    Map nextSong = next();
+    if (nextSong == null) {
+      setState(() {
+        playerState = PlayerState.stopped;
+        position = 0;
+      });
+    }
   }
 
   Widget _buildTitle() {
@@ -210,7 +241,7 @@ class _PlayerPageState extends State<PlayerPage>
           },
         ),
         title: Text(
-          widget.song['name'],
+          song['name'],
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(fontSize: 16.0, color: Colors.white),
@@ -221,8 +252,24 @@ class _PlayerPageState extends State<PlayerPage>
           overflow: TextOverflow.ellipsis,
           style: TextStyle(fontSize: 14.0, color: Colors.white60),
         ),
-        trailing: FavoriteIcon(widget.song) // 收藏按钮
+        trailing: FavoriteIcon(song) // 收藏按钮
         );
+  }
+
+  Widget _getSongImage(BoxFit fit) {
+    return songImage.isEmpty
+        ? Image.asset(
+            'images/music_2.jpg',
+            width: imageSize.toDouble(),
+            height: imageSize.toDouble(),
+            fit: fit,
+          )
+        : CachedNetworkImage(
+            width: imageSize.toDouble(),
+            height: imageSize.toDouble(),
+            imageUrl: songImage,
+            fit: fit,
+          );
   }
 
   Widget _buildMusicCover() {
@@ -266,49 +313,38 @@ class _PlayerPageState extends State<PlayerPage>
 
   Widget _buildControllerBar() {
     return Container(
-        height: 120.0,
-        padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 16.0),
+        padding: EdgeInsets.fromLTRB(24.0, 4.0, 24.0, 20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             MyIconButton(
               icon:Icons.skip_previous, 
-              size: 40,
+              size: 46,
               onTap: (){
-              
+                previous();
             },),
-            //Icon(Icons.skip_previous, size: 40, color: Colors.white70),
             SizedBox(width: 24.0),
             playerState == PlayerState.loading
-                ? CircularProgressIndicator(
+                ? Container(
+                  height: 66.0,
+                  width: 66.0,
+                  child:CircularProgressIndicator(
                     strokeWidth: 2.0,
-                  )
+                  ))
                 : MyIconButton(
                   icon: playerState == PlayerState.playing
                           ? Icons.pause
                           : Icons.play_arrow,
-                  size: 66,
+                  size: 66.0,
                   onTap: (){
                      playerState == PlayerState.playing ? pause() : play();
                 },),
-                
-                /* InkWell(
-                    onTap: () {
-                      playerState == PlayerState.playing ? pause() : play();
-                    },
-                    child: Icon(
-                        playerState == PlayerState.playing
-                            ? Icons.pause
-                            : Icons.play_arrow,
-                        size: 66,
-                        color: Colors.white70)), */
             SizedBox(width: 24.0),
-            //Icon(Icons.skip_next, size: 40, color: Colors.white70),
             MyIconButton(
               icon:Icons.skip_next, 
-              size: 40,
+              size: 46,
               onTap: (){
-              
+                next();
             },)
           ],
         ));
@@ -353,16 +389,16 @@ class _PlayerPageState extends State<PlayerPage>
             ),
           ),
           SafeArea(
-              child: Column(
-            children: <Widget>[
-              _buildTitle(),
-              _buildMusicCover(),
-              Expanded(
-                child: _lyricPage, // 歌词
-              ),
-              _buildProgressBar(),
-              _buildControllerBar(),
-            ],
+            child: Column(
+              children: <Widget>[
+                _buildTitle(),
+                _buildMusicCover(),
+                Expanded(
+                  child: _lyricPage, // 歌词
+                ),
+                _buildProgressBar(),
+                _buildControllerBar(),
+              ],
           )),
         ]);
       }),

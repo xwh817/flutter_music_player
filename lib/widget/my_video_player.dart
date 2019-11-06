@@ -7,8 +7,8 @@ import 'package:video_player/video_player.dart';
 import 'music_progress_bar_2.dart';
 
 class MyVideoPlayer extends StatefulWidget {
-  VideoPlayerController controller;
-  PlayerState playerState;
+  final VideoPlayerController controller;
+  final PlayerState playerState;
   final Map mv;
   MyVideoPlayer({Key key, this.mv, this.controller, this.playerState:PlayerState.idle}) : super(key: key);
 

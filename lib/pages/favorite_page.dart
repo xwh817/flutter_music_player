@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
+import 'package:provider/provider.dart';
 
 class FavoritePage extends StatefulWidget {
   FavoritePage({Key key}) : super(key: key);
@@ -38,9 +40,9 @@ class _FavoritePageState extends State<FavoritePage> {
     if (_songs.length == 0) {
       return Center(
           child: Text(
-            '您还没有收藏歌曲\n可点击播放页右上角进行收藏。',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, height: 1.5),
+        '您还没有收藏歌曲\n可点击播放页右上角进行收藏。',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.grey, height: 1.5),
       ));
     } else {
       return ListView.builder(
@@ -52,13 +54,11 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 
   Widget _buildItem(index) {
-    Map fav = this._songs[index];
-    Map song = {
-      'id': fav['id'],
-      'name': fav['name'],
-      'artistNames': fav['artist'],
-      'imageUrl': fav['cover']
-    };
-    return SongItemTile(song);
+    return SongItemTile(
+      _songs[index],
+      onItemTap: () {
+        Provider.of<PlayList>(context).setPlayList(_songs, index);
+      },
+    );
   }
 }
