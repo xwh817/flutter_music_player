@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:audioplayer/audioplayer.dart';
@@ -46,7 +47,7 @@ class _PlayerPageState extends State<PlayerPage>
   void initState() {
     super.initState();
     _animController =
-        AnimationController(duration: const Duration(seconds: 16), vsync: this);
+        AnimationController(duration: const Duration(seconds: 24), vsync: this);
     _animController.addStatusListener((status) {
       print("RotationTransition: $status");
     });
@@ -64,7 +65,7 @@ class _PlayerPageState extends State<PlayerPage>
 
   void startSong() {
     song = Provider.of<PlayList>(context, listen: false).getCurrentSong();
-    if(song == null) {
+    if (song == null) {
       return;
     }
 
@@ -76,7 +77,7 @@ class _PlayerPageState extends State<PlayerPage>
 
     SongUtil.getPlayPath(song).then((playPath) {
       play(path: playPath);
-    }).then((_){
+    }).then((_) {
       _lyricPage.updateSong(song);
     });
 
@@ -94,7 +95,9 @@ class _PlayerPageState extends State<PlayerPage>
       });
     }
 
-    setState(() {});
+    setState(() {
+      position = 0;
+    });
   }
 
   void initAudioPlayer() {
@@ -118,18 +121,30 @@ class _PlayerPageState extends State<PlayerPage>
           setState(() => playerState = PlayerState.playing);
           print("AudioPlayer playing");
         }
+      } else if (s == AudioPlayerState.PAUSED) {
+        setState(() => playerState = PlayerState.paused);
       } else if (s == AudioPlayerState.STOPPED) {
+        print("AudioPlayer stopped");
+      } else if (s == AudioPlayerState.COMPLETED) {
+        print('播放结束');
         onComplete();
       }
       print("AudioPlayer onPlayerStateChanged: $s");
     }, onError: (msg) {
-      Fluttertoast.showToast(
-        msg: "歌曲播放失败！",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 14.0);
+      try {
+        Map json = jsonDecode(msg);
+        if (json['what'] == 1) {
+          Fluttertoast.showToast(
+              msg: "歌曲播放失败！",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 14.0);
+        }
+      } catch (e) {
+        print(e);
+      }
 
       setState(() {
         playerState = PlayerState.stopped;
@@ -159,7 +174,7 @@ class _PlayerPageState extends State<PlayerPage>
     bool isContinue = path == null;
     if (!isContinue) {
       this.url = path;
-      if (playerState != PlayerState.loading){
+      if (playerState != PlayerState.loading) {
         audioPlayer.stop();
         setState(() {
           duration = 0;
@@ -176,7 +191,6 @@ class _PlayerPageState extends State<PlayerPage>
 
   Future pause() async {
     await audioPlayer.pause();
-    setState(() => playerState = PlayerState.paused);
   }
 
   Future seek(double millseconds) async {
@@ -202,11 +216,11 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   Map next() {
-    Map next = Provider.of<PlayList>(context).next();
-    if (next != null) {
+    Map nextSong = Provider.of<PlayList>(context).next();
+    if (nextSong != null) {
       startSong();
     }
-    return next;
+    return nextSong;
   }
 
   Map previous() {
@@ -218,7 +232,6 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   void onComplete() {
-    print('播放结束');
     Map nextSong = next();
     if (nextSong == null) {
       setState(() {
@@ -318,34 +331,29 @@ class _PlayerPageState extends State<PlayerPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             MyIconButton(
-              icon:Icons.skip_previous, 
-              size: 46,
-              onTap: (){
+              icon: Icons.skip_previous,
+              size: 40,
+              onTap: () {
                 previous();
-            },),
-            SizedBox(width: 24.0),
-            playerState == PlayerState.loading
-                ? Container(
-                  height: 66.0,
-                  width: 66.0,
-                  child:CircularProgressIndicator(
-                    strokeWidth: 2.0,
-                  ))
-                : MyIconButton(
-                  icon: playerState == PlayerState.playing
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                  size: 66.0,
-                  onTap: (){
-                     playerState == PlayerState.playing ? pause() : play();
-                },),
+              },
+            ), 
             SizedBox(width: 24.0),
             MyIconButton(
-              icon:Icons.skip_next, 
-              size: 46,
-              onTap: (){
+              icons: [Icons.pause, Icons.play_arrow],
+              iconIndex: playerState == PlayerState.playing ? 0 : 1,
+              size: 60.0,
+              onTap: () {
+                playerState == PlayerState.playing ? pause() : play();
+              },
+            ),
+            SizedBox(width: 24.0),
+            MyIconButton(
+              icon: Icons.skip_next,
+              size: 40,
+              onTap: () {
                 next();
-            },)
+              },
+            )
           ],
         ));
   }
@@ -389,17 +397,22 @@ class _PlayerPageState extends State<PlayerPage>
             ),
           ),
           SafeArea(
-            child: Column(
-              children: <Widget>[
-                _buildTitle(),
-                _buildMusicCover(),
-                Expanded(
-                  child: _lyricPage, // 歌词
-                ),
-                _buildProgressBar(),
-                _buildControllerBar(),
-              ],
+              child: Column(
+            children: <Widget>[
+              _buildTitle(),
+              _buildMusicCover(),
+              Expanded(
+                child: _lyricPage, // 歌词
+              ),
+              _buildProgressBar(),
+              _buildControllerBar(),
+            ],
           )),
+          playerState == PlayerState.loading 
+            ? CircularProgressIndicator(
+              strokeWidth: 2.0,
+            ): Container(),
+
         ]);
       }),
     );

@@ -5,10 +5,13 @@ class ScreenUtil {
   static double screenHeight;
 
   static void getScreenSize(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    MediaQueryData mediaData = MediaQuery.of(context);
+    final size = mediaData.size;
     screenWidth = size.width;
     screenHeight = size.height;
-    print('屏幕宽高: ${size.width} * ${size.height}');
+
+    double dp = mediaData.devicePixelRatio;
+    print('屏幕宽高: ${size.width} * ${size.height}, 屏幕密度：$dp ');
   }
 
 }

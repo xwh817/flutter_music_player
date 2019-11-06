@@ -45,13 +45,15 @@ class SongUtil {
       try {
         if (song.containsKey('al')) {
           imgUrl = song['al']['picUrl'];
-        } else {
+        } else if (song.containsKey('song')) {// URL_NEW_SONGS里面的数据结构
           imgUrl = song['song']['album']['picUrl'];
         }
-        song['imageUrl'] = imgUrl;  // 取一次之后存下来，不用后面计算。
+        if (imgUrl != null) {
+          song['imageUrl'] = imgUrl;  // 取一次之后存下来，不用后面计算。
+        }
       } catch(e) {
         print(e);
-        print(song.toString());
+        print(song['name']);
         return '';
       } 
     }

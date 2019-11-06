@@ -17,7 +17,7 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar> {
   bool showClear = false;
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,33 +39,35 @@ class _SearchBarState extends State<SearchBar> {
                 autofocus: widget.enable,
                 textAlignVertical: TextAlignVertical.bottom,
                 style: TextStyle(
-                    fontSize: 16.0,
+                    fontSize: 14.0,
                     color: Colors.black87,
                     fontWeight: FontWeight.w300),
                 //输入文本的样式
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(3.5),
+                  contentPadding: EdgeInsets.all(3.0), // 可控制文字在框中的位置
                   border: InputBorder.none,
                   hintText: '请输入歌名或歌手名',
-                  hintStyle: TextStyle(fontSize: 14),
+                  hintStyle: TextStyle(fontSize: 14.0),
                 )),
           ),
           InkWell(
-            child:Icon(showClear? Icons.clear : Icons.mic, size: 22.0, color: Colors.green),
-            onTap: (){
-              if (showClear) {
-                widget.controller.clear();
-              } else {
-
-              }
-            }
-          ),
+              child: Icon(showClear ? Icons.clear : Icons.mic,
+                  size: 22.0, color: Colors.green),
+              onTap: () {
+                if (showClear) {
+                  widget.controller.clear();
+                  setState(() {
+                    showClear = false;
+                  });
+                } else {
+                  // 语音识别按钮
+                }
+              }),
         ],
       ),
     );
   }
 
-  
   _onChanged(String text) {
     if (text.length > 0) {
       setState(() {
@@ -81,5 +83,4 @@ class _SearchBarState extends State<SearchBar> {
       widget.onChanged(text);
     }
   }
-
 }
