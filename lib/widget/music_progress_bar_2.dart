@@ -24,6 +24,10 @@ class _MyProgressBarState extends State<MyProgressBar> {
   
   @override
   Widget build(BuildContext context) {
+    double position = widget.position == null ? 0.0 : widget.position.toDouble();
+    double duration = widget.duration == null ? 0.0 : widget.duration.toDouble();
+
+
     final ThemeData theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -38,9 +42,9 @@ class _MyProgressBarState extends State<MyProgressBar> {
             ),
             child: Slider.adaptive(
               // 歌曲切换的时候duration可能返回0，这儿要进行判断。
-              value: widget.duration == 0 ? 0.0 : widget.position.toDouble(),
+              value: position,
               min: 0.0,
-              max: widget.duration == 0 ? 1.0 : widget.duration.toDouble(),
+              max: duration,
               onChanged: (double value) {
                 widget.onChanged(value);
               },
@@ -62,6 +66,9 @@ class _MyProgressBarState extends State<MyProgressBar> {
   }
 
   String _getFormatTime(int milliseconds) {
+    if (milliseconds == null) {
+      milliseconds =0;
+    }
     int seconds = milliseconds ~/ 1000;
     int minute = seconds ~/ 60;
     int hour = minute ~/ 60;

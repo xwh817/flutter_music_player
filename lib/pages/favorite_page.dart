@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
-import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
-import 'package:provider/provider.dart';
 
 class FavoritePage extends StatefulWidget {
   FavoritePage({Key key}) : super(key: key);
@@ -48,17 +46,9 @@ class _FavoritePageState extends State<FavoritePage> {
       return ListView.builder(
         itemCount: this._songs.length,
         itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-        itemBuilder: (context, index) => _buildItem(index),
+        itemBuilder: (context, index) => SongItemTile(_songs, index),
       );
     }
   }
 
-  Widget _buildItem(index) {
-    return SongItemTile(
-      _songs[index],
-      onItemTap: () {
-        Provider.of<PlayList>(context).setPlayList(_songs, index);
-      },
-    );
-  }
 }

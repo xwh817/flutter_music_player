@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/widget/my_video_player.dart';
+
+import 'fullscreen_video_player.dart';
 class MVItem extends StatefulWidget {
   final Map mv;
   MVItem(this.mv, {Key key}) : super(key: key);
@@ -40,6 +43,9 @@ class _MVItemState extends State<MVItem> {
                   borderRadius: BorderRadius.circular(8.0),
                   child: MyVideoPlayer(
                     mv: widget.mv,
+                    onResizePressed: (controller){
+                      NavigatorUtil.push(context, FullScreenVideoPlayer(controller, mv: widget.mv));
+                    }
                   ),
                 ),
               )

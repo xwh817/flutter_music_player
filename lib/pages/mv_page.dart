@@ -3,7 +3,7 @@ import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/pages/mv_tab_page.dart';
 
 class MVPage extends StatefulWidget {
-   MVPage({Key key}) : super(key: key);
+  MVPage({Key key}) : super(key: key);
 
   _MVPageState createState() => _MVPageState();
 }
@@ -11,10 +11,10 @@ class MVPage extends StatefulWidget {
 const types = {
   "最新": MusicDao.URL_MV_FIRST,
   "Top": MusicDao.URL_MV_TOP,
+  '推荐': MusicDao.URL_MV_PERSONAL,
 };
 
-class _MVPageState extends State<MVPage>
-    with SingleTickerProviderStateMixin {
+class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
   TabController tabController; //tab控制器
 
   @override
@@ -24,7 +24,6 @@ class _MVPageState extends State<MVPage>
     tabController = TabController(length: types.length, vsync: this);
     tabController.addListener(() => _onTabChanged());
   }
-
 
   void _onTabChanged() {
     if (tabController.index.toDouble() == tabController.animation.value) {}
@@ -60,7 +59,7 @@ class _MVPageState extends State<MVPage>
       body: TabBarView(
         controller: tabController,
         children: types.values.map((url) {
-          return  MVTabPage(url: url);
+          return MVTabPage(url: url);
         }).toList(),
       ),
     );

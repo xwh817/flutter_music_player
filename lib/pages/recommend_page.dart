@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/play_list.dart';
+import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
@@ -23,7 +24,6 @@ class _RecommendPageState extends State<RecommendPage> {
   List _topSongs = [];
   final double _appBarHeight = 200.0;
   static final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _RecommendPageState extends State<RecommendPage> {
                 SliverAppBar(
                   expandedHeight: _appBarHeight,
                   pinned: true,
-                  floating: true,
+                  floating: false,
                   titleSpacing: 36.0,
                   snap: false,
                   title: InkWell(
@@ -68,11 +68,11 @@ class _RecommendPageState extends State<RecommendPage> {
                           autoplayDisableOnInteraction: false,
                           itemBuilder: (BuildContext context, int index) {
                             Map song = _newSongs[index];
-                            String picUrl = song['song']['album']['picUrl'];
+                            String picUrl = SongUtil.getSongImage(song, width:600, height:300);
                             return GestureDetector(
                               onTap: () => _onItemTap(_newSongs, index),
                               child: CachedNetworkImage(
-                                imageUrl: picUrl + "?param=600y300",
+                                imageUrl: picUrl,
                                 fit: BoxFit.cover,
                               ),
                             );
@@ -80,26 +80,12 @@ class _RecommendPageState extends State<RecommendPage> {
                           itemCount: _newSongs.length,
                           pagination: new SwiperPagination(),
                         ),
-                        // This gradient ensures that the toolbar icons are distinct
-                        // against the background image.
-                        /* const DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment(0.0, -1.0),
-                          end: Alignment(0.0, -0.4),
-                          colors: <Color>[Color(0x60000000), Color(0x00000000)],
-                        ),
-                      ),
-                    ), */
-                      
                   ),
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
-                      return SongItemTile(this._topSongs[index], onItemTap: (){
-                        Provider.of<PlayList>(context).setPlayList(_topSongs, index);
-                      },);
+                      return SongItemTile(this._topSongs, index);
                     },
                     childCount: _topSongs.length,
                   ),
@@ -109,8 +95,7 @@ class _RecommendPageState extends State<RecommendPage> {
           );
   }
 
-  void _onItemTap(List<Map> songList, int index) {
-    Map song = songList[index];
+  void _onItemTap(List songList, int index) {
     Provider.of<PlayList>(context).setPlayList(songList, index);
     NavigatorUtil.push(context, PlayerPage());
   }

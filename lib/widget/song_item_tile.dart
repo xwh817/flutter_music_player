@@ -1,22 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
+import 'package:flutter_music_player/utils/navigator_util.dart';
+import 'package:provider/provider.dart';
 
 class SongItemTile extends StatelessWidget {
-  final Map song;
+  final List songList;
+  final int index;
   final Function onItemTap;
-  const SongItemTile(this.song, {Key key, this.onItemTap}) : super(key: key);
+  const SongItemTile(this.songList, this.index, {Key key, this.onItemTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Map song = this.songList[index];
     String image = SongUtil.getSongImage(song);
     return new ListTile(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(6.0),
         child: image.isEmpty
-          ? Image.asset('images/music_2.jpg',fit: BoxFit.cover)
-          : CachedNetworkImage(imageUrl: image),
+            ? Image.asset('images/music_2.jpg', fit: BoxFit.cover)
+            : CachedNetworkImage(imageUrl: image),
       ),
       title: new Text(
         "${song['name']}",
@@ -34,10 +40,10 @@ class SongItemTile extends StatelessWidget {
         if (onItemTap != null) {
           this.onItemTap();
         }
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => PlayerPage()));
+
+        Provider.of<PlayList>(context).setPlayList(songList, index);
+        NavigatorUtil.push(context, PlayerPage());
       },
     );
   }
-
 }

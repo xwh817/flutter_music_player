@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
   SearchPage({Key key}) : super(key: key);
@@ -23,7 +21,6 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //leading: IconButton(icon:Icon(Icons.arrow_back), onPressed: (){},),
         titleSpacing: 0.0,
         title: SearchBar(
           controller: _controller,
@@ -42,32 +39,24 @@ class _SearchPageState extends State<SearchPage> {
         ],
       ),
       body: isSearching
-          ? Center(child: CircularProgressIndicator())
-          : _songs.length > 0
-              ? ListView.builder(
-                  itemCount: this._songs.length,
-                  itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-                  itemBuilder: (context, index) =>
-                      SongItemTile(this._songs[index], onItemTap: (){
-                        // 这儿设置只放一首
-                        List songList = [_songs[index]];
-                        Provider.of<PlayList>(context).setPlayList(songList, 0);
-                      },),
-                )
-              : Center(child:Text('')),
+        ? Center(child: CircularProgressIndicator())
+        : ListView.builder(
+            itemCount: this._songs.length,
+            itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
+            itemBuilder: (context, index) => SongItemTile(_songs, index)
+            ),
     );
   }
 
   _search() {
     if (keywords.length == 0) {
       Fluttertoast.showToast(
-        msg: "请输入歌名或歌手名",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 14.0
-    );
+          msg: "请输入歌名或歌手名",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 14.0);
       return;
     }
     setState(() {

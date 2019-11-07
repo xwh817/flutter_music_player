@@ -23,6 +23,7 @@ class MusicDao {
   static const URL_GET_LYRIC = '$URL_ROOT/lyric?id=';
   static const URL_MV_FIRST = '$URL_ROOT/mv/first';
   static const URL_MV_TOP = '$URL_ROOT/top/mv';
+  static const URL_MV_PERSONAL = '$URL_ROOT/personalized/mv';
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
   static const URL_SEARCH = '$URL_ROOT/search?keywords=';
 
@@ -64,7 +65,18 @@ class MusicDao {
 
   static Future<List> getMVList(String url) async {
     var data = await HttpUtil.getJsonData(url);
-    List mvList = data['data'];
+    List mvList;
+    if (url == URL_MV_PERSONAL) {
+      mvList = (data['result'] as List).map((item)=>{
+        'id': item['id'],
+        'name': item['name'],
+        'cover': item['picUrl'],
+        'artistNames': item['artistName'],
+      }).toList();
+
+    } else {
+      mvList = data['data'];
+    }
     return mvList;
   }
 

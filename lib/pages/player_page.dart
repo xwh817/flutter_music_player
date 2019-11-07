@@ -169,7 +169,6 @@ class _PlayerPageState extends State<PlayerPage>
       print('Error: empty url!');
       return;
     }
-
     // 如果参数url为空，说明是继续播放当前url
     bool isContinue = path == null;
     if (!isContinue) {
@@ -241,6 +240,12 @@ class _PlayerPageState extends State<PlayerPage>
     }
   }
 
+  // 将要播放和正在播放，用于播放按钮的状态控制。
+  bool isGoingPlaying() {
+    return playerState == PlayerState.loading ||
+        playerState == PlayerState.playing;
+  }
+
   Widget _buildTitle() {
     return ListTile(
         contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -296,8 +301,7 @@ class _PlayerPageState extends State<PlayerPage>
             //将要执行动画的子view
             child: ClipOval(
                 child: GestureDetector(
-              onTap: () =>
-                  {playerState == PlayerState.playing ? pause() : play()},
+              onTap: () => {isGoingPlaying() ? pause() : play()},
               child: _getSongImage(BoxFit.cover),
             ))));
   }
@@ -336,14 +340,14 @@ class _PlayerPageState extends State<PlayerPage>
               onTap: () {
                 previous();
               },
-            ), 
+            ),
             SizedBox(width: 24.0),
             MyIconButton(
               icons: [Icons.pause, Icons.play_arrow],
-              iconIndex: playerState == PlayerState.playing ? 0 : 1,
+              iconIndex: isGoingPlaying() ? 0 : 1,
               size: 60.0,
               onTap: () {
-                playerState == PlayerState.playing ? pause() : play();
+                isGoingPlaying() ? pause() : play();
               },
             ),
             SizedBox(width: 24.0),
@@ -408,11 +412,12 @@ class _PlayerPageState extends State<PlayerPage>
               _buildControllerBar(),
             ],
           )),
-          playerState == PlayerState.loading 
-            ? CircularProgressIndicator(
-              strokeWidth: 2.0,
-            ): Container(),
-
+          playerState == PlayerState.loading
+              ? Center(
+                  child: CircularProgressIndicator(
+                  strokeWidth: 2.0,
+                ))
+              : Container(),
         ]);
       }),
     );

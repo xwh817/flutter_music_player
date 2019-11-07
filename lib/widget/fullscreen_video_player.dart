@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_music_player/widget/my_video_player.dart';
 import 'package:orientation/orientation.dart';
 import 'package:video_player/video_player.dart';
 
 class FullScreenVideoPlayer extends StatefulWidget {
   final VideoPlayerController controller;
-  FullScreenVideoPlayer(this.controller, {Key key}) : super(key: key);
+  final Map mv;
+  FullScreenVideoPlayer(this.controller, {Key key, this.mv}) : super(key: key);
 
   @override
   _FullScreenVideoPlayerState createState() => _FullScreenVideoPlayerState();
@@ -13,7 +15,7 @@ class FullScreenVideoPlayer extends StatefulWidget {
 
 class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   VideoPlayerController _controller;
-  //PlayerState _playerState = PlayerState.idle;
+  PlayerState _playerState = PlayerState.playing;
 
   @override
   void initState() {
@@ -90,14 +92,14 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     return WillPopScope(
         onWillPop: _beforePop,
         child: Material(
-            color: Color.fromARGB(255, 20, 20, 20),
+            color: Colors.black,
             child: Center(
                 child: AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: Stack(
                       children: <Widget>[
-                        VideoPlayer(_controller),
-                        //MyVideoPlayer(mv:widget.mv, controller:_controller, playerState: this._playerState,),
+                        //VideoPlayer(_controller),
+                        MyVideoPlayer(mv:widget.mv, controller:_controller, playerState: this._playerState),
                         //_buildResizeButton(),
                         //_buildProgressBar(),
                         //_bulidPlayButton(),

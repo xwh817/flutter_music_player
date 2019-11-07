@@ -2,10 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
-import 'package:provider/provider.dart';
 
 /// 歌单页
 /// 笔记：在state里面获取widget中定义的变量使用widget.playlist
@@ -102,9 +100,7 @@ class _PlayListPageState extends State<PlayListPage> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  return SongItemTile(this._songs[index], onItemTap: (){
-                    Provider.of<PlayList>(context).setPlayList(_songs, index);
-                  },);
+                  return SongItemTile(this._songs, index);
                 },
                 childCount: _songs.length,
               ),
