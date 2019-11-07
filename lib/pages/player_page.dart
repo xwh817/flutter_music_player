@@ -337,7 +337,7 @@ class _PlayerPageState extends State<PlayerPage>
             MyIconButton(
               icon: Icons.skip_previous,
               size: 40,
-              onTap: () {
+              onPressed: () {
                 previous();
               },
             ),
@@ -346,7 +346,7 @@ class _PlayerPageState extends State<PlayerPage>
               icons: [Icons.pause, Icons.play_arrow],
               iconIndex: isGoingPlaying() ? 0 : 1,
               size: 60.0,
-              onTap: () {
+              onPressed: () {
                 isGoingPlaying() ? pause() : play();
               },
             ),
@@ -354,7 +354,7 @@ class _PlayerPageState extends State<PlayerPage>
             MyIconButton(
               icon: Icons.skip_next,
               size: 40,
-              onTap: () {
+              onPressed: () {
                 next();
               },
             )

@@ -16,6 +16,7 @@ class FullScreenVideoPlayer extends StatefulWidget {
 class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   VideoPlayerController _controller;
   PlayerState _playerState = PlayerState.playing;
+  bool showButtons = true;
 
   @override
   void initState() {
@@ -67,23 +68,17 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     print('FullScreen dispose');
   }
 
-  bool isLandscape = false;
+  bool isFullScreen = false;
 
   Future<bool> _beforePop() {
-    if(!isLandscape) {
+    if (!isFullScreen) {
       return Future.value(true);
     }
 
-    isLandscape = false;
-    _switchScreen();
+    _switchScreen(false);
 
-    //OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp)
-    //.then((_)=>isLandscape = false);
-    //.then((_)=>Future.delayed(Duration(seconds: 1)))
-    //.then((_)=>Navigator.pop(context)); 
-    
     // 返回false，不关闭，走上面的异步操作。
-    return Future.value(false); 
+    return Future.value(false);
   }
 
   @override
@@ -93,42 +88,57 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
         onWillPop: _beforePop,
         child: Material(
             color: Colors.black,
-            child: Center(
-                child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: Stack(
-                      children: <Widget>[
-                        //VideoPlayer(_controller),
-                        MyVideoPlayer(mv:widget.mv, controller:_controller, playerState: this._playerState),
-                        //_buildResizeButton(),
-                        //_buildProgressBar(),
-                        //_bulidPlayButton(),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: IconButton(
-                            icon: Image.asset(
-                              isLandscape ? 'images/full_screen_exist.png' : 'images/full_screen.png',
-                              width: 20.0,
-                            ),
-                            onPressed: () {
-                              isLandscape = !isLandscape;
-                              _switchScreen();
-                            },
-                          ),
-                        )
-                      ],
-                    )))));
+            child: Stack(
+              children: <Widget>[
+                Center(
+                    child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: MyVideoPlayer(
+                          mv: widget.mv,
+                          controller: _controller,
+                          playerState: this._playerState,
+                          onResizePressed: (controller) {
+                            _switchScreen(!isFullScreen);
+                          },
+                          onShowButtons: (showButtons) {
+                            setState(() {
+                              this.showButtons = showButtons;
+                            });
+                          },
+                          isFullScreen: isFullScreen,
+                        ))),
+                this.showButtons
+                    ? SafeArea(
+                        child: IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        color: Colors.white,
+                        iconSize: 28.0,
+                        padding: EdgeInsets.all(12.0),
+                        onPressed: () {
+                          if (isFullScreen) {
+                            _switchScreen(false);
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                      ))
+                    : Container()
+              ],
+            )));
   }
 
-  Future<void> _switchScreen() async {
-    return OrientationPlugin.forceOrientation(
-      isLandscape ? 
-      DeviceOrientation.landscapeRight
-      : DeviceOrientation.portraitUp).then((_){
-        // 全屏时隐藏默认的状态栏，返回时恢复
-        SystemChrome.setEnabledSystemUIOverlays(isLandscape ? [] : SystemUiOverlay.values);
+  Future<void> _switchScreen(bool fullScreen) async {
+    print('_switchScreen: $fullScreen');
+    this.isFullScreen = fullScreen;
+    return OrientationPlugin.forceOrientation(isFullScreen
+            ? DeviceOrientation.landscapeRight
+            : DeviceOrientation.portraitUp)
+        .then((_) {
+      // 全屏时隐藏默认的状态栏，返回时恢复
+      SystemChrome.setEnabledSystemUIOverlays(
+          this.isFullScreen ? [] : SystemUiOverlay.values);
 
-        setState(() {});
-      });
-    }
+      setState(() {});
+    });
+  }
 }

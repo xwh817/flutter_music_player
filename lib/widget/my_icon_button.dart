@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// 点击会有动画的按钮，并支持图片切换。
 class MyIconButton extends StatefulWidget {
-  final Function onTap;
+  final Function onPressed;
   final List<IconData> icons;
   final IconData icon;
   final int iconIndex;
@@ -17,7 +17,7 @@ class MyIconButton extends StatefulWidget {
       this.icons,
       this.iconIndex: 0,
       this.size: 24,
-      this.onTap,
+      this.onPressed,
       this.color: Colors.white});
 
   @override
@@ -54,7 +54,7 @@ class _MyIconButtonState extends State<MyIconButton>
             iconIndex = nextIndex;
           });
 
-          print('Anim completed, iconIndex: $iconIndex ');
+          //print('Anim completed, iconIndex: $iconIndex ');
         }
         //动画执行结束时反向执行动画
         _controller.reverse();
@@ -89,7 +89,7 @@ class _MyIconButtonState extends State<MyIconButton>
     return InkWell(
         onTap: () {
           startAnim();
-          widget.onTap();
+          widget.onPressed();
         },
         child: Transform.scale(
             scale: 1.0 - _controller.value * 0.2,

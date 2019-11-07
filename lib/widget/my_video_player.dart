@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/widget/fullscreen_video_player.dart';
+import 'package:flutter_music_player/widget/my_icon_button.dart';
 import 'package:video_player/video_player.dart';
 
 import 'music_progress_bar_2.dart';
@@ -11,13 +13,16 @@ class MyVideoPlayer extends StatefulWidget {
   final PlayerState playerState;
   final Map mv;
   final Function onResizePressed;
+  final Function onShowButtons;
+  final bool isFullScreen;
   MyVideoPlayer(
       {Key key,
       this.mv,
       this.controller,
       this.playerState: PlayerState.idle,
-      this.onResizePressed})
-      : super(key: key);
+      this.onResizePressed,
+      this.onShowButtons,
+      this.isFullScreen: false});
 
   @override
   _MyVideoPlayerState createState() => _MyVideoPlayerState();
@@ -97,7 +102,6 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
   void dispose() {
     super.dispose();
     if (_controller != null) {
-
       // 去掉当前页面的进度监听
       _controller.removeListener(videoListener);
 
@@ -131,26 +135,27 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         _playerState == PlayerState.paused)) {
       children.add(InkWell(
         onTap: () {
-          if (_playerState == PlayerState.playing) {
-            _pause();
-          }
+          _showButtonsAndAutoHide(autoHideTime);
         },
         child: VideoPlayer(_controller),
       ));
 
-      // 全屏按钮
-      children.add(_buildResizeButton());
+      if (isShowButton) {
+        // 全屏按钮
+        children.add(_buildResizeButton());
 
-      // 进度条
-      children.add(_buildProgressBar());
+        // 进度条
+        children.add(_buildProgressBar());
+
+        if (widget.isFullScreen) {
+          
+        }
+      }
     }
 
     if (_playerState == PlayerState.loading) {
       children.add(Center(child: CircularProgressIndicator()));
-    }
-
-    if (_playerState == PlayerState.idle ||
-        _playerState == PlayerState.paused) {
+    } else if (isShowButton) {
       // 播放按钮
       children.add(_bulidPlayButton());
     }
@@ -158,37 +163,92 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     return children;
   }
 
+  final int autoHideTime = 3000;
+  Timer showButtonTimer;
+  bool isShowButton = true;
+  int startTime = 0;
+  int nextEventAfter = 0; // 如果后面点击了，就延长显示时间
+  _showButtonsAndAutoHide(int milliseconds) {
+    int now = DateTime.now().millisecondsSinceEpoch;
+      // 发现前面的还没结束
+    if (startTime > 0) {
+      nextEventAfter = now - startTime;
+      //print('Timer is waiting, $nextEventAfter');
+      return;
+    } else {
+      nextEventAfter = 0;
+    }
+
+    if (!isShowButton) {
+      if (widget.onShowButtons != null) {
+        widget.onShowButtons(true);
+      }
+      setState(() {
+        isShowButton = true;
+      });
+    }
+
+    //showButtonTimer?.cancel(); // 如果上一个还没结束，就取消掉。
+    //print('start Timer');
+    startTime = now;
+    showButtonTimer = Timer(Duration(milliseconds: milliseconds), () {
+      if (!mounted) {
+        return;
+      }
+      startTime = 0;
+      //print('Timer out, nextEventAfter: $nextEventAfter');
+
+      // 如果在等待的中途再次点击了，就延长时间。
+      if (nextEventAfter > 500) {
+        // 太短就没必要延长了
+        _showButtonsAndAutoHide(nextEventAfter);
+      } else {
+        if (widget.onShowButtons != null) {
+          widget.onShowButtons(false);
+        }
+        setState(() {
+          isShowButton = false;
+        });
+      }
+    });
+  }
+
   Widget _buildResizeButton() {
     return Align(
         alignment: Alignment.topRight,
         child: IconButton(
           icon: Image.asset(
-            'images/full_screen.png',
+            widget.isFullScreen
+                ? 'images/full_screen_exist.png'
+                : 'images/full_screen.png',
             width: 20.0,
           ),
-          //icon: Icon(Icons.fullscreen),
           color: Colors.white,
           padding: EdgeInsets.all(8.0),
           onPressed: () {
             widget.onResizePressed(_controller);
-            //pushFullScreenWidget(context);
           },
         ));
   }
 
   Widget _bulidPlayButton() {
     return Center(
-      child: IconButton(
-        icon: Icon(Icons.play_arrow),
-        iconSize: 66,
+      child: MyIconButton(
+        icons: [Icons.pause, Icons.play_arrow],
+        iconIndex: _playerState == PlayerState.playing ? 0 : 1,
+        size: 66.0,
         color: Colors.white60,
         onPressed: () {
-          if (_controller == null) {
-            _getMVDetail();
+          if (_playerState == PlayerState.playing) {
+            _pause();
           } else {
-            _play();
+            if (_controller == null) {
+              _getMVDetail();
+            } else {
+              _play();
+            }
           }
-          //Navigator.of(context).push(MaterialPageRoute(builder: (context) => MVPlayer(mv)));
+          _showButtonsAndAutoHide(autoHideTime);
         },
       ),
     );
@@ -199,7 +259,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         alignment: Alignment.bottomCenter,
         child: Container(
           height: 36.0,
-          padding: EdgeInsets.all(8.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: MyProgressBar(
               duration: _controller.value.duration.inMilliseconds,
               position: position,
@@ -207,6 +267,8 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                 setState(() {
                   position = value.toInt();
                 });
+                // 拖动过程中不要隐藏按钮
+                _showButtonsAndAutoHide(autoHideTime);
               },
               onChangeStart: (double value) {
                 isTaping = true;
@@ -216,58 +278,5 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                 _controller.seekTo(Duration(milliseconds: value.toInt()));
               }),
         ));
-  }
-
-  // 全屏
-  Widget _buildFullScreenVideo() {
-    //OrientationPlugin.forceOrientation(DeviceOrientation.landscapeLeft);
-    return Material(
-        child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: Stack(
-              children: <Widget>[
-                //FullScreenVideoPlayer(_controller),
-                VideoPlayer(_controller),
-                //MyVideoPlayer(mv:widget.mv, controller:_controller, playerState: this._playerState,),
-                //_buildResizeButton(),
-                //_buildProgressBar(),
-                //_bulidPlayButton(),
-              ],
-            )));
-  }
-
-  void pushFullScreenWidget(context) {
-    //SystemChrome.setPreferredOrientations(
-    // [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-
-    final TransitionRoute<void> route = PageRouteBuilder<void>(
-      settings: RouteSettings(name: "Test", isInitialRoute: false),
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          FullScreenVideoPlayer(_controller, mv: widget.mv),
-      /* transitionsBuilder: (
-          BuildContext context,
-          Animation<double> animation1,
-          Animation<double> animation2,
-          Widget child
-        ){
-          return SlideTransition(
-            position: Tween<Offset>(
-              begin: Offset(-1.0, 0.0),
-              end: Offset(0.0, 0.0)
-            )
-            .animate(CurvedAnimation(parent: animation1, curve: Curves.fastOutSlowIn)),
-            child: child,
-          );
-        } */
-    );
-
-    route.completed.then((void value) {
-      //controller.setVolume(0.0);
-      //SystemChrome.setPreferredOrientations(
-      //    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    });
-
-    //controller.setVolume(1.0);
-    Navigator.of(context).push(route);
   }
 }

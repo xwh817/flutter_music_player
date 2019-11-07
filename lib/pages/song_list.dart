@@ -41,7 +41,7 @@ class _SongListState extends State<SongList> {
       mWidget = ListView.builder(
         itemCount: this._songs.length,
         itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-        itemBuilder: (context, index) => SongItemTile(this._songs[index]),
+        itemBuilder: (context, index) => SongItemTile(_songs, index),
       );
     }
     return mWidget;

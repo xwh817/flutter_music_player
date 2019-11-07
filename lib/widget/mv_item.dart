@@ -44,7 +44,7 @@ class _MVItemState extends State<MVItem> {
                   child: MyVideoPlayer(
                     mv: widget.mv,
                     onResizePressed: (controller){
-                      NavigatorUtil.push(context, FullScreenVideoPlayer(controller, mv: widget.mv));
+                      NavigatorUtil.pushFade(context, FullScreenVideoPlayer(controller, mv: widget.mv));
                     }
                   ),
                 ),

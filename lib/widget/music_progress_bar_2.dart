@@ -8,7 +8,7 @@ class MyProgressBar extends StatefulWidget {
   final int duration;
   final int position;
 
-  MyProgressBar({Key key, this.duration, this.position, this.onChanged, this.onChangeStart, this.onChangeEnd}): super(key: key);
+  MyProgressBar({Key key, this.duration:1, this.position:0, this.onChanged, this.onChangeStart, this.onChangeEnd}): super(key: key);
 
   _MyProgressBarState createState() => _MyProgressBarState();
 
@@ -25,7 +25,10 @@ class _MyProgressBarState extends State<MyProgressBar> {
   @override
   Widget build(BuildContext context) {
     double position = widget.position == null ? 0.0 : widget.position.toDouble();
-    double duration = widget.duration == null ? 0.0 : widget.duration.toDouble();
+    double duration = widget.duration == null ? 1.0 : widget.duration.toDouble();
+    if (position > duration) {
+      position = duration;
+    }
 
 
     final ThemeData theme = Theme.of(context);
