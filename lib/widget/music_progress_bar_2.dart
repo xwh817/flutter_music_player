@@ -24,18 +24,19 @@ class _MyProgressBarState extends State<MyProgressBar> {
   
   @override
   Widget build(BuildContext context) {
-    double position = widget.position == null ? 0.0 : widget.position.toDouble();
-    double duration = widget.duration == null ? 1.0 : widget.duration.toDouble();
+    // Slider注意范围越界的问题，而且duration不能为0.0
+    // 歌曲切换的时候duration可能返回0，这儿要进行判断。
+    double position = widget.position.toDouble();
+    double duration = widget.duration == 0 ? 1.0 : widget.duration.toDouble();
     if (position > duration) {
       position = duration;
     }
-
 
     final ThemeData theme = Theme.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text(_getFormatTime(widget.position),
+        Text(_getFormatTime(position.toInt()),
             style: TextStyle(color: Colors.white, fontSize: 12)),
         Expanded(
           child: SliderTheme(
@@ -44,7 +45,6 @@ class _MyProgressBarState extends State<MyProgressBar> {
               overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
             ),
             child: Slider.adaptive(
-              // 歌曲切换的时候duration可能返回0，这儿要进行判断。
               value: position,
               min: 0.0,
               max: duration,
@@ -61,7 +61,7 @@ class _MyProgressBarState extends State<MyProgressBar> {
           )
         ),
         Text(
-          _getFormatTime(widget.duration),
+          _getFormatTime(duration.toInt()),
           style: TextStyle(color: Colors.white, fontSize: 12),
         ),
       ],
