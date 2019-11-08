@@ -26,7 +26,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     MusicDB().getFavoriteById(song['id']).then((fav) {
       print('getFavoriteById : $fav');
       setState(() {
-       isFavorited = fav != null; 
+        isFavorited = fav != null;
       });
     });
   }
@@ -39,90 +39,96 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     }
     //print('FavoriteIcon build');
     return IconButton(
-        icon: Icon(
-          Icons.favorite,
-          color: isFavorited ? Colors.pink : Colors.white60,
-        ),
-        onPressed: () {                 
-          if (this.isFavorited) {
-            _cancelFavorite(context);
-          } else {
-            _favorite(context);
-          }
-        },
+      icon: Icon(
+        Icons.favorite,
+        color: isFavorited ? Colors.pink : Colors.white60,
+      ),
+      onPressed: () {
+        if (this.isFavorited) {
+          _cancelFavorite(context);
+        } else {
+          _favorite(context);
+        }
+      },
     );
   }
 
+  _showSnackBar({IconData icon, String title, String subTitle}) {
+    SnackBar snackBar = SnackBar(
+        content: ListTile(
+          leading: Icon(icon),
+          title: Text(title, style: TextStyle(fontSize: 16.0)),
+          subtitle:
+              Text(subTitle, style: TextStyle(fontSize: 14.0, height: 2.0)),
+        ),
+        duration: Duration(seconds: 3));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
 
-  void _favorite(context){
+  void _favorite(context) {
     bool success = false;
-    MusicDB().addFavorite(widget.song).then((re){
-        print('addFavorite re: $re , song: ${widget.song}');
-      }).then((_){
-        return FileUtil.getSongLocalPath(widget.song);
-      }).then((savePath){
-        String url = SongUtil.getSongUrl(widget.song);
-        HttpUtil.download(url, savePath);
-        print('download: $url');
-        setState(() {
-          isFavorited = true;
-        });
-        success = true;
-      }).catchError((error){
-        print('addFavorite error: $error');
-        success = false;
-      }).whenComplete((){
-        
-        SnackBar snackBar = SnackBar(content: ListTile(
-          title: Text(success ? '已添加收藏' : '添加收藏失败'),
-          subtitle: Text(success ? '正在下载歌曲...' : ''),
-        ), duration: Duration(seconds: 2));
-        Scaffold.of(context).showSnackBar(snackBar);
+    MusicDB().addFavorite(widget.song).then((re) {
+      print('addFavorite re: $re , song: ${widget.song}');
+    }).then((_) {
+      return FileUtil.getSongLocalPath(widget.song);
+    }).then((savePath) {
+      String url = SongUtil.getSongUrl(widget.song);
+      HttpUtil.download(url, savePath);
+      print('download: $url');
+      setState(() {
+        isFavorited = true;
       });
+      success = true;
+    }).catchError((error) {
+      print('addFavorite error: $error');
+      success = false;
+    }).whenComplete(() {
+      _showSnackBar(
+          icon: Icons.file_download,
+          title: success ? '已添加收藏' : '添加收藏失败',
+          subTitle: success ? '正在下载歌曲...' : '');
+    });
   }
 
-  void _cancelFavorite(context){
+  void _cancelFavorite(context) {
     bool success = false;
-    showDialog(context: context, barrierDismissible: true, 
-    builder: (_)=>AlertDialog(
-      title: Text('取消收藏？'),
-      content: Text(('已下载歌曲会被删掉')),
-      actions: <Widget>[
-        new FlatButton(
-          child: new Text("继续收藏"),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        new FlatButton(
-          child: new Text("确定删除"),
-          onPressed: () {    
-            MusicDB().deleteFavorite(widget.song['id'])
-            .then((re){
-              return FileUtil.deleteLocalSong(widget.song);
-            }).then((re){
-              success = true;
-              Navigator.of(context).pop();
-              setState(() {
-                isFavorited = false;
-              });
-            }).catchError((error){
-              success = false;
-              print('deleteFavorite error: $error');
-              throw Exception('取消收藏失败');
-            }).whenComplete((){
-              SnackBar snackBar = SnackBar(content: ListTile(
-                title: Text(success ? '已取消收藏' : '取消收藏失败'),
-                subtitle: Text(success ? '正在取消...' : ''),
-              ), duration: Duration(seconds: 1));
-              Scaffold.of(context).showSnackBar(snackBar);
-          });
-          },
-        ),
-      ],
-    ));
-
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => AlertDialog(
+              title: Text('取消收藏？', style: TextStyle(fontSize: 16.0)),
+              content: Text('已下载歌曲会被删掉', style: TextStyle(fontSize: 14.0)),
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text("继续收藏"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                new FlatButton(
+                  child: new Text("确定删除"),
+                  onPressed: () {
+                    MusicDB().deleteFavorite(widget.song['id']).then((re) {
+                      return FileUtil.deleteLocalSong(widget.song);
+                    }).then((re) {
+                      success = true;
+                      Navigator.of(context).pop();
+                      setState(() {
+                        isFavorited = false;
+                      });
+                    }).catchError((error) {
+                      success = false;
+                      print('deleteFavorite error: $error');
+                      throw Exception('取消收藏失败');
+                    }).whenComplete(() {
+                      _showSnackBar(
+                          icon: Icons.delete_sweep,
+                          title: success ? '已取消收藏' : '取消收藏失败',
+                          subTitle: success ? '正在取消...' : '');
+                    });
+                  },
+                ),
+              ],
+            ));
   }
-
-
 }

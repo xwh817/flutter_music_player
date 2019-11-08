@@ -17,7 +17,7 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
 
   _getPlaylists() async {
     await MusicDao.getPlayList(widget.type).then((result) {
-      // 界面未加载，返回。
+      // 界面未加载或者已关闭，返回。
       if (!mounted) return;
 
       print("getPlayList result");

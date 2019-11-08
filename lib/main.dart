@@ -3,6 +3,7 @@ import 'package:flutter_music_player/utils/colors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'model/play_list.dart';
+import 'model/video_controller.dart';
 import 'pages/home_page.dart';
 
 void main() => runApp(_buildProvider());
@@ -13,6 +14,7 @@ _buildProvider() {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<PlayList>.value(value: PlayList()),
+      ChangeNotifierProvider<VideoControllerProvider>.value(value: VideoControllerProvider()),
     ],
     child: MyApp(),
   );

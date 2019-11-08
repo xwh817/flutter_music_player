@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/model/video_controller.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import 'music_progress_bar_2.dart';
@@ -74,15 +76,15 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     // 获取到视频地址之后开始播放
     MusicDao.getMVDetail(widget.mv['id']).then((url) {
       _controller = VideoPlayerController.network(url)
-        ..initialize().then((_) {
-          _play();
-        });
+        ..initialize().then((_) => _play());
 
       _initControllerListener();
     });
   }
 
   void _play() {
+    // 开始播放的时候，切换全局controller，停掉上一个视频。
+    Provider.of<VideoControllerProvider>(context).setController(_controller);
     _controller.play().then((_) {
       setState(() {
         _playerState = PlayerState.playing;
@@ -111,6 +113,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
           _controller.pause();
         }
         _controller.dispose();
+        Provider.of<VideoControllerProvider>(context).clearController(_controller);
         _controller = null;
       }
     }
@@ -118,6 +121,12 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    // 全局controller发生了变化，停掉当前的。
+    if (_controller != null &&
+        Provider.of<VideoControllerProvider>(context).getController() !=
+            _controller) {
+      _pause();
+    }
     return Stack(
       children: _getWidgetsByState(),
     );
@@ -135,7 +144,11 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         _playerState == PlayerState.paused)) {
       children.add(InkWell(
         onTap: () {
-          _showButtonsAndAutoHide(autoHideTime);
+          if (isShowButton) {
+            _showButtons(false);
+          } else {
+            _showButtonsAndAutoHide(autoHideTime, clearTimer: true);
+          }
         },
         child: VideoPlayer(_controller),
       ));
@@ -147,9 +160,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         // 进度条
         children.add(_buildProgressBar());
 
-        if (widget.isFullScreen) {
-          
-        }
+        if (widget.isFullScreen) {}
       }
     }
 
@@ -168,9 +179,13 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
   bool isShowButton = true;
   int startTime = 0;
   int nextEventAfter = 0; // 如果后面点击了，就延长显示时间
-  _showButtonsAndAutoHide(int milliseconds) {
+  _showButtonsAndAutoHide(int milliseconds, {clearTimer: false}) {
+    if (clearTimer) {
+      startTime = 0;
+      showButtonTimer?.cancel();
+    }
     int now = DateTime.now().millisecondsSinceEpoch;
-      // 发现前面的还没结束
+    // 发现前面的还没结束
     if (startTime > 0) {
       nextEventAfter = now - startTime;
       //print('Timer is waiting, $nextEventAfter');
@@ -180,12 +195,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     }
 
     if (!isShowButton) {
-      if (widget.onShowButtons != null) {
-        widget.onShowButtons(true);
-      }
-      setState(() {
-        isShowButton = true;
-      });
+      _showButtons(true);
     }
 
     //showButtonTimer?.cancel(); // 如果上一个还没结束，就取消掉。
@@ -203,13 +213,17 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
         // 太短就没必要延长了
         _showButtonsAndAutoHide(nextEventAfter);
       } else {
-        if (widget.onShowButtons != null) {
-          widget.onShowButtons(false);
-        }
-        setState(() {
-          isShowButton = false;
-        });
+        _showButtons(false);
       }
+    });
+  }
+
+  _showButtons(bool show) {
+    if (widget.onShowButtons != null) {
+      widget.onShowButtons(show);
+    }
+    setState(() {
+      isShowButton = show;
     });
   }
 
@@ -255,13 +269,22 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
   }
 
   Widget _buildProgressBar() {
+    int duration = 0;
+    try {
+      duration = _controller.value.duration.inMilliseconds;
+      if (position > duration) {
+        position = 0;
+      }
+    } catch (e) {
+      print(e);
+    }
     return Align(
         alignment: Alignment.bottomCenter,
         child: Container(
           height: 36.0,
           padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: MyProgressBar(
-              duration: _controller.value.duration.inMilliseconds,
+              duration: duration,
               position: position,
               onChanged: (double value) {
                 setState(() {

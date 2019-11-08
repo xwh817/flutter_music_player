@@ -22,14 +22,13 @@ class _PlayListPageState extends State<PlayListPage> {
       GlobalKey<ScaffoldState>();
 
   double _appBarHeight = 256.0;
-  AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
   List _songs = List();
   bool _imageLoaded = true;
 
   @override
   void initState() {
     // appBar和图片宽高比相同
-     _appBarHeight = ScreenUtil.screenWidth * 4 / 6;
+    _appBarHeight = ScreenUtil.screenWidth * 4 / 6;
     _getPlayListSongs();
     super.initState();
   }
@@ -41,9 +40,11 @@ class _PlayListPageState extends State<PlayListPage> {
 
   _getPlayListSongs() async {
     MusicDao.getPlayListDetail(widget.playlist['id'] as int).then((list) {
-      setState(() {
-        _songs = list;
-      });
+      if (mounted) {
+        setState(() {
+          _songs = list;
+        });
+      }
     });
   }
 
@@ -61,10 +62,9 @@ class _PlayListPageState extends State<PlayListPage> {
           slivers: <Widget>[
             SliverAppBar(
               expandedHeight: _appBarHeight,
-              pinned: _appBarBehavior == AppBarBehavior.pinned,
-              floating: _appBarBehavior == AppBarBehavior.floating ||
-                  _appBarBehavior == AppBarBehavior.snapping,
-              snap: _appBarBehavior == AppBarBehavior.snapping,
+              pinned: true,
+              floating: false,
+              snap: false,
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
                   "${widget.playlist['name']}",
@@ -73,15 +73,22 @@ class _PlayListPageState extends State<PlayListPage> {
                   style: TextStyle(fontSize: 16.0),
                 ),
                 centerTitle: false,
-                titlePadding: EdgeInsetsDirectional.only(start: 42, bottom: 16),
+                titlePadding:
+                    EdgeInsetsDirectional.only(start: 46.0, bottom: 16.0),
                 background: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
                     Hero(
-                      tag: "playListImage_${widget.playlist['id']}",
-                      child:CachedNetworkImage(imageUrl: "${widget.playlist['coverImgUrl']}?param=600y400", fit: BoxFit.cover,
-                      height: _appBarHeight)
-                    ),
+                        tag: "playListImage_${widget.playlist['id']}",
+                        child: CachedNetworkImage(
+                            imageUrl:
+                                "${widget.playlist['coverImgUrl']}?param=600y400",
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Image.asset(
+                                  'images/placeholder_play_list.jpg',
+                                  fit: BoxFit.cover,
+                                ),
+                            height: _appBarHeight)),
                     // This gradient ensures that the toolbar icons are distinct
                     // against the background image.
                     const DecoratedBox(
@@ -110,5 +117,4 @@ class _PlayListPageState extends State<PlayListPage> {
       ),
     );
   }
-
 }

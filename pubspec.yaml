@@ -55,8 +55,8 @@ flutter:
   assets:
   - images/full_screen.png
   - images/full_screen_exist.png
-  - images/music_1.jpg
   - images/music_2.jpg
+  - images/placeholder_play_list.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

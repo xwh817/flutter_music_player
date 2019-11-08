@@ -12,6 +12,7 @@ import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/widget/blur_widget.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
@@ -299,15 +300,22 @@ class _PlayerPageState extends State<PlayerPage>
 
   Widget _buildCDCover() {
     return Container(
-        width: 66.0,
-        height: 66.0,
+        width: 50.0,
+        height: 50.0,
         child: Container(
-            child:
-                ClipOval(child: Container(color: Colors.black.withAlpha(234))),
-            margin: EdgeInsets.all(16.0)),
+          width: 20.0,
+          height: 20.0,
+          margin: EdgeInsets.all(14.0),
+          child:BlurOvalWidget(
+              //padding: 8.0,
+              sigma: 1.0,
+              color:Colors.grey.shade700,
+              child: SizedBox(width: 20, height: 20,)),
+        ),
         decoration: BoxDecoration(
+            color: Colors.white24,
             border: Border.all(
-              width: 2.0,
+              width: 0.5,
               color: Colors.black45,
             ),
             shape: BoxShape.circle));
@@ -341,6 +349,7 @@ class _PlayerPageState extends State<PlayerPage>
                   onTap: () => {isGoingPlaying() ? pause() : play()},
                   child: ClipOval(child: _getSongImage(BoxFit.cover))),
             ),
+            _buildCDCover(),
             _buildProgressIndicator(),
           ],
         ));
