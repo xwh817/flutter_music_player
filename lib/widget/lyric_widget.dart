@@ -31,6 +31,7 @@ class _LyricPageState extends State<LyricPage> {
   Lyric lyric;
   ScrollController _controller;
   int _currentIndex = -1;
+  bool success = true;
 
   @override
   void initState() {
@@ -45,12 +46,23 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   void _getLyric() {
+    if (song == null) {
+      setState(() {
+        lyric = null;
+      });
+    }
     MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {
+          success = true;
           lyric = result;
         });
       }
+    }).catchError((e) {
+      print(e);
+      setState(() {
+        success = false;
+      });
     });
   }
 
@@ -60,21 +72,22 @@ class _LyricPageState extends State<LyricPage> {
     _controller.dispose();
   }
 
+  Widget _buildInfo(String msg) {
+    return Center(
+        child: Text(msg,
+            style: TextStyle(color: Colors.white30, fontSize: 13.0)));
+  }
+
   @override
   Widget build(BuildContext context) {
     //print('LyricPage build $_currentIndex');
 
-    if (lyric == null) {
-      return Text('歌词加载中...',
-          style: TextStyle(color: Colors.white30, fontSize: 13.0));
-    }
-    if (lyric.items.length == 0) {
-      return Text('...纯音乐，无歌词...',
-          style: TextStyle(
-            color: Colors.white30,
-            fontSize: 13.0,
-            height: 3,
-          ));
+    if (!success) {
+      return _buildInfo('歌词加载失败');
+    } else if (lyric == null) {
+      return _buildInfo('歌词加载中...');
+    } else if (lyric.items.length == 0) {
+      return  _buildInfo('...纯音乐，无歌词...');
     }
 
     return Container(
@@ -122,7 +135,7 @@ class _LyricPageState extends State<LyricPage> {
     // 选取比较的范围，不用每次都从头遍历。
     int start;
     int end;
-    if (_currentIndex <= 1) {
+    if (_currentIndex <= 1 || _currentIndex >= lyric.items.length) {
       start = 0;
       end = lyric.items.length;
     } else if (milliseconds >= lyric.items[_currentIndex - 1].position) {
@@ -205,7 +218,7 @@ class _LyricPageState extends State<LyricPage> {
 
   void updateSong(Map song) {
     setState(() {
-     this.song = song; 
+      this.song = song;
     });
     _getLyric();
   }

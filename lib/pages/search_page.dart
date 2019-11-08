@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,7 +55,7 @@ class _SearchPageState extends State<SearchPage> {
           msg: "请输入歌名或歌手名",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.toastBackground,
           textColor: Colors.white,
           fontSize: 14.0);
       return;

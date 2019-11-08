@@ -5,10 +5,12 @@ import 'dart:ui';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
 import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
@@ -138,7 +140,7 @@ class _PlayerPageState extends State<PlayerPage>
               msg: "歌曲播放失败！",
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.toastBackground,
               textColor: Colors.white,
               fontSize: 14.0);
         }
@@ -276,34 +278,72 @@ class _PlayerPageState extends State<PlayerPage>
 
   Widget _getSongImage(BoxFit fit) {
     return songImage.isEmpty
-        ? Image.asset(
-            'images/music_2.jpg',
-            width: imageSize.toDouble(),
-            height: imageSize.toDouble(),
-            fit: fit,
-          )
+        ? _getPlaceHolder(fit)
         : CachedNetworkImage(
             width: imageSize.toDouble(),
             height: imageSize.toDouble(),
             imageUrl: songImage,
             fit: fit,
+            placeholder: (context, url) => _getPlaceHolder(fit),
           );
+  }
+
+  Widget _getPlaceHolder(BoxFit fit) {
+    return Image.asset(
+      'images/music_2.jpg',
+      width: imageSize.toDouble(),
+      height: imageSize.toDouble(),
+      fit: fit,
+    );
+  }
+
+  Widget _buildCDCover() {
+    return Container(
+        width: 66.0,
+        height: 66.0,
+        child: Container(
+            child:
+                ClipOval(child: Container(color: Colors.black.withAlpha(234))),
+            margin: EdgeInsets.all(16.0)),
+        decoration: BoxDecoration(
+            border: Border.all(
+              width: 2.0,
+              color: Colors.black45,
+            ),
+            shape: BoxShape.circle));
+  }
+
+  Widget _buildProgressIndicator() {
+    return playerState == PlayerState.loading
+        ? SizedBox(
+            width: imageSize.toDouble(),
+            height: imageSize.toDouble(),
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(Colors.lightGreenAccent),
+              strokeWidth: 2.0,
+            ))
+        : SizedBox(width: 0.0);
   }
 
   Widget _buildMusicCover() {
     return Container(
         margin: EdgeInsets.only(top: 10.0, bottom: 20.0),
-        child: RotationTransition(
-            //设置动画的旋转中心
-            alignment: Alignment.center,
-            //动画控制器
-            turns: _animController,
-            //将要执行动画的子view
-            child: ClipOval(
-                child: GestureDetector(
-              onTap: () => {isGoingPlaying() ? pause() : play()},
-              child: _getSongImage(BoxFit.cover),
-            ))));
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: <Widget>[
+            RotationTransition(
+              //设置动画的旋转中心
+              alignment: Alignment.center,
+              //动画控制器
+              turns: _animController,
+              //将要执行动画的子view
+              child: InkWell(
+                  onTap: () => {isGoingPlaying() ? pause() : play()},
+                  child: ClipOval(child: _getSongImage(BoxFit.cover))),
+            ),
+            _buildProgressIndicator(),
+          ],
+        ));
   }
 
   // 进度条
@@ -412,12 +452,12 @@ class _PlayerPageState extends State<PlayerPage>
               _buildControllerBar(),
             ],
           )),
-          playerState == PlayerState.loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  strokeWidth: 2.0,
-                ))
-              : Container(),
+          /* playerState == PlayerState.loading
+              ? Align(
+                  alignment: Alignment.bottomCenter,
+                  child:
+                      SizedBox(height: 2.0, child: LinearProgressIndicator()))
+              : Container(), */
         ]);
       }),
     );
