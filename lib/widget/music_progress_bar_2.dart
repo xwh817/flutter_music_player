@@ -32,7 +32,7 @@ class _MyProgressBarState extends State<MyProgressBar> {
     if (position > duration) {
       position = 0;
     }
-    print('duration: $duration, position: $position');
+    //print('duration: $duration, position: $position');
 
     final ThemeData theme = Theme.of(context);
     return Row(

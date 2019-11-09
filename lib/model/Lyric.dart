@@ -38,6 +38,10 @@ class Lyric {
         if(position>=0) {
           this.items.add(new LyricItem(index, position, content));
           index++;
+        } else {
+          /* position = this.items.length > 0 ? this.items.last.position : 0;
+          this.items.add(new LyricItem(index, position, str));
+          index++; */
         }
       }
     });
@@ -60,7 +64,7 @@ class Lyric {
       }
     } catch (e) {
       position = -1;
-      print(e);
+      //print(str + e.toString());
     }
 
     return position;

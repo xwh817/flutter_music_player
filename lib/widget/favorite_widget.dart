@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
 
@@ -24,7 +25,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
 
   void _checkFavorite() {
     MusicDB().getFavoriteById(song['id']).then((fav) {
-      print('getFavoriteById : $fav');
+      //print('getFavoriteById : $fav');
       setState(() {
         isFavorited = fav != null;
       });
@@ -41,7 +42,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     return IconButton(
       icon: Icon(
         Icons.favorite,
-        color: isFavorited ? Colors.pink : Colors.white60,
+        color: isFavorited ? AppColors.mainColor : Colors.white60,
       ),
       onPressed: () {
         if (this.isFavorited) {

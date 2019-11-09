@@ -15,7 +15,6 @@ class PlayList with ChangeNotifier{
     if (index <0 || index >= songList.length) {
       return null;
     }
-
     return songList[index];
   }
 

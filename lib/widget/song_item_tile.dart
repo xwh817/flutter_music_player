@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/model/play_list.dart';
+import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
@@ -40,9 +40,7 @@ class SongItemTile extends StatelessWidget {
         if (onItemTap != null) {
           this.onItemTap();
         }
-
-        Provider.of<PlayList>(context).setPlayList(songList, index);
-        NavigatorUtil.push(context, PlayerPage());
+        PlayerPage.gotoPlayer(context, songList, index);
       },
     );
   }

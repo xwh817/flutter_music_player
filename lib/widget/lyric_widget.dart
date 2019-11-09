@@ -19,7 +19,17 @@ class LyricPage extends StatefulWidget {
     _state?.updatePosition(position, isTaping: isTaping);
   }
 
+  int retryCount = 0;
   void updateSong(Map song) {
+    if (_state == null) {
+      print('_LyricPageState is null, retryCount: $retryCount');
+      Future.delayed(Duration(milliseconds: 200)).then((_){
+        retryCount++;
+        if (retryCount < 5) {
+          updateSong(song);
+        }
+      });
+    }
     _state?.updateSong(song);
   }
 }
@@ -46,11 +56,6 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   void _getLyric() {
-    if (song == null) {
-      setState(() {
-        lyric = null;
-      });
-    }
     MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {
@@ -217,9 +222,9 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   void updateSong(Map song) {
-    setState(() {
+    if (song != this.song) {
       this.song = song;
-    });
-    _getLyric();
+      _getLyric();
+    }
   }
 }

@@ -1,12 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
+
+import 'package:audioplayer/audioplayer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
-import 'package:flutter_music_player/model/music_controller.dart';
+import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/colors.dart';
-import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
@@ -16,35 +19,30 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class PlayerPage extends StatefulWidget {
-  //PlayerPage({Key key}) : super(key: key);
-  // 将默认构造函数私有化
-  PlayerPage._();
-
-  // 外部跳转统一经过这儿
-  static void gotoPlayer(BuildContext context, List list, int index) {
-    Provider.of<MusicController>(context).setPlayList(list, index);
-    NavigatorUtil.push(context, PlayerPage._());
-  }
+  PlayerPage({Key key}) : super(key: key);
 
   _PlayerPageState createState() => _PlayerPageState();
 }
 
+enum PlayerState { loading, stopped, playing, paused }
+
 class _PlayerPageState extends State<PlayerPage>
     with SingleTickerProviderStateMixin {
   AnimationController _animController;
-  PlayerState playerState = PlayerState.loading;
-
+  AudioPlayer audioPlayer;
   Map song;
   String url;
   int duration = 0;
   int position = 0; // 单位：毫秒
-
+  bool isMuted = false;
+  PlayerState playerState = PlayerState.loading;
+  StreamSubscription _positionSubscription;
+  StreamSubscription _audioPlayerStateSubscription;
   bool isTaping = false; // 是否在手动拖动进度条（拖动的时候播放进度条不要自己动）
   int imageSize;
   String songImage;
   String artistNames;
   LyricPage _lyricPage;
-  MusicController musicController;
 
   @override
   void initState() {
@@ -62,18 +60,27 @@ class _PlayerPageState extends State<PlayerPage>
 
     _lyricPage = LyricPage();
 
-    musicController = Provider.of<MusicController>(context, listen: false);
-    initMusicListener();
-    musicController.startSong();
+    initAudioPlayer();
+    startSong();
   }
 
-  _onStartLoading() {
-    song = musicController.getCurrentSong();
+  void startSong() {
+    song = Provider.of<PlayList>(context, listen: false).getCurrentSong();
+    if (song == null) {
+      return;
+    }
+
     // 不要把函数调用放在build之中，不然每次刷新都会调用！！
     songImage = SongUtil.getSongImage(song, size: imageSize);
     artistNames = SongUtil.getArtistNames(song);
 
     print("StartSong: $song， imageSize: $imageSize");
+
+    SongUtil.getPlayPath(song).then((playPath) {
+      play(path: playPath);
+    }).then((_) {
+      //_lyricPage.updateSong(song);
+    });
 
     if (songImage.isEmpty) {
       MusicDao.getSongDetail(song['id'].toString()).then((songDetail) {
@@ -92,67 +99,151 @@ class _PlayerPageState extends State<PlayerPage>
     setState(() {
       position = 0;
     });
-
-    _lyricPage.updateSong(song);
   }
 
-  void initMusicListener() {
-    musicController.setMusicListener(MusicListener(
-        onLoading: () => _onStartLoading(),
-        onStart: (duration) {
-          setState(() => this.duration = duration);
-        },
-        onPosition: (position) {
-          if (!isTaping) {
-            // 如果手指拖动，就不通过播放器更新状态，以免抖动。
-            _lyricPage.updatePosition(position);
-            setState(() => this.position = position);
-          }
-        },
-        onStateChanged: (state) {
-          setState(() => this.playerState = state);
-        },
-        onError: (msg) => _onError(msg)));
-  }
-
-  void _onError(msg) {
-    /* try {
-      Map json = jsonDecode(msg);
-      if (json['what'] == 1) {
+  void initAudioPlayer() {
+    audioPlayer = new AudioPlayer();
+    _positionSubscription = audioPlayer.onAudioPositionChanged.listen((p) {
+      int milliseconds = p.inMilliseconds;
+      if (!isTaping && milliseconds <= duration) {
+        //_lyricPage.updatePosition(milliseconds);
+        setState(() => position = milliseconds);
       }
-    } catch (e) {
-      print('onError: $msg ');
-    } */
-
-    setState(() {
-      playerState = PlayerState.stopped;
-      duration = 0;
-      position = 0;
     });
-    print("AudioPlayer onError: $msg");
+    _audioPlayerStateSubscription =
+        audioPlayer.onPlayerStateChanged.listen((s) {
+      print("AudioPlayer onPlayerStateChanged, last state: $playerState");
+      if (s == AudioPlayerState.PLAYING) {
+        if (duration == 0) {
+          setState(() => duration = audioPlayer.duration.inMilliseconds);
+          print("AudioPlayer start, duration:$duration");
+        }
+        if (playerState != PlayerState.playing) {
+          setState(() => playerState = PlayerState.playing);
+          print("AudioPlayer playing");
+        }
+      } else if (s == AudioPlayerState.PAUSED) {
+        setState(() => playerState = PlayerState.paused);
+      } else if (s == AudioPlayerState.STOPPED) {
+        print("AudioPlayer stopped");
+      } else if (s == AudioPlayerState.COMPLETED) {
+        print('播放结束');
+        onComplete();
+      }
+      print("AudioPlayer onPlayerStateChanged: $s");
+    }, onError: (msg) {
+      try {
+        Map json = jsonDecode(msg);
+        if (json['what'] == 1) {
+          Fluttertoast.showToast(
+              msg: "歌曲播放失败！",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: AppColors.toastBackground,
+              textColor: Colors.white,
+              fontSize: 14.0);
+        }
+      } catch (e) {
+        print(e);
+      }
 
-    Fluttertoast.showToast(
-        msg: "歌曲播放失败！",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: AppColors.toastBackground,
-        textColor: Colors.white,
-        fontSize: 14.0);
+      setState(() {
+        playerState = PlayerState.stopped;
+        duration = 0;
+        position = 0;
+      });
+      print("AudioPlayer onError: $msg");
+    });
   }
 
   @override
   void dispose() {
     _animController.dispose();
-    musicController.stop();
-    musicController.setMusicListener(null);
+    _positionSubscription.cancel();
+    _audioPlayerStateSubscription.cancel();
+    audioPlayer.stop();
     super.dispose();
   }
 
+  Future play({String path}) async {
+    if (path == null && this.url == null) {
+      print('Error: empty url!');
+      return;
+    }
+    // 如果参数url为空，说明是继续播放当前url
+    bool isContinue = path == null;
+    if (!isContinue) {
+      this.url = path;
+      if (playerState != PlayerState.loading) {
+        audioPlayer.stop();
+        setState(() {
+          duration = 0;
+          playerState = PlayerState.loading;
+        });
+      }
+    }
+
+    bool isLocal = !this.url.startsWith('http');
+    print("start play: $url , isLocal: $isLocal ");
+
+    await audioPlayer.play(this.url, isLocal: isLocal);
+  }
+
+  Future pause() async {
+    await audioPlayer.pause();
+  }
+
+  Future seek(double millseconds) async {
+    await audioPlayer.seek(millseconds / 1000);
+    if (playerState == PlayerState.paused) {
+      //play();
+    }
+  }
+
+  Future stop() async {
+    await audioPlayer.stop();
+    setState(() {
+      playerState = PlayerState.stopped;
+      position = 0;
+    });
+  }
+
+  Future mute(bool muted) async {
+    await audioPlayer.mute(muted);
+    setState(() {
+      isMuted = muted;
+    });
+  }
+
+  Map next() {
+    Map nextSong = Provider.of<PlayList>(context).next();
+    if (nextSong != null) {
+      startSong();
+    }
+    return nextSong;
+  }
+
+  Map previous() {
+    Map prev = Provider.of<PlayList>(context).previous();
+    if (prev != null) {
+      startSong();
+    }
+    return prev;
+  }
+
+  void onComplete() {
+    Map nextSong = next();
+    if (nextSong == null) {
+      setState(() {
+        playerState = PlayerState.stopped;
+        position = 0;
+      });
+    }
+  }
+
   // 将要播放和正在播放，用于播放按钮的状态控制。
-  // 中途切歌会调用一下stoppted
   bool isGoingPlaying() {
     return playerState == PlayerState.loading ||
-        playerState == PlayerState.stopped ||
         playerState == PlayerState.playing;
   }
 
@@ -210,20 +301,20 @@ class _PlayerPageState extends State<PlayerPage>
         width: 60.0,
         height: 60.0,
         child: Container(
-            margin: EdgeInsets.all(18.0),
-            /* decoration: BoxDecoration(
+          margin: EdgeInsets.all(18.0),
+          /* decoration: BoxDecoration(
             color: Colors.black54,
             border: Border.all(
               width: 0.5,
               color: Colors.black45,
             ),
             shape: BoxShape.circle) */
-            child: ClipOval(child: Container(color: Colors.black54))
-            /* BlurOvalWidget(
+          child:ClipOval(child: Container(color: Colors.black54))
+          /* BlurOvalWidget(
               sigma: 1.0,
               color:Colors.grey.shade700,
               child: SizedBox(width: 20, height: 20,) ),*/
-            ),
+        ),
         decoration: BoxDecoration(
             color: Colors.white38,
             border: Border.all(
@@ -258,25 +349,16 @@ class _PlayerPageState extends State<PlayerPage>
               turns: _animController,
               //将要执行动画的子view
               child: InkWell(
-                  onTap: () => {
-                        isGoingPlaying()
-                            ? musicController.pause()
-                            : musicController.play()
-                      },
+                  onTap: () => {isGoingPlaying() ? pause() : play()},
                   child: ClipOval(child: _getSongImage(BoxFit.cover))),
             ),
-            //_buildCDCover(),
+            _buildCDCover(),
             _buildProgressIndicator(),
           ],
         ));
   }
 
-  Widget _buildLyricPage() {
-    return Expanded(
-      child: _lyricPage, // 歌词
-    );
-  }
-
+  // 进度条
   Widget _buildProgressBar() {
     return Container(
         padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
@@ -287,20 +369,20 @@ class _PlayerPageState extends State<PlayerPage>
               setState(() {
                 position = value.toInt();
               });
-              _lyricPage.updatePosition(position, isTaping: true);
+              //_lyricPage.updatePosition(position, isTaping: true);
             },
             onChangeStart: (double value) {
               isTaping = true;
             },
             onChangeEnd: (double value) {
               isTaping = false;
-              musicController.seek(value);
+              seek(value);
             }));
   }
 
   Widget _buildControllerBar() {
     return Container(
-        padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
+        padding: EdgeInsets.fromLTRB(24.0, 4.0, 24.0, 20.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -308,7 +390,7 @@ class _PlayerPageState extends State<PlayerPage>
               icon: Icons.skip_previous,
               size: 40,
               onPressed: () {
-                musicController.previous();
+                previous();
               },
             ),
             SizedBox(width: 24.0),
@@ -317,9 +399,7 @@ class _PlayerPageState extends State<PlayerPage>
               iconIndex: isGoingPlaying() ? 0 : 1,
               size: 60.0,
               onPressed: () {
-                isGoingPlaying()
-                    ? musicController.pause()
-                    : musicController.play();
+                isGoingPlaying() ? pause() : play();
               },
             ),
             SizedBox(width: 24.0),
@@ -327,7 +407,7 @@ class _PlayerPageState extends State<PlayerPage>
               icon: Icons.skip_next,
               size: 40,
               onPressed: () {
-                musicController.next();
+                next();
               },
             )
           ],
@@ -377,7 +457,9 @@ class _PlayerPageState extends State<PlayerPage>
             children: <Widget>[
               _buildTitle(),
               _buildMusicCover(),
-              _buildLyricPage(),
+              Expanded(
+                child: _lyricPage, // 歌词
+              ),
               _buildProgressBar(),
               _buildControllerBar(),
             ],

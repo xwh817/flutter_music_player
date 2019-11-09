@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/model/play_list.dart';
+import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
@@ -70,7 +70,7 @@ class _RecommendPageState extends State<RecommendPage> {
                             Map song = _newSongs[index];
                             String picUrl = SongUtil.getSongImage(song, width:600, height:300);
                             return GestureDetector(
-                              onTap: () => _onItemTap(_newSongs, index),
+                              onTap: () => PlayerPage.gotoPlayer(context, _newSongs, index),
                               child: CachedNetworkImage(
                                 imageUrl: picUrl,
                                 fit: BoxFit.cover,
@@ -95,8 +95,4 @@ class _RecommendPageState extends State<RecommendPage> {
           );
   }
 
-  void _onItemTap(List songList, int index) {
-    Provider.of<PlayList>(context).setPlayList(songList, index);
-    NavigatorUtil.push(context, PlayerPage());
-  }
 }
