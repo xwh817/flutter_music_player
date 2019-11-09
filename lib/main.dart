@@ -3,7 +3,6 @@ import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/utils/colors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'model/play_list.dart';
 import 'model/video_controller.dart';
 import 'pages/home_page.dart';
 
@@ -14,7 +13,6 @@ void main() => runApp(_buildProvider());
 _buildProvider() {
   return MultiProvider(
     providers: [
-      ChangeNotifierProvider<PlayList>.value(value: PlayList()),
       ChangeNotifierProvider<MusicController>.value(value: MusicController()),
       ChangeNotifierProvider<VideoControllerProvider>.value(value: VideoControllerProvider()),
     ],
@@ -33,12 +31,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primarySwatch: Colors.green),
         home: WillPopScope(
-          onWillPop: _beforePop,
+          onWillPop: ()=>_beforePop(context),
           child: HomePage(),
         ));
   }
 
-  Future<bool> _beforePop() async {
+  Future<bool> _beforePop(BuildContext context) async {
     if (lastBackTime == null ||
         DateTime.now().difference(lastBackTime) > Duration(seconds: 2)) {
       Fluttertoast.showToast(
@@ -52,6 +50,8 @@ class MyApp extends StatelessWidget {
       lastBackTime = DateTime.now();
       return false; // 不返回
     }
+
+    Provider.of<MusicController>(context, listen: false).dispose();
     return true;
   }
 

@@ -16,6 +16,16 @@ class LyricPage extends StatefulWidget {
 
   // 对比发现，从外面调用触发build的次数要少，而不是从父控件传入position。
   void updatePosition(int position, {isTaping: false}) {
+    print('updatePosition: $position');
+    if (_state == null || _state.lyric == null) {
+      print('_LyricPageState is null, retryCount: $retryCount');
+      Future.delayed(Duration(milliseconds: 200)).then((_){
+        retryCount++;
+        if (retryCount < 5) {
+          updatePosition(position, isTaping: isTaping);
+        }
+      });
+    }
     _state?.updatePosition(position, isTaping: isTaping);
   }
 
@@ -32,6 +42,7 @@ class LyricPage extends StatefulWidget {
     }
     _state?.updateSong(song);
   }
+
 }
 
 class _LyricPageState extends State<LyricPage> {
@@ -42,6 +53,7 @@ class _LyricPageState extends State<LyricPage> {
   ScrollController _controller;
   int _currentIndex = -1;
   bool success = true;
+  bool isFirst = true;
 
   @override
   void initState() {
@@ -184,8 +196,14 @@ class _LyricPageState extends State<LyricPage> {
       return;
     }
 
-    _controller.animateTo(topIndex * itemHeight,
+    if (isFirst) {  // 第一次进入时不用滚动。
+      isFirst = false;
+      _controller.jumpTo(topIndex * itemHeight);
+    } else {
+      _controller.animateTo(topIndex * itemHeight,
         duration: Duration(seconds: 1), curve: Curves.easeInOut);
+    }
+    
   }
 
   // 根据歌曲播放的位置确定滚动的位置

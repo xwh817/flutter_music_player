@@ -21,8 +21,10 @@ class PlayerPage extends StatefulWidget {
   PlayerPage._();
 
   // 外部跳转统一经过这儿
-  static void gotoPlayer(BuildContext context, List list, int index) {
-    Provider.of<MusicController>(context).setPlayList(list, index);
+  static void gotoPlayer(BuildContext context, {List list, int index}) {
+    if (list !=null) {
+      Provider.of<MusicController>(context).setPlayList(list, index);
+    }
     NavigatorUtil.push(context, PlayerPage._());
   }
 
@@ -45,6 +47,7 @@ class _PlayerPageState extends State<PlayerPage>
   String artistNames;
   LyricPage _lyricPage;
   MusicController musicController;
+  MusicListener musicListener;
 
   @override
   void initState() {
@@ -64,7 +67,17 @@ class _PlayerPageState extends State<PlayerPage>
 
     musicController = Provider.of<MusicController>(context, listen: false);
     initMusicListener();
+
+    /* this.position = musicController.getPosition();
+    if (this.position > 0) {
+      print("Continue playing");
+      _onStartLoading();
+      musicController.play();
+    } else {
+      musicController.startSong();
+    } */
     musicController.startSong();
+
   }
 
   _onStartLoading() {
@@ -75,7 +88,7 @@ class _PlayerPageState extends State<PlayerPage>
 
     print("StartSong: $song， imageSize: $imageSize");
 
-    if (songImage.isEmpty) {
+    if (songImage == null || songImage.isEmpty) {
       MusicDao.getSongDetail(song['id'].toString()).then((songDetail) {
         // 异步任务要判断mouted，可能结果返回时界面关闭了。
         if (mounted && songDetail != null) {
@@ -97,12 +110,14 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   void initMusicListener() {
-    musicController.setMusicListener(MusicListener(
+    musicListener = MusicListener(
+        getName: () => "PlayerPage",
         onLoading: () => _onStartLoading(),
         onStart: (duration) {
           setState(() => this.duration = duration);
         },
         onPosition: (position) {
+          //print('MusicListener in PlayerPager, position: $position, duration: $duration');
           if (!isTaping) {
             // 如果手指拖动，就不通过播放器更新状态，以免抖动。
             _lyricPage.updatePosition(position);
@@ -112,7 +127,9 @@ class _PlayerPageState extends State<PlayerPage>
         onStateChanged: (state) {
           setState(() => this.playerState = state);
         },
-        onError: (msg) => _onError(msg)));
+        onError: (msg) => _onError(msg));
+
+    musicController.addMusicListener(musicListener);
   }
 
   void _onError(msg) {
@@ -143,17 +160,14 @@ class _PlayerPageState extends State<PlayerPage>
   @override
   void dispose() {
     _animController.dispose();
-    musicController.stop();
-    musicController.setMusicListener(null);
+    musicController.removeMusicListener(musicListener);
     super.dispose();
   }
 
   // 将要播放和正在播放，用于播放按钮的状态控制。
   // 中途切歌会调用一下stoppted
   bool isGoingPlaying() {
-    return playerState == PlayerState.loading ||
-        playerState == PlayerState.stopped ||
-        playerState == PlayerState.playing;
+    return playerState != PlayerState.paused;
   }
 
   Widget _buildTitle() {
@@ -185,7 +199,7 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   Widget _getSongImage(BoxFit fit) {
-    return songImage.isEmpty
+    return songImage == null || songImage.isEmpty
         ? _getPlaceHolder(fit)
         : CachedNetworkImage(
             width: imageSize.toDouble(),

@@ -40,7 +40,7 @@ class SongItemTile extends StatelessWidget {
         if (onItemTap != null) {
           this.onItemTap();
         }
-        PlayerPage.gotoPlayer(context, songList, index);
+        PlayerPage.gotoPlayer(context, list:songList, index:index);
       },
     );
   }

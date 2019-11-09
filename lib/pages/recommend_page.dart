@@ -70,7 +70,7 @@ class _RecommendPageState extends State<RecommendPage> {
                             Map song = _newSongs[index];
                             String picUrl = SongUtil.getSongImage(song, width:600, height:300);
                             return GestureDetector(
-                              onTap: () => PlayerPage.gotoPlayer(context, _newSongs, index),
+                              onTap: () => PlayerPage.gotoPlayer(context, list:_newSongs, index:index),
                               child: CachedNetworkImage(
                                 imageUrl: picUrl,
                                 fit: BoxFit.cover,
