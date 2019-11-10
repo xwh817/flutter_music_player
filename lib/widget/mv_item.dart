@@ -34,7 +34,7 @@ class _MVItemState extends State<MVItem> {
           children: <Widget>[
             SizedBox(height: 8.0),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: AspectRatio(
                 // 设定宽高比
                 aspectRatio: 16 / 9,
@@ -51,7 +51,7 @@ class _MVItemState extends State<MVItem> {
               )
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12.0, 6.0, 12.0, 4.0),
+              padding: EdgeInsets.fromLTRB(14.0, 6.0, 14.0, 4.0),
               child: Text(
                 widget.mv['name'],
                 style: TextStyle(
@@ -63,13 +63,18 @@ class _MVItemState extends State<MVItem> {
               )
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 8.0),
+              padding: EdgeInsets.fromLTRB(14.0, 0.0, 14.0, 8.0),
               child: Text(
                 SongUtil.getArtistNames(widget.mv),
                 style: TextStyle(fontSize: 14.0, color: Colors.black54),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               )
+            ),
+            Divider(
+              color: Color(0x0f000000),
+              height: 12.0, // 间隔的高度
+              thickness: 8.0, // 绘制的线的厚度
             )
           ],
         );

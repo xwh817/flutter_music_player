@@ -36,15 +36,15 @@ class _MVTabPageState extends State<MVTabPage> {
   Widget build(BuildContext context) {
     return _mvList.length == 0
         ? Center(child: CircularProgressIndicator())
-        : ListView.separated(
+        : ListView.builder(
             itemCount: this._mvList.length,
             //itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
             itemBuilder: (context, index) => MVItem(this._mvList[index]),
-            separatorBuilder: (context, index) => Divider(
+            /* separatorBuilder: (context, index) => Divider(
               color: Color(0x0f000000),
               height: 12.0, // 间隔的高度
               thickness: 8.0, // 绘制的线的厚度
-            ),
+            ), */
           );
   }
 }

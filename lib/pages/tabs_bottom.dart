@@ -25,7 +25,7 @@ class BottomTabs extends StatelessWidget {
         children: <Widget>[
           TextIcon(
             icon: Icons.whatshot,
-            title: '推荐',
+            title: '发现',
             selected: currentIndex == 0,
             onPressed: ()=>tapCallback(0),
           ),
