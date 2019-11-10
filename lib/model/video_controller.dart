@@ -10,7 +10,7 @@ class VideoControllerProvider with ChangeNotifier{
         controller.dispose();
       } */
     this.controller = controller;
-    notifyListeners();
+    //notifyListeners();
   }
 
   VideoPlayerController getController(){

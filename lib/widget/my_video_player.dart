@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/video_controller.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
   }
 
   void _play() {
+    // 播放视频的时候把音乐暂停
+    Provider.of<MusicController>(context).pause();
+
     // 开始播放的时候，切换全局controller，停掉上一个视频。
     Provider.of<VideoControllerProvider>(context).setController(_controller);
     _controller.play().then((_) {

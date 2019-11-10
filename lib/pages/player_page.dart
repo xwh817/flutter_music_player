@@ -68,14 +68,6 @@ class _PlayerPageState extends State<PlayerPage>
     musicController = Provider.of<MusicController>(context, listen: false);
     initMusicListener();
 
-    /* this.position = musicController.getPosition();
-    if (this.position > 0) {
-      print("Continue playing");
-      _onStartLoading();
-      musicController.play();
-    } else {
-      musicController.startSong();
-    } */
     musicController.startSong();
   }
 
@@ -85,7 +77,7 @@ class _PlayerPageState extends State<PlayerPage>
     songImage = SongUtil.getSongImage(song, size: imageSize);
     artistNames = SongUtil.getArtistNames(song);
 
-    print("StartSong: $song， imageSize: $imageSize");
+    print("StartSong: ${song['name']}， imageSize: $imageSize");
 
     if (songImage == null || songImage.isEmpty) {
       MusicDao.getSongDetail(song['id'].toString()).then((songDetail) {
@@ -124,6 +116,7 @@ class _PlayerPageState extends State<PlayerPage>
           }
         },
         onStateChanged: (state) {
+          print('MusicListener onStateChanged: $state ');
           setState(() => this.playerState = state);
         },
         onError: (msg) => _onError(msg));

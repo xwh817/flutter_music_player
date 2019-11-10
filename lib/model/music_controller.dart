@@ -4,11 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 
-
 enum PlayerState {loading, playing, paused, stopped, completed }
 
 class MusicListener{
-  //Function onPlayListChanged;
   Function getName;
   Function onLoading;
   Function onStart;
@@ -31,8 +29,6 @@ class MusicController with ChangeNotifier {
   int position = 0;
   String url;
   List<MusicListener> musicListeners = [];
-  //MusicListener musicListener;
-
 
   MusicController(){
     if (audioPlayer == null) {
@@ -42,30 +38,19 @@ class MusicController with ChangeNotifier {
 
   void addMusicListener(MusicListener listener) {
     print('addMusicListener');
-    //this.musicListeners.clear();
     if (!this.musicListeners.contains(listener)) {
       this.musicListeners.add(listener);
     }
-    //musicListener = listener;
   }
 
   void removeMusicListener(MusicListener listener) {
     print('removeMusicListener');
     this.musicListeners.remove(listener);
-    //musicListener = null;
   }
 
   void notifyMusicListeners(Function event) {
     //print('notifyMusicListeners, musicListeners: ${musicListeners.length}, event:$event.');
     musicListeners.forEach((listener) => event(listener));
-    
-    /* if (musicListener != null) {
-      event(musicListener);
-      //print('notifyMusicListeners: ${musicListener.getName()}');
-    } else {
-      //print('musicListener is null!!');
-    } */
-    
   }
 
   void init() {
@@ -145,9 +130,12 @@ class MusicController with ChangeNotifier {
     if (!isContinue) {
       this.url = path;
       if (playerState != PlayerState.loading) {
-        audioPlayer.stop();
-        duration = 0;
-        notifyMusicListeners((listener) => listener.onStateChanged(PlayerState.loading));
+        audioPlayer.stop().then((_){
+          /// 注意异步任务的先后执行顺序。
+          /// 等停完之后再更新loading状态，不然状态会被异步任务改成stop了。
+          duration = 0;
+          notifyMusicListeners((listener) => listener.onStateChanged(PlayerState.loading));
+        });
       }
     }
 

@@ -25,8 +25,10 @@ class LyricPage extends StatefulWidget {
           updatePosition(position, isTaping: isTaping);
         }
       });
+    } else {
+      _state.updatePosition(position, isTaping: isTaping);
     }
-    _state?.updatePosition(position, isTaping: isTaping);
+    
   }
 
   int retryCount = 0;
@@ -39,8 +41,10 @@ class LyricPage extends StatefulWidget {
           updateSong(song);
         }
       });
+    } else {
+      _state.updateSong(song);
     }
-    _state?.updateSong(song);
+    
   }
 
 }
@@ -54,6 +58,7 @@ class _LyricPageState extends State<LyricPage> {
   int _currentIndex = -1;
   bool success = true;
   bool isFirst = true;
+  bool isItemsEmpty = false;
 
   @override
   void initState() {
@@ -90,6 +95,7 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   Widget _buildInfo(String msg) {
+    isItemsEmpty = true;
     return Center(
         child: Text(msg,
             style: TextStyle(color: Colors.white30, fontSize: 13.0)));
@@ -105,6 +111,8 @@ class _LyricPageState extends State<LyricPage> {
       return _buildInfo('歌词加载中...');
     } else if (lyric.items.length == 0) {
       return  _buildInfo('...纯音乐，无歌词...');
+    } else {
+      isItemsEmpty = false;
     }
 
     return Container(
@@ -208,6 +216,10 @@ class _LyricPageState extends State<LyricPage> {
 
   // 根据歌曲播放的位置确定滚动的位置
   void updatePosition(int milliseconds, {isTaping: false}) {
+    if (isItemsEmpty) {
+      return;
+    }
+
     if (isScrolling) {
       lastScrollPosition = milliseconds;
       return;
