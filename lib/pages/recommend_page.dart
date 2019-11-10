@@ -5,9 +5,11 @@ import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
+import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/mv_item.dart';
+import 'package:flutter_music_player/widget/play_iist_item.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_grid.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
@@ -26,6 +28,7 @@ class _RecommendPageState extends State<RecommendPage> {
   List _newSongs = [];
   List _topSongs = [];
   List _mvList = [];
+  List _playList = [];
   double _appBarHeight = 200.0;
   /* static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); */
@@ -41,10 +44,13 @@ class _RecommendPageState extends State<RecommendPage> {
       MusicDao.getNewSongs(),
       MusicDao.getTopSongs(0),
     ]).then((results) {
-      setState(() {
+      if (results[0].length > 5) {
         _newSongs = results[0].sublist(0, 5);
-        _topSongs = results[1].sublist(0, 24);
-      });
+      }
+      if (results[1].length > 18) {
+        _topSongs = results[1].sublist(0, 18);
+      }
+      setState(() {});
     }).then((_) {
       // 第一次进来的时候，设置默认的播放列表
       MusicController musicController = Provider.of<MusicController>(context);
@@ -56,8 +62,19 @@ class _RecommendPageState extends State<RecommendPage> {
       }
     });
 
+// TODO 后面添加： 下拉刷新，滑到下面才加载更多。
     MusicDao.getMVList(MusicDao.URL_MV_PERSONAL).then((list) {
+      if (list.length > 10) {
+        list = list.sublist(0, 10);
+      }
       setState(() => this._mvList = list);
+    });
+
+    MusicDao.getPlayList('流行').then((list) {
+      if (list.length > 16) {
+        list = list.sublist(0, 16);
+      }
+      setState(() => this._playList = list);
     });
   }
 
@@ -71,18 +88,14 @@ class _RecommendPageState extends State<RecommendPage> {
                 _buildHeader(),
                 _buildCenterGrid(),
                 _buildDivider(),
-                _buildSubHeader('推荐单曲'),
+                _buildSubHeader('推荐单曲', Icons.music_note),
                 _buildSongGrid(),
                 _buildDivider(),
-                _buildSubHeader('推荐MV'),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return MVItem(_mvList[index]);
-                    },
-                    childCount: _mvList.length,
-                  ),
-                ),
+                _buildSubHeader('推荐歌单', Icons.library_music),
+                _buildPlayListGrid(),
+                _buildDivider(),
+                _buildSubHeader('推荐MV', Icons.video_library),
+                _buildMVList(),
               ],
             ),
           );
@@ -183,17 +196,46 @@ class _RecommendPageState extends State<RecommendPage> {
         ));
   }
 
-  Widget _buildSubHeader(String title, {String action}) {
+  Widget _buildPlayListGrid() {
+    return SliverPadding(
+        padding: EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 12.0),
+        sliver: SliverGrid(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.0,
+            mainAxisSpacing: 12.0,
+            crossAxisSpacing: 12.0,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return PlayListItem(_playList[index]);
+            },
+            childCount: _playList.length,
+          ),
+        ));
+  }
+
+  Widget _buildSubHeader(String title, IconData icon, {String action}) {
     return SliverToBoxAdapter(
         child: Container(
-      padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-        ),
+      padding: EdgeInsets.fromLTRB(8.0, 16.0, 16.0, 4.0),
+      child: Row(
+        children: <Widget>[
+          Icon(
+            icon,
+            color: AppColors.mainColor,
+            size: 18.0,
+          ),
+          SizedBox(width: 4.0),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        ],
       ),
       /* child: Row(
         children: <Widget>[
@@ -224,5 +266,16 @@ class _RecommendPageState extends State<RecommendPage> {
         ],
       ), */
     ));
+  }
+
+  Widget _buildMVList() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (BuildContext context, int index) {
+          return MVItem(_mvList[index]);
+        },
+        childCount: _mvList.length,
+      ),
+    );
   }
 }

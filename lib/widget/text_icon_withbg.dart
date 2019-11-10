@@ -22,11 +22,12 @@ class TextIconWithBg extends StatelessWidget {
                   padding: EdgeInsets.all(10.0),
                   child: Icon(icon, color: Colors.white, size: 24.0),
                 ),
+                SizedBox(height: 6.0),
                 Text(
                   title,
                   style: TextStyle(
                       fontSize: 14.0,
-                      color: Colors.black87, height: 1.8),
+                      color: Colors.black87),
                 )
               ],
             ));
