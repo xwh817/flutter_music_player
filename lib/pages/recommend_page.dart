@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/dao/music_db.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
@@ -38,6 +39,13 @@ class _RecommendPageState extends State<RecommendPage> {
         _newSongs = results[0].sublist(0, 5);
         _topSongs = results[1];
       });
+    }).then((_){
+      // 第一次进来的时候，设置默认的播放列表
+      MusicDB().getFavoriteList().then((favList){
+        List defaultList = favList.length > 0 ? favList : _topSongs;
+        Provider.of<MusicController>(context).setPlayList(defaultList, 0);
+      });
+      
     });
   }
 

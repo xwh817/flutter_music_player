@@ -11,8 +11,12 @@ class BottomTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _buildBottomAppBar();
+  }
+
+  _buildBottomAppBar() {
     return BottomAppBar(
-      color: Color(0xFFdddddd),
+      color: Color(0xffffffff),
       shape: CircularNotchedRectangle(),
       notchMargin: 4.0,
       child: Row(
@@ -31,7 +35,7 @@ class BottomTabs extends StatelessWidget {
             selected: currentIndex == 1,
             onPressed: ()=>tapCallback(1),
           ),
-          SizedBox(width: 50.0),
+          SizedBox(width: 70.0),
           TextIcon(
             icon: Icons.movie,
             title: 'MV',
@@ -47,24 +51,14 @@ class BottomTabs extends StatelessWidget {
         ],
       ),
     );
+  }
 
-    _buildItem(int index, IconData icon, String title) {
-      return TextIcon(
-            icon: icon,
-            title: title,
-            selected: currentIndex == index,
-            onPressed: ()=>tapCallback(index),
-          );
-    }
-
-/*     return BottomAppBar(
-      shape: CircularNotchedRectangle(),
-      child: BottomNavigationBar(
+  _buildBottomNavigationBar(){
+    return BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: tapCallback,
         type: BottomNavigationBarType.fixed,
         fixedColor: Colors.green,
-        
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.whatshot),
@@ -83,7 +77,6 @@ class BottomTabs extends StatelessWidget {
             title: Text('收藏'),
           ),
         ],
-      ),
-    ); */
+      );
   }
 }

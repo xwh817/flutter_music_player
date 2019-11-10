@@ -42,7 +42,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     return IconButton(
       icon: Icon(
         Icons.favorite,
-        color: isFavorited ? AppColors.mainColor : Colors.white60,
+        color: isFavorited ? Colors.pink : Colors.white60,
       ),
       onPressed: () {
         if (this.isFavorited) {

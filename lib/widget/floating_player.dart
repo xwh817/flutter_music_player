@@ -23,7 +23,7 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
     super.initState();
 
     _animController =
-        AnimationController(duration: const Duration(seconds: 24), vsync: this);
+        AnimationController(duration: const Duration(seconds: 16), vsync: this);
 
     musicController = Provider.of<MusicController>(context, listen: false);
     initMusicListener();
@@ -56,7 +56,10 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
 
     _buildAnim();
 
-    return FloatingActionButton(
+    return Container(
+      width: 70.0,
+      height: 70.0,
+      child:FloatingActionButton(
       onPressed: () {
         if (song != null) {
           PlayerPage.gotoPlayer(context);
@@ -64,6 +67,7 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
       },
       elevation: 2.0,
       backgroundColor: Colors.black26,
+      heroTag: 'FloatingPlayer',
       child: Container(
           padding: EdgeInsets.all(2.0),
           child: RotationTransition(
@@ -76,9 +80,10 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
                     ? Image.asset('images/music_2.jpg', fit: BoxFit.cover)
                     : CachedNetworkImage(
                         imageUrl: SongUtil.getSongImage(song),
+                        placeholder: (context, url) => Image.asset('images/music_2.jpg', fit: BoxFit.cover),
                         fit: BoxFit.cover),
               ))),
-    );
+    ));
   }
 
   void _buildAnim() {

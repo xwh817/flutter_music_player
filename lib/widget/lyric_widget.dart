@@ -16,7 +16,7 @@ class LyricPage extends StatefulWidget {
 
   // 对比发现，从外面调用触发build的次数要少，而不是从父控件传入position。
   void updatePosition(int position, {isTaping: false}) {
-    print('updatePosition: $position');
+    //print('updatePosition: $position');
     if (_state == null || _state.lyric == null) {
       print('_LyricPageState is null, retryCount: $retryCount');
       Future.delayed(Duration(milliseconds: 200)).then((_){

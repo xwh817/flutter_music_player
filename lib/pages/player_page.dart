@@ -22,7 +22,7 @@ class PlayerPage extends StatefulWidget {
 
   // 外部跳转统一经过这儿
   static void gotoPlayer(BuildContext context, {List list, int index}) {
-    if (list !=null) {
+    if (list != null) {
       Provider.of<MusicController>(context).setPlayList(list, index);
     }
     NavigatorUtil.push(context, PlayerPage._());
@@ -77,7 +77,6 @@ class _PlayerPageState extends State<PlayerPage>
       musicController.startSong();
     } */
     musicController.startSong();
-
   }
 
   _onStartLoading() {
@@ -277,7 +276,9 @@ class _PlayerPageState extends State<PlayerPage>
                             ? musicController.pause()
                             : musicController.play()
                       },
-                  child: ClipOval(child: _getSongImage(BoxFit.cover))),
+                  child: Hero(
+                      tag: 'FloatingPlayer',
+                      child: ClipOval(child: _getSongImage(BoxFit.cover)))),
             ),
             //_buildCDCover(),
             _buildProgressIndicator(),

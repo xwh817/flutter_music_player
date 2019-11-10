@@ -43,13 +43,11 @@ class _HomePageState extends State<HomePage> {
     print('HomePage dispose');
   }
 
-  
   @override
   void deactivate() {
     super.deactivate();
     print('HomePage deactive');
   }
-
 
   _tapCallback(int index) {
     print("HomePage: on page selected: $index");
@@ -61,13 +59,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     print('HomePage build');
 
     // 获取屏幕大小,用于界面适配
-    //if(ScreenUtil.screenWidth == null || ScreenUtil.screenWidth == 0.0) {
     ScreenUtil.getScreenSize(context);
-    //}
 
     return Scaffold(
       body: PageView(
@@ -80,5 +75,22 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
+}
 
+class _RightFloatingActionButtonLocation
+    extends FloatingActionButtonLocation {
+  const _RightFloatingActionButtonLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double fabX = scaffoldGeometry.scaffoldSize.width -
+        scaffoldGeometry.floatingActionButtonSize.width * 3 /4;
+    final double fabY = (scaffoldGeometry.scaffoldSize.height -
+            scaffoldGeometry.floatingActionButtonSize.width) / 4 * 2.8;
+
+    return Offset(fabX, fabY);
+  }
+
+  @override
+  String toString() => 'FloatingActionButtonLocation.rightFloating';
 }
