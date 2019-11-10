@@ -16,8 +16,8 @@ class TextIcon extends StatelessWidget {
     return InkWell(
         onTap: this.onPressed,
         child: Container(
-            width: 60.0,
-            padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
+            width: 66.0,
+            padding: EdgeInsets.fromLTRB(4.0, 8.0, 4.0, 4.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[

@@ -2,7 +2,7 @@ import 'package:flutter_music_player/model/song_util.dart';
 import 'package:sqflite/sqflite.dart';
 
 class MusicDB {
-  static const db_version = 1;
+  static const db_version = 2;
   static const db_file = 'music.db';
   static const t_favorite = 't_favorite';
 
@@ -40,7 +40,7 @@ class MusicDB {
       version: db_version,
       onCreate: (Database db, int version) async {
         // 初始化，创建表
-        await db.execute('''create table $t_favorite ( 
+        db.execute('''create table $t_favorite ( 
           id integer primary key, 
           name text not null,
           artist text,
@@ -48,7 +48,11 @@ class MusicDB {
           url text)''');
       },
       onUpgrade: (Database db, int oldVersion, int newVersion) async{
-        // 数据库升级策略
+        // 数据库升级，修改表结构。
+        if (oldVersion == 1) {
+          await db.execute('ALTER TABLE $t_favorite ADD COLUMN createTime integer');
+        }
+        
       }
     );
   }
@@ -64,7 +68,9 @@ class MusicDB {
       'name':song['name'],
       'artist':SongUtil.getArtistNames(song),
       'cover': SongUtil.getSongImage(song, size: 0),
-      'url': SongUtil.getSongUrl(song)
+      'url': SongUtil.getSongUrl(song),
+      // 查看sqflite文档，发现不支持DateTime字段，用int来存储。
+      'createTime': DateTime.now().millisecondsSinceEpoch,
     };
 
     db = await getDB();
@@ -83,7 +89,7 @@ class MusicDB {
 
   Future<List<Map<String, dynamic>>> getFavoriteList() async {
     db = await getDB();
-    List list = await db.query(t_favorite);
+    List list = await db.query(t_favorite, orderBy: 'createTime desc');
     List songs = list.map((fav) => {
       'id': fav['id'],
       'name': fav['name'],

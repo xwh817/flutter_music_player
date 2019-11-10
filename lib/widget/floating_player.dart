@@ -24,8 +24,15 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
 
     _animController =
         AnimationController(duration: const Duration(seconds: 16), vsync: this);
+  }
 
-    musicController = Provider.of<MusicController>(context, listen: false);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    /// listen: true，当Provider中notifyListeners时，自动触发更新。
+    /// 默认为true，所以在不需要自动触发更新的地方要设为false。
+    musicController = Provider.of<MusicController>(context, listen: true);
     initMusicListener();
   }
 

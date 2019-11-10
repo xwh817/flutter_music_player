@@ -41,10 +41,14 @@ class _RecommendPageState extends State<RecommendPage> {
       });
     }).then((_){
       // 第一次进来的时候，设置默认的播放列表
-      MusicDB().getFavoriteList().then((favList){
+      MusicController musicController = Provider.of<MusicController>(context);
+      if (musicController.getCurrentSong() == null) {
+        MusicDB().getFavoriteList().then((favList){
         List defaultList = favList.length > 0 ? favList : _topSongs;
-        Provider.of<MusicController>(context).setPlayList(defaultList, 0);
+        musicController.setPlayList(defaultList, 0);
       });
+      }
+      
       
     });
   }

@@ -8,6 +8,7 @@ import 'package:flutter_music_player/model/song_util.dart';
 enum PlayerState {loading, playing, paused, stopped, completed }
 
 class MusicListener{
+  //Function onPlayListChanged;
   Function getName;
   Function onLoading;
   Function onStart;
@@ -116,6 +117,7 @@ class MusicController with ChangeNotifier {
 
   void setPlayList(List list, int currentIndex){
     playList.setPlayList(list, currentIndex);
+    notifyListeners();
   }
 
   Future startSong() async {
@@ -164,18 +166,18 @@ class MusicController with ChangeNotifier {
   }
 
   Future pause() async {
-    await audioPlayer.pause();
+    await audioPlayer?.pause();
   }
 
   Future seek(double millseconds) async {
-    await audioPlayer.seek(millseconds / 1000);
+    await audioPlayer?.seek(millseconds / 1000);
     if (playerState == PlayerState.paused) {
       //play();
     }
   }
 
   Future stop() async {
-    await audioPlayer.stop();
+    await audioPlayer?.stop();
   }
 
   Map next() {
