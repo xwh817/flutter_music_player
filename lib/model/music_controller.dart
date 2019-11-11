@@ -4,16 +4,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 
-enum PlayerState {loading, playing, paused, stopped, completed }
+enum PlayerState { loading, playing, paused, stopped, completed }
 
-class MusicListener{
+class MusicListener {
   Function getName;
   Function onLoading;
   Function onStart;
   Function onPosition;
   Function onStateChanged;
   Function onError;
-  MusicListener({this.getName, this.onLoading, this.onStart, this.onPosition, this.onStateChanged, this.onError});
+  MusicListener(
+      {this.getName,
+      this.onLoading,
+      this.onStart,
+      this.onPosition,
+      this.onStateChanged,
+      this.onError});
 }
 
 class MusicController with ChangeNotifier {
@@ -30,7 +36,7 @@ class MusicController with ChangeNotifier {
   String url;
   List<MusicListener> musicListeners = [];
 
-  MusicController(){
+  MusicController() {
     if (audioPlayer == null) {
       init();
     }
@@ -54,24 +60,24 @@ class MusicController with ChangeNotifier {
   }
 
   void init() {
-
     audioPlayer = new AudioPlayer();
     playList = PlayList();
 
     _positionSubscription = audioPlayer.onAudioPositionChanged.listen((p) {
       position = p.inMilliseconds;
-      notifyMusicListeners((listener)=>listener.onPosition(position));
+      notifyMusicListeners((listener) => listener.onPosition(position));
     });
     _audioPlayerStateSubscription =
         audioPlayer.onPlayerStateChanged.listen((event) {
-      print("AudioPlayer onPlayerStateChanged, last state: $playerState, currentState: $event");
-        
-       if (event == AudioPlayerState.PLAYING) {
-         playerState = PlayerState.playing;
+      print(
+          "AudioPlayer onPlayerStateChanged, last state: $playerState, currentState: $event");
+
+      if (event == AudioPlayerState.PLAYING) {
+        playerState = PlayerState.playing;
         //if (duration == 0) {
-          duration = audioPlayer.duration.inMilliseconds;
-          notifyMusicListeners((listener) => listener.onStart(duration));
-          print("AudioPlayer start, duration:$duration");
+        duration = audioPlayer.duration.inMilliseconds;
+        notifyMusicListeners((listener) => listener.onStart(duration));
+        print("AudioPlayer start, duration:$duration");
         //}
       } else if (event == AudioPlayerState.PAUSED) {
         playerState = PlayerState.paused;
@@ -100,7 +106,7 @@ class MusicController with ChangeNotifier {
     audioPlayer?.stop();
   }
 
-  void setPlayList(List list, int currentIndex){
+  void setPlayList(List list, int currentIndex) {
     playList.setPlayList(list, currentIndex);
     notifyListeners();
   }
@@ -115,42 +121,36 @@ class MusicController with ChangeNotifier {
     SongUtil.getPlayPath(song).then((playPath) {
       play(path: playPath);
     });
-
   }
-
-
 
   Future play({String path}) async {
     if (path == null && this.url == null) {
       print('Error: empty url!');
       return;
     }
-    // 如果参数url为空，说明是继续播放当前url
+    // 如果参数url为空，或者和之前一样，说明是继续播放当前url
     bool isContinue = path == null || path == this.url;
     if (!isContinue) {
       this.url = path;
       if (playerState != PlayerState.loading) {
-        audioPlayer.stop().then((_){
-          /// 注意异步任务的先后执行顺序。
-          /// 等停完之后再更新loading状态，不然状态会被异步任务改成stop了。
-          duration = 0;
-          notifyMusicListeners((listener) => listener.onStateChanged(PlayerState.loading));
-        });
+        await audioPlayer.stop(); // 注意这儿要用await，不然异步到后面，状态会不对。
       }
+      // 不是继续播放，就进入加载状态
+      duration = 0;
+      notifyMusicListeners(
+          (listener) => listener.onStateChanged(PlayerState.loading));
     }
 
-    bool isLocal = !this.url.startsWith('http');
-    print("start play: $url , isLocal: $isLocal, playerState: $playerState ");
-
-    if (path!=null && path == this.url && playerState==PlayerState.paused) {
-      print('从暂停界面切换过来，继续暂停');
+    if (path != null && path == this.url && playerState == PlayerState.paused) {
+      print('播放相同的歌曲，从暂停界面切换过来，继续暂停。 path: $path , url: $url ');
       pause();
-      notifyMusicListeners((listener)=>listener.onStart(duration));
-      notifyMusicListeners((listener)=>listener.onPosition(position));
+      notifyMusicListeners((listener) => listener.onStart(duration));
+      notifyMusicListeners((listener) => listener.onPosition(position));
     } else {
+      bool isLocal = !this.url.startsWith('http');
+      print("start play: $url , isLocal: $isLocal, playerState: $playerState ");
       await audioPlayer.play(this.url, isLocal: isLocal);
     }
-    
   }
 
   Future pause() async {
@@ -199,8 +199,8 @@ class MusicController with ChangeNotifier {
   void onComplete() {
     Map nextSong = next();
     if (nextSong == null) {
-      notifyMusicListeners((listener) => listener.onStateChanged(PlayerState.stopped));
+      notifyMusicListeners(
+          (listener) => listener.onStateChanged(PlayerState.stopped));
     }
   }
-
 }

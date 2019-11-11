@@ -123,7 +123,7 @@ class _RecommendPageState extends State<RecommendPage> {
   Widget _buildSwiper() {
     return Swiper(
       autoplay: true,
-      itemHeight: 200,
+      itemHeight: _appBarHeight,
       autoplayDisableOnInteraction: false,
       itemBuilder: (BuildContext context, int index) {
         Map song = _newSongs[index];
@@ -158,12 +158,36 @@ class _RecommendPageState extends State<RecommendPage> {
 
   Widget _buildCenterGrid() {
     // 加载固定数量的Grid
-    return SliverGrid.count(crossAxisCount: 4, children: <Widget>[
+    /*  return SliverGrid.count(crossAxisCount: 4, children: <Widget>[
       TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
       TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
       TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
       TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
-    ]);
+    ]); */
+    return SliverToBoxAdapter(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+          TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
+          TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
+          TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
+          TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
+        ]));
+
+    /* return SliverToBoxAdapter(
+        child: ListView(scrollDirection: Axis.horizontal, children: <Widget>[
+      TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
+      TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
+      TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
+      TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
+    ])); */
+
+    /*  return SliverGrid.count(crossAxisCount: 4, children: <Widget>[
+      TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
+      TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
+      TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
+      TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
+    ]); */
   }
 
   Widget _buildSongList() {
@@ -179,13 +203,13 @@ class _RecommendPageState extends State<RecommendPage> {
 
   Widget _buildSongGrid() {
     return SliverPadding(
-        padding: EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 12.0),
+        padding: EdgeInsets.fromLTRB(10.0, 4.0, 10.0, 10.0),
         sliver: SliverGrid(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
             childAspectRatio: 1.0,
-            mainAxisSpacing: 12.0,
-            crossAxisSpacing: 12.0,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
@@ -198,13 +222,13 @@ class _RecommendPageState extends State<RecommendPage> {
 
   Widget _buildPlayListGrid() {
     return SliverPadding(
-        padding: EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 12.0),
+        padding: EdgeInsets.fromLTRB(10.0, 4.0, 10.0, 10.0),
         sliver: SliverGrid(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             childAspectRatio: 1.0,
-            mainAxisSpacing: 12.0,
-            crossAxisSpacing: 12.0,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
@@ -254,7 +278,7 @@ class _RecommendPageState extends State<RecommendPage> {
             child: Container(
               height: 26,
               alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 2.0),
+              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
               child: Text('更多 >'),
               decoration: BoxDecoration(
                 shape: BoxShape.rectangle,

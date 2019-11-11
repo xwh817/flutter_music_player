@@ -45,6 +45,9 @@ class Lyric {
         }
       }
     });
+
+    _initDuraton();
+
   }
 
   _getPositon(String str) {
@@ -69,12 +72,26 @@ class Lyric {
 
     return position;
   }
+
+  // 计算每段歌词的显示时间
+  void _initDuraton() {
+    for(int i=0; i<items.length-1; i++) {
+      LyricItem item = items[i];
+      item.duration = items[i+1].position - item.position;
+    }
+    // 最后一行怎样计算长度？？
+    if (items.length > 1) {
+      items[items.length -1].duration = items[items.length -2].duration;
+    }
+    
+  }
 }
 
 class LyricItem {
   int index;
   int position;
   String content;
+  int duration; // 歌词显示的时间长度
 
   LyricItem(this.index, this.position, this.content);
 }

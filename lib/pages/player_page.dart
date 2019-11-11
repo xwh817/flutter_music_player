@@ -273,7 +273,7 @@ class _PlayerPageState extends State<PlayerPage>
                       tag: 'FloatingPlayer',
                       child: ClipOval(child: _getSongImage(BoxFit.cover)))),
             ),
-            //_buildCDCover(),
+            //_buildCDCover(),  // cd控件会挡住点击事件
             _buildProgressIndicator(),
           ],
         ));

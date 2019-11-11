@@ -34,7 +34,7 @@ class _MVItemState extends State<MVItem> {
           children: <Widget>[
             SizedBox(height: 8.0),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: AspectRatio(
                 // 设定宽高比
                 aspectRatio: 16 / 9,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/Lyric.dart';
+import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:provider/provider.dart';
+
+import 'gradient_text.dart';
 
 class LyricPage extends StatefulWidget {
   _LyricPageState _state;
@@ -15,38 +19,39 @@ class LyricPage extends StatefulWidget {
   }
 
   // 对比发现，从外面调用触发build的次数要少，而不是从父控件传入position。
+  
+  int updatePositionCount = 0;
   void updatePosition(int position, {isTaping: false}) {
     //print('updatePosition: $position');
     if (_state == null || _state.lyric == null) {
-      print('_LyricPageState is null, retryCount: $retryCount');
-      Future.delayed(Duration(milliseconds: 200)).then((_){
-        retryCount++;
-        if (retryCount < 5) {
+      print('_LyricPageState is null, retryCount: $updatePositionCount');
+      Future.delayed(Duration(milliseconds: 200)).then((_) {
+        updatePositionCount++;
+        if (updatePositionCount < 5) {
           updatePosition(position, isTaping: isTaping);
         }
       });
     } else {
+      updatePositionCount = 0;
       _state.updatePosition(position, isTaping: isTaping);
     }
-    
   }
 
-  int retryCount = 0;
+  int updateSongCount = 0;
   void updateSong(Map song) {
     if (_state == null) {
-      print('_LyricPageState is null, retryCount: $retryCount');
-      Future.delayed(Duration(milliseconds: 200)).then((_){
-        retryCount++;
-        if (retryCount < 5) {
+      print('_LyricPageState is null, retryCount: $updateSongCount');
+      Future.delayed(Duration(milliseconds: 200)).then((_) {
+        updateSongCount++;
+        if (updateSongCount < 5) {
           updateSong(song);
         }
       });
     } else {
+      updateSongCount = 0;
       _state.updateSong(song);
     }
-    
   }
-
 }
 
 class _LyricPageState extends State<LyricPage> {
@@ -56,6 +61,7 @@ class _LyricPageState extends State<LyricPage> {
   Lyric lyric;
   ScrollController _controller;
   int _currentIndex = -1;
+  int position = 0;
   bool success = true;
   bool isFirst = true;
   bool isItemsEmpty = false;
@@ -97,8 +103,8 @@ class _LyricPageState extends State<LyricPage> {
   Widget _buildInfo(String msg) {
     isItemsEmpty = true;
     return Center(
-        child: Text(msg,
-            style: TextStyle(color: Colors.white30, fontSize: 13.0)));
+        child:
+            Text(msg, style: TextStyle(color: Colors.white30, fontSize: 13.0)));
   }
 
   @override
@@ -110,7 +116,7 @@ class _LyricPageState extends State<LyricPage> {
     } else if (lyric == null) {
       return _buildInfo('歌词加载中...');
     } else if (lyric.items.length == 0) {
-      return  _buildInfo('...纯音乐，无歌词...');
+      return _buildInfo('...纯音乐，无歌词...');
     } else {
       isItemsEmpty = false;
     }
@@ -132,19 +138,44 @@ class _LyricPageState extends State<LyricPage> {
   }
 
   Widget _getItem(LyricItem item) {
+    bool isCurrent = item.index == _currentIndex;
+    Widget itemText = Text(
+      item.content,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+          fontSize: 13.0,
+          color: isCurrent ? Colors.white : Colors.white60),
+    );
+
+    if (isCurrent) {
+      itemText = GradientText(text:itemText);
+      if (item.content.isEmpty) {
+        currentLyricItem = null;
+      } else {
+        currentLyricItem = itemText;
+      }
+    }
+
     return Container(
-        alignment: Alignment.center,
-        height: itemHeight,
-        child: Text(
-          item.content,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-              fontSize: 13.0,
-              color: (item.index == _currentIndex)
-                  ? Colors.white
-                  : Colors.white60),
-        ));
+        alignment: Alignment.center, height: itemHeight, child: itemText);
+  }
+
+
+  GradientText currentLyricItem;
+  void updateCurrentLyricItem() {
+    if (currentLyricItem != null && _currentIndex >=0 &&_currentIndex < lyric.items.length) {
+      LyricItem item = lyric.items[_currentIndex];
+      double offsetX; // 遮住的比例
+      if (item.duration > 0) {
+        offsetX = (position - item.position) / item.duration;
+      } else {
+        offsetX = 1.0;
+      }
+      currentLyricItem.setOffsetX(offsetX);
+    }
+      
+
   }
 
   /// 比较播放位置和歌词时间戳，获取当前是哪条歌词。
@@ -204,14 +235,14 @@ class _LyricPageState extends State<LyricPage> {
       return;
     }
 
-    if (isFirst) {  // 第一次进入时不用滚动。
+    if (isFirst) {
+      // 第一次进入时不用滚动。
       isFirst = false;
       _controller.jumpTo(topIndex * itemHeight);
     } else {
       _controller.animateTo(topIndex * itemHeight,
-        duration: Duration(seconds: 1), curve: Curves.easeInOut);
+          duration: Duration(seconds: 1), curve: Curves.easeInOut);
     }
-    
   }
 
   // 根据歌曲播放的位置确定滚动的位置
@@ -224,7 +255,13 @@ class _LyricPageState extends State<LyricPage> {
       lastScrollPosition = milliseconds;
       return;
     }
-    int _index = getIndexByTime(milliseconds);
+
+    position = milliseconds;
+
+    // 更新单条歌词进度
+    updateCurrentLyricItem();
+
+    int _index = getIndexByTime(position);
     //print("update index : $_index, currentIndex: $_currentIndex");
     if (_index != _currentIndex) {
       _currentIndex = _index;
