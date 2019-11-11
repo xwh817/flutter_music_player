@@ -158,7 +158,8 @@ class _LyricPageState extends State<LyricPage> {
     }
 
     return Container(
-        alignment: Alignment.center, height: itemHeight, child: itemText);
+      padding: EdgeInsets.symmetric(horizontal: 12.0),
+      alignment: Alignment.center, height: itemHeight, child: itemText);
   }
 
 
