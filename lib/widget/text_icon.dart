@@ -25,7 +25,8 @@ class TextIcon extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                      fontSize: selected ? 14.0 : 12.0,
+                      //fontSize: selected ? 14.0 : 12.0,
+                      fontSize: 14.0,
                       height: 1.4,
                       color: color),
                 )

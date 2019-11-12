@@ -73,12 +73,17 @@ class _LyricPageState extends State<LyricPage> {
     visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
     _controller = ScrollController();
 
-    //_getLyric();
-
     print('LyricPage initState, 歌词可见行数：$visibleItemSize');
   }
 
   void _getLyric() {
+      // 进入加载中状态
+    if (lyric != null) {
+      setState(() {
+        lyric = null;
+      });
+    }
+    // 获取歌词
     MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {

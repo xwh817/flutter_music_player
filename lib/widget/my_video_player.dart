@@ -8,12 +8,13 @@ import 'package:flutter_music_player/model/video_controller.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-
 import 'music_progress_bar_2.dart';
+
+enum VideoState { idle, loading, playing, paused }
 
 class MyVideoPlayer extends StatefulWidget {
   final VideoPlayerController controller;
-  final PlayerState playerState;
+  final VideoState playerState;
   final Map mv;
   final Function onResizePressed;
   final Function onShowButtons;
@@ -22,7 +23,7 @@ class MyVideoPlayer extends StatefulWidget {
       {Key key,
       this.mv,
       this.controller,
-      this.playerState: PlayerState.idle,
+      this.playerState: VideoState.idle,
       this.onResizePressed,
       this.onShowButtons,
       this.isFullScreen: false});
@@ -31,11 +32,10 @@ class MyVideoPlayer extends StatefulWidget {
   _MyVideoPlayerState createState() => _MyVideoPlayerState();
 }
 
-enum PlayerState { idle, loading, playing, paused }
 
 class _MyVideoPlayerState extends State<MyVideoPlayer> {
-  PlayerState _playerState = PlayerState.idle;
-  int position;
+  VideoState _playerState = VideoState.idle;
+  int position = 0;
   bool isTaping = false; // 是否在手动拖动（拖动的时候进度条不要自己动
   VideoPlayerController _controller;
   bool isFromOtherPage = false;
@@ -52,46 +52,62 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
     // 从其他页面而来，继续播放，现成的controller，但要添加进度监听。
     if (isFromOtherPage) {
-      _initControllerListener();
+      _addControllerListener();
     }
   }
 
-  void _initControllerListener() {
+  void _addControllerListener() {
     videoListener = () {
       if (!isTaping) {
         setState(() {
           position = _controller.value.position.inMilliseconds;
         });
       }
+
+      bool isPlaying = _controller.value.isPlaying;
+      if (this._playerState == VideoState.playing && !isPlaying) {
+        setState(() {
+          _playerState = VideoState.paused;
+        });
+      }
+
+      //print('VideoListener: isPlayer ${_controller.value.isPlaying}, position: ${_controller.value.position.inMilliseconds}');
     };
 
     _controller.addListener(videoListener);
   }
 
-  // 获取视频播放地址
-  _getMVDetail() {
-    setState(() {
-      _playerState = PlayerState.loading;
-    });
+  // 当播放一个新的视频时，初始化Controller
+  _initMVController() async {
+    // 获取到视频地址
+    String url = await MusicDao.getMVDetail(widget.mv['id']);
+    _controller = VideoPlayerController.network(url)..initialize();
 
-    // 获取到视频地址之后开始播放
-    MusicDao.getMVDetail(widget.mv['id']).then((url) {
-      _controller = VideoPlayerController.network(url)
-        ..initialize().then((_) => _play());
-
-      _initControllerListener();
-    });
+    _addControllerListener();
   }
 
-  void _play() {
-    // 播放视频的时候把音乐暂停
+  Future _play() async {
+    // 播放视频的时候把正在播放的音乐和视频暂停
     Provider.of<MusicController>(context).pause();
+    VideoPlayerController _oldController = Provider.of<VideoControllerProvider>(context).getController();
+    if (_oldController != null) {
+      _oldController.pause();
+    }
+
+    // 播放一个新的视频
+    if (_controller == null) {
+      setState(() {
+        _playerState = VideoState.loading;
+      });
+      // 等待初始化
+      await _initMVController();
+    }
 
     // 开始播放的时候，切换全局controller，停掉上一个视频。
     Provider.of<VideoControllerProvider>(context).setController(_controller);
     _controller.play().then((_) {
       setState(() {
-        _playerState = PlayerState.playing;
+        _playerState = VideoState.playing;
       });
     });
   }
@@ -99,7 +115,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
   void _pause() {
     _controller.pause().then((_) {
       setState(() {
-        _playerState = PlayerState.paused;
+        _playerState = VideoState.paused;
       });
     });
   }
@@ -113,7 +129,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
       // 视频从其他页面而来，就不要dispose，不然上个页面播不了了。
       if (!isFromOtherPage) {
-        if (_playerState == PlayerState.playing) {
+        if (_playerState == VideoState.playing) {
           _controller.pause();
         }
         _controller.dispose();
@@ -125,12 +141,6 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    // 全局controller发生了变化，停掉当前的。
-    if (_controller != null &&
-        Provider.of<VideoControllerProvider>(context).getController() !=
-            _controller) {
-      _pause();
-    }
     return Stack(
       children: _getWidgetsByState(),
     );
@@ -138,14 +148,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   List<Widget> _getWidgetsByState() {
     List<Widget> children = [];
-    if ((_playerState == PlayerState.idle ||
-        _playerState == PlayerState.loading)) {
+    if ((_playerState == VideoState.idle ||
+        _playerState == VideoState.loading)) {
       children.add(
           CachedNetworkImage(imageUrl: "${widget.mv['cover']}?param=640y360"));
     }
 
-    if ((_playerState == PlayerState.playing ||
-        _playerState == PlayerState.paused)) {
+    if ((_playerState == VideoState.playing ||
+        _playerState == VideoState.paused)) {
       children.add(InkWell(
         onTap: () {
           if (isShowButton) {
@@ -168,7 +178,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
       }
     }
 
-    if (_playerState == PlayerState.loading) {
+    if (_playerState == VideoState.loading) {
       children.add(Center(child: CircularProgressIndicator()));
     } else if (isShowButton) {
       // 播放按钮
@@ -253,18 +263,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     return Center(
       child: MyIconButton(
         icons: [Icons.pause, Icons.play_arrow],
-        iconIndex: _playerState == PlayerState.playing ? 0 : 1,
+        iconIndex: _playerState == VideoState.playing ? 0 : 1,
         size: 66.0,
         color: Colors.white60,
         onPressed: () {
-          if (_playerState == PlayerState.playing) {
+          if (_playerState == VideoState.playing) {
             _pause();
           } else {
-            if (_controller == null) {
-              _getMVDetail();
-            } else {
-              _play();
-            }
+            _play();
           }
           _showButtonsAndAutoHide(autoHideTime);
         },

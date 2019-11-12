@@ -27,7 +27,7 @@ class _MyProgressBarState extends State<MyProgressBar> {
     // 坑很多：Slider注意范围越界的问题，而且duration不能为0.0
     // 歌曲切换的时候duration可能返回0。
     // 播放出错的时候，可能返回负数。
-    double position = widget.position <0 ? 0.0 : widget.position.toDouble();
+    double position = widget.position < 0 ? 0.0 : widget.position.toDouble();
     double duration = widget.duration <= 0 ? 1.0 : widget.duration.toDouble();
     if (position > duration) {
       position = 0;

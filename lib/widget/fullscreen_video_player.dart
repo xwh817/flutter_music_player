@@ -15,8 +15,10 @@ class FullScreenVideoPlayer extends StatefulWidget {
 
 class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   VideoPlayerController _controller;
-  PlayerState _playerState = PlayerState.playing;
+  VideoState _playerState = VideoState.playing;
   bool showButtons = true;
+  bool isFullScreen = false;
+  WidgetsBindingObserver widgetsBindingObserver;
 
   @override
   void initState() {
@@ -37,11 +39,18 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
     print('FullScreen initState');
 
     // 延时1s执行返回
-    /* Future.delayed(Duration(seconds: 1), (){
+    Future.delayed(Duration(seconds: 1), () {
       print('延时1s执行');
-      OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
-      isLandscape = true;
+      _switchScreen(true);
+    });
+
+    /*  WidgetsBinding.instance.addPostFrameCallback((callback){
+    print("addPostFrameCallback be invoke");
+    isFullScreen = true;
+    OrientationPlugin.forceOrientation(DeviceOrientation.landscapeRight);
   }); */
+
+    WidgetsBinding.instance.addObserver(widgetsBindingObserver);
   }
 
   @override
@@ -59,23 +68,22 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
 
   @override
   void dispose() {
-    //OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
-
     super.dispose();
 
-    //AutoOrientation.portraitUpMode();
-
     print('FullScreen dispose');
+    WidgetsBinding.instance.removeObserver(widgetsBindingObserver);
   }
-
-  bool isFullScreen = false;
 
   Future<bool> _beforePop() {
     if (!isFullScreen) {
       return Future.value(true);
     }
 
-    _switchScreen(false);
+    _switchScreen(false).then((_){
+      /* Future.delayed(Duration(seconds: 1)).then((_){
+        Navigator.pop(context);
+      }); */
+    });
 
     // 返回false，不关闭，走上面的异步操作。
     return Future.value(false);
@@ -84,6 +92,7 @@ class _FullScreenVideoPlayerState extends State<FullScreenVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     print('FullScreen build');
+
     return WillPopScope(
         onWillPop: _beforePop,
         child: Material(

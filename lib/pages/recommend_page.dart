@@ -166,12 +166,12 @@ class _RecommendPageState extends State<RecommendPage> {
     ]); */
     return SliverToBoxAdapter(
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-          TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
-          TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
-          TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
+          TextIconWithBg(icon: Icons.date_range, title: '排行', onPressed: () {}),
           TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
+          TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
+          TextIconWithBg(icon: Icons.settings, title: '设置', onPressed: () {}),
         ]));
 
     /* return SliverToBoxAdapter(

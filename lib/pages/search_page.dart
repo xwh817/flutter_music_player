@@ -17,6 +17,13 @@ class _SearchPageState extends State<SearchPage> {
   String keywords = '';
   bool isSearching = false;
   final TextEditingController _controller = TextEditingController();
+  //BaiduSpeechRecognition _speechRecognition = BaiduSpeechRecognition();
+
+  @override
+  void initState() {
+    super.initState();
+    //_speechRecognition.init().then((value) => print(value));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +33,18 @@ class _SearchPageState extends State<SearchPage> {
         title: SearchBar(
           controller: _controller,
           onChanged: (text) => keywords = text,
+          onSpeechPressed: (){
+            /* _speechRecognition.start().then((value){
+              print(value);
+              if (value.isNotEmpty) {
+                setState(() {
+                  keywords = value;
+                });
+                this._search();
+              }
+              
+            });  */ 
+          },
         ),
         actions: [
           MaterialButton(

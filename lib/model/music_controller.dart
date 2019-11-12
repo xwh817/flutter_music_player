@@ -112,15 +112,27 @@ class MusicController with ChangeNotifier {
   }
 
   Future startSong() async {
-    song = getCurrentSong();
-    if (song == null) {
+    Map newSong = getCurrentSong();
+    if (newSong == null) {
       return;
     }
 
+    // 是否将要播放的歌曲就是当前歌曲
+    bool isContinue = song != null && song['id'] == newSong['id'];
+    if (!isContinue) {
+      song = newSong;
+    }
+
     notifyMusicListeners((listener) => listener.onLoading());
-    SongUtil.getPlayPath(song).then((playPath) {
+
+    if (isContinue) {
+      play(path: this.url);
+    } else {  // 如果是播放新歌，就重新获取播放地址。
+      SongUtil.getPlayPath(song).then((playPath) {
       play(path: playPath);
     });
+    }
+    
   }
 
   Future play({String path}) async {

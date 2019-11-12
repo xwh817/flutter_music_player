@@ -21,6 +21,7 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+    print('FloatingPlayer initState');
 
     _animController =
         AnimationController(duration: const Duration(seconds: 16), vsync: this);
@@ -29,15 +30,17 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    
+    print('FloatingPlayer didChangeDependencies');
 
     /// listen: true，当Provider中notifyListeners时，自动触发更新。
     /// 默认为true，所以在不需要自动触发更新的地方要设为false。
-    musicController = Provider.of<MusicController>(context, listen: true);
     initMusicListener();
   }
 
   void initMusicListener() {
-    musicListener = MusicListener(
+    if (musicListener == null) {
+      musicListener = MusicListener(
         getName: () => "FloatingPlayer",
         onLoading: () {},
         onStart: (duration) {},
@@ -46,6 +49,9 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
           setState(() => this.playerState = state);
         },
         onError: (msg) => {});
+    }
+    
+    musicController = Provider.of<MusicController>(context, listen: true);
     musicController.addMusicListener(musicListener);    
   }
 
@@ -59,6 +65,8 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    print('FloatingPlayer build');
+
     Map song = musicController.getCurrentSong();
 
     _buildAnim();
@@ -97,11 +105,13 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
     playerState = musicController.getCurrentState();
     if (playerState == PlayerState.playing) {
       if (!_animController.isAnimating) {
+        print('开始动画');
         _animController.forward();
         _animController.repeat();
       }
     } else {
       if (_animController.isAnimating) {
+        print('结束动画');
         _animController.stop();
       }
     }

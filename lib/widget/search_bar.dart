@@ -4,11 +4,13 @@ class SearchBar extends StatefulWidget {
   final bool enable;
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
+  final Function onSpeechPressed;
   SearchBar({
     Key key,
-    this.enable: true,
+    this.enable = true,
     this.controller,
     this.onChanged,
+    this.onSpeechPressed,
   }) : super(key: key);
 
   @override
@@ -61,6 +63,7 @@ class _SearchBarState extends State<SearchBar> {
                   });
                 } else {
                   // 语音识别按钮
+                  widget.onSpeechPressed();
                 }
               }),
         ],

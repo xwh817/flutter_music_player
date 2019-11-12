@@ -38,6 +38,7 @@ class MusicDB {
     return await openDatabase(db_file, version: db_version,
         onCreate: (Database db, int version) async {
       // 初始化，创建表
+      this.db = db;
       _createTableFavorite();
     }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
       // 数据库升级，修改表结构。

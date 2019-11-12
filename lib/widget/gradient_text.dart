@@ -48,7 +48,7 @@ class _GradientTextState extends State<GradientText> {
   @override
   Widget build(BuildContext context) {
     /// 参考：https://juejin.im/post/5c860c0a6fb9a049e702ef39
-    return ShaderMask(  // 遮罩层src，通过不同的BlendMode叠在dst上，产生不同的效果。
+    return ShaderMask(  // 遮罩层src，通过不同的BlendMode(混合模式)叠在dst上，产生不同的效果。
       shaderCallback: (bounds) {
         //print('bounds: $bounds');
         return gradient.createShader(

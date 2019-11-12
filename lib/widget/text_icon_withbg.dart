@@ -26,7 +26,7 @@ class TextIconWithBg extends StatelessWidget {
             )),
         Text(
           title,
-          style: TextStyle(fontSize: 14.0, color: Colors.black87),
+          style: TextStyle(fontSize: 13.0, color: Colors.black87),
         ),
         SizedBox(height: 16.0),
       ],
