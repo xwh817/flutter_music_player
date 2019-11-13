@@ -4,8 +4,10 @@ import 'package:flutter_music_player/dao/music_db_favorite.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/pages/artist_list_page.dart';
 import 'package:flutter_music_player/pages/history_page.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
+import 'package:flutter_music_player/pages/rank_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
 import 'package:flutter_music_player/pages/setting_page.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
@@ -170,8 +172,12 @@ class _RecommendPageState extends State<RecommendPage> {
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-          TextIconWithBg(icon: Icons.date_range, title: '排行', onPressed: () {}),
-          TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
+          TextIconWithBg(icon: Icons.date_range, title: '排行', onPressed: () {
+            NavigatorUtil.push(context, RankPage());
+          }),
+          TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {
+            NavigatorUtil.push(context, ArtistListPage());
+          }),
           TextIconWithBg(icon: Icons.history, title: '历史', onPressed: () {
             NavigatorUtil.push(context, HistoryPage());
           }),

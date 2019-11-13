@@ -72,10 +72,11 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
     _buildAnim();
 
     return GestureDetector(
-      onDoubleTap: (){
+      // 加了双击事件之后，单击事件就变迟缓了。
+      /* onDoubleTap: (){
         print('onDoubleTap');
         musicController.toggle();
-      },
+      }, */
       onLongPress: (){
         print('onLongPress');
       },

@@ -27,6 +27,11 @@ class MusicDao {
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
   static const URL_SEARCH = '$URL_ROOT/search?keywords=';
 
+  static const URL_GET_TOPLIST = '$URL_ROOT/toplist/detail'; // 获取排行和摘要
+
+  static const URL_TOP_ARTISTS = '$URL_ROOT/toplist/artist';
+  static const URL_ARTIST_DETAIL = '$URL_ROOT/artists?id=';
+
   static Future<List> getPlayList(String cat) async {
     var data = await HttpUtil.getJsonData(URL_PLAY_LIST + cat);
     List playlist = data['playlists'];
@@ -67,13 +72,14 @@ class MusicDao {
     var data = await HttpUtil.getJsonData(url);
     List mvList;
     if (url == URL_MV_PERSONAL) {
-      mvList = (data['result'] as List).map((item)=>{
-        'id': item['id'],
-        'name': item['name'],
-        'cover': item['picUrl'],
-        'artistNames': item['artistName'],
-      }).toList();
-
+      mvList = (data['result'] as List)
+          .map((item) => {
+                'id': item['id'],
+                'name': item['name'],
+                'cover': item['picUrl'],
+                'artistNames': item['artistName'],
+              })
+          .toList();
     } else {
       mvList = data['data'];
     }
@@ -109,5 +115,24 @@ class MusicDao {
       song = songList[0];
     }
     return song;
+  }
+
+  static Future<List> getArtistList() async {
+    var data = await HttpUtil.getJsonData(URL_TOP_ARTISTS);
+    List songList = data['list']['artists'];
+    return songList;
+  }
+  
+  static Future<Map> getArtistDetail(int id) async {
+    Map detail = await HttpUtil.getJsonData('$URL_ARTIST_DETAIL$id');
+    Map artist = detail['artist'];
+    Map content = {
+      'id': artist['id'],
+      'name': artist['name'],
+      'desc': artist['briefDesc'],
+      'image': artist['picUrl'],
+      'songs': detail['hotSongs'],
+    };
+    return content;
   }
 }

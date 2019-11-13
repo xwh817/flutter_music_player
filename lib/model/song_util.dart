@@ -87,4 +87,15 @@ class SongUtil {
 
   }
 
+
+  static String getArtistImage(Map artist, {int size:100, int width:0, int height:0}) {
+    String imgUrl = artist['picUrl'];
+    if (width > 0 && height > 0) {
+      imgUrl += '?param=${width}y$height';
+    } else if (size > 0) {
+      imgUrl += '?param=${size}y$size';
+    }
+    return imgUrl;
+  }
+
 }
