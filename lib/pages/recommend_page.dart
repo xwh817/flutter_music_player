@@ -86,8 +86,8 @@ class _RecommendPageState extends State<RecommendPage> {
             body: CustomScrollView(
               slivers: <Widget>[
                 _buildHeader(),
-                _buildCenterGrid(),
-                _buildDivider(),
+                //_buildCenterGrid(),
+                //_buildDivider(),
                 _buildSubHeader('推荐单曲', Icons.music_note),
                 _buildSongGrid(),
                 _buildDivider(),
