@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
+import 'package:flutter_music_player/pages/setting_page.dart';
 import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
@@ -86,8 +88,8 @@ class _RecommendPageState extends State<RecommendPage> {
             body: CustomScrollView(
               slivers: <Widget>[
                 _buildHeader(),
-                //_buildCenterGrid(),
-                //_buildDivider(),
+                _buildCenterGrid(),
+                _buildDivider(),
                 _buildSubHeader('推荐单曲', Icons.music_note),
                 _buildSongGrid(),
                 _buildDivider(),
@@ -148,8 +150,8 @@ class _RecommendPageState extends State<RecommendPage> {
     return SliverToBoxAdapter(
       child: Divider(
         height: 1.0,
-        thickness: 0.5,
-        color: Colors.black12,
+        thickness: 1.0,
+        color: Color(0x11000000),
         //indent: 16.0,
         //endIndent: 16.0,
       ),
@@ -170,8 +172,10 @@ class _RecommendPageState extends State<RecommendPage> {
             children: <Widget>[
           TextIconWithBg(icon: Icons.date_range, title: '排行', onPressed: () {}),
           TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
-          TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
-          TextIconWithBg(icon: Icons.settings, title: '设置', onPressed: () {}),
+          TextIconWithBg(icon: Icons.history, title: '历史', onPressed: () {}),
+          TextIconWithBg(icon: Icons.settings, title: '设置', onPressed: () {
+            NavigatorUtil.push(context, SettingPage());
+          }),
         ]));
 
     /* return SliverToBoxAdapter(
@@ -247,7 +251,7 @@ class _RecommendPageState extends State<RecommendPage> {
         children: <Widget>[
           Icon(
             icon,
-            color: AppColors.mainColor,
+            color: Provider.of<ColorStyleProvider>(context).getCurrentColor(),
             size: 18.0,
           ),
           SizedBox(width: 4.0),

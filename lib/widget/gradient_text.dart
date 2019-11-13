@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class GradientText extends StatefulWidget {
   final Widget text;
@@ -30,11 +32,7 @@ class GradientText extends StatefulWidget {
 }
 
 class _GradientTextState extends State<GradientText> {
-  final Gradient gradient = LinearGradient(
-    colors: [AppColors.mainLightColor, Colors.white], 
-    stops: [0.5, 0.6]   // 设置渐变的起始位置
-    );
-
+  
   double offsetX = 0.0;
 
   setOffsetX(offsetX) {
@@ -47,6 +45,11 @@ class _GradientTextState extends State<GradientText> {
 
   @override
   Widget build(BuildContext context) {
+    final Gradient gradient = LinearGradient(
+      colors: [Provider.of<ColorStyleProvider>(context).getLightColor(), Colors.white], 
+      stops: [0.5, 0.6]   // 设置渐变的起始位置
+    );
+
     /// 参考：https://juejin.im/post/5c860c0a6fb9a049e702ef39
     return ShaderMask(  // 遮罩层src，通过不同的BlendMode(混合模式)叠在dst上，产生不同的效果。
       shaderCallback: (bounds) {

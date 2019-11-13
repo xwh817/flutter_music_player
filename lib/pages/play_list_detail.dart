@@ -56,7 +56,6 @@ class _PlayListPageState extends State<PlayListPage> {
         child: Theme(
           data: ThemeData(
             brightness: Brightness.light,
-            primarySwatch: _imageLoaded ? Colors.green : Colors.grey,
             platform: Theme.of(context).platform,
           ),
           child: Scaffold(

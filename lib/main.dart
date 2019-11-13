@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
-import 'package:flutter_music_player/utils/colors.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:provider/provider.dart';
+import 'model/color_provider.dart';
 import 'model/video_controller.dart';
 import 'pages/home_page.dart';
 
@@ -13,8 +13,11 @@ void main() => runApp(_buildProvider());
 _buildProvider() {
   return MultiProvider(
     providers: [
+      ChangeNotifierProvider<ColorStyleProvider>.value(
+          value: ColorStyleProvider()),
       ChangeNotifierProvider<MusicController>.value(value: MusicController()),
-      ChangeNotifierProvider<VideoControllerProvider>.value(value: VideoControllerProvider()),
+      ChangeNotifierProvider<VideoControllerProvider>.value(
+          value: VideoControllerProvider()),
     ],
     child: MyApp(),
   );
@@ -22,16 +25,41 @@ _buildProvider() {
 
 DateTime lastBackTime;
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ColorStyle _style = ColorStyle.green;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    ColorStyleProvider colorStyleProvider =
+        Provider.of<ColorStyleProvider>(context);
+    colorStyleProvider.initColorStyle().then((style) {
+      if (style != _style) {
+        setState(() {
+          _style = style;
+        });
+      }
+    });
+
     return MaterialApp(
         title: 'Flutter Music',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(primarySwatch: Colors.green),
+        theme: ThemeData(
+            primarySwatch:
+                colorStyleProvider.getCurrentColor(color: 'mainColor')),
         home: WillPopScope(
-          onWillPop: ()=>_beforePop(context),
+          onWillPop: () => _beforePop(context),
           child: HomePage(),
         ));
   }
@@ -39,14 +67,7 @@ class MyApp extends StatelessWidget {
   Future<bool> _beforePop(BuildContext context) async {
     if (lastBackTime == null ||
         DateTime.now().difference(lastBackTime) > Duration(seconds: 2)) {
-      Fluttertoast.showToast(
-          msg: "再按一次退出",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: AppColors.toastBackground,
-          textColor: Colors.white,
-          fontSize: 14.0);
-
+      ToastUtil.showToast(context, "再按一次退出");
       lastBackTime = DateTime.now();
       return false; // 不返回
     }
@@ -54,6 +75,4 @@ class MyApp extends StatelessWidget {
     Provider.of<MusicController>(context, listen: false).dispose();
     return true;
   }
-
-  
 }

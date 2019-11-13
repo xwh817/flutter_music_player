@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
+import 'package:flutter_music_player/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class SearchBar extends StatefulWidget {
   final bool enable;
@@ -22,6 +25,7 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    Color mainColor = Provider.of<ColorStyleProvider>(context).getCurrentColor();
     return Container(
       height: 36.0,
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -31,7 +35,7 @@ class _SearchBarState extends State<SearchBar> {
       ),
       child: Row(
         children: <Widget>[
-          Icon(Icons.search, size: 22.0, color: Colors.green),
+          Icon(Icons.search, size: 22.0, color: mainColor),
           Expanded(
             child: TextField(
                 controller: widget.controller,
@@ -54,7 +58,7 @@ class _SearchBarState extends State<SearchBar> {
           ),
           InkWell(
               child: Icon(showClear ? Icons.clear : Icons.mic,
-                  size: 22.0, color: Colors.green),
+                  size: 22.0, color: mainColor),
               onTap: () {
                 if (showClear) {
                   widget.controller.clear();

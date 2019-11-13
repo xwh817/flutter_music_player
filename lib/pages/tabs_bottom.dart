@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/widget/text_icon.dart';
+import 'package:provider/provider.dart';
 
 
 class BottomTabs extends StatelessWidget {
@@ -11,10 +13,10 @@ class BottomTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildBottomAppBar();
+    return _buildBottomAppBar(context);
   }
 
-  _buildBottomAppBar() {
+  _buildBottomAppBar(BuildContext context) {
     return BottomAppBar(
       color: Color(0xffffffff),
       shape: CircularNotchedRectangle(),
@@ -53,12 +55,12 @@ class BottomTabs extends StatelessWidget {
     );
   }
 
-  _buildBottomNavigationBar(){
+  _buildBottomNavigationBar(BuildContext context){
     return BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: tapCallback,
         type: BottomNavigationBarType.fixed,
-        fixedColor: Colors.green,
+        fixedColor: Provider.of<ColorStyleProvider>(context).getCurrentColor(),
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.whatshot),

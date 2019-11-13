@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/utils/colors.dart';
+import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class SearchPage extends StatefulWidget {
   SearchPage({Key key}) : super(key: key);
@@ -70,13 +69,7 @@ class _SearchPageState extends State<SearchPage> {
 
   _search() {
     if (keywords.length == 0) {
-      Fluttertoast.showToast(
-          msg: "请输入歌名或歌手名",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: AppColors.toastBackground,
-          textColor: Colors.white,
-          fontSize: 14.0);
+      ToastUtil.showToast(context, "请输入歌名或歌手名");
       return;
     }
     setState(() {

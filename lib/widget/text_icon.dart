@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/utils/colors.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
+import 'package:provider/provider.dart';
 
 class TextIcon extends StatelessWidget {
   final IconData icon;
@@ -12,7 +13,7 @@ class TextIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color = selected ? AppColors.mainColor : Colors.black54;
+    Color color = selected ? Provider.of<ColorStyleProvider>(context).getCurrentColor() : Colors.black54;
     return InkWell(
         onTap: this.onPressed,
         child: Container(

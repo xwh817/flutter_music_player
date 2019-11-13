@@ -3,16 +3,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
-import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class PlayerPage extends StatefulWidget {
@@ -140,13 +140,8 @@ class _PlayerPageState extends State<PlayerPage>
     });
     print("AudioPlayer onError: $msg");
 
-    Fluttertoast.showToast(
-        msg: "歌曲播放失败！",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        backgroundColor: AppColors.toastBackground,
-        textColor: Colors.white,
-        fontSize: 14.0);
+    ToastUtil.showToast(context, "歌曲播放失败！");
+
   }
 
   @override
@@ -245,7 +240,7 @@ class _PlayerPageState extends State<PlayerPage>
             width: imageSize.toDouble(),
             height: imageSize.toDouble(),
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Colors.lightGreenAccent),
+              valueColor: AlwaysStoppedAnimation(Provider.of<ColorStyleProvider>(context).getCurrentColor()),
               strokeWidth: 2.0,
             ))
         : SizedBox(width: 0.0);

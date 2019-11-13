@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/pages/mv_tab_page.dart';
+import 'package:provider/provider.dart';
 
 class MVPage extends StatefulWidget {
   MVPage({Key key}) : super(key: key);
@@ -32,14 +34,15 @@ class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
   Widget mWidget;
   @override
   Widget build(BuildContext context) {
+    ColorStyleProvider colorStyleProvider = Provider.of<ColorStyleProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0x07000000),
         elevation: 0,
         title: TabBar(
           controller: tabController, //控制器
-          indicatorColor: Colors.orange,
-          labelColor: Colors.green,
+          indicatorColor: colorStyleProvider.getIndicatorColor(),
+          labelColor: colorStyleProvider.getCurrentColor(),
           unselectedLabelColor: Colors.black45,
           labelStyle: TextStyle(fontWeight: FontWeight.w600), //选中的样式
           unselectedLabelStyle: TextStyle(fontSize: 14), //未选中的样式
