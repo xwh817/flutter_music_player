@@ -6,10 +6,10 @@ import 'package:flutter_music_player/pages/player_page.dart';
 class SongItemOfGrid extends StatelessWidget {
   final List songList;
   final int index;
-  static final Image defaultCover = Image.asset('images/music_cover.jpg',
+  /* static final Image defaultCover = Image.asset('images/music_cover.jpg',
         fit: BoxFit.cover,
         color: Colors.black54,
-        colorBlendMode: BlendMode.dstOut);
+        colorBlendMode: BlendMode.dstOut); */
 
   SongItemOfGrid(this.songList, this.index);
 
@@ -22,12 +22,11 @@ class SongItemOfGrid extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
-            child: image.isEmpty
-                ? defaultCover
-                : CachedNetworkImage(
+            child: CachedNetworkImage(
                     imageUrl: image,
                     fit: BoxFit.fill,
-                    placeholder: (context, url) => defaultCover),
+                    //placeholder: (context, url) => Container(color: Colors.black12)
+              ),
           ),
           ClipRRect(
             borderRadius: BorderRadius.only(
@@ -47,7 +46,7 @@ class SongItemOfGrid extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                  // 水波纹
+                  // ???
                   splashColor: Colors.white.withOpacity(0.3),
                   highlightColor: Colors.white.withOpacity(0.1),
                   onTap: () {

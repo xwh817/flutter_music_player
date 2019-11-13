@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/widget/loading_container.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 
 /// 歌单详情页
@@ -19,8 +20,7 @@ class _PlayListPageState extends State<PlayListPage> {
       GlobalKey<ScaffoldState>();
 
   double _appBarHeight;
-  List _songs = List();
-  bool _imageLoaded = true;
+  List _songs = [];
   ScrollController _controller;
 
   @override
@@ -54,28 +54,31 @@ class _PlayListPageState extends State<PlayListPage> {
     return WillPopScope(
         onWillPop: _beforePop,
         child: Theme(
-          data: ThemeData(
-            brightness: Brightness.light,
-            platform: Theme.of(context).platform,
-          ),
-          child: Scaffold(
-            key: _scaffoldKey,
-            body: CustomScrollView(
-              slivers: <Widget>[
-                _buildAppBar(),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return SongItemTile(this._songs, index);
-                    },
-                    childCount: _songs.length,
-                  ),
-                ),
-              ],
-              controller: _controller,
+            data: ThemeData(
+              brightness: Brightness.light,
+              platform: Theme.of(context).platform,
             ),
-          ),
-        ));
+            child: Scaffold(
+              key: _scaffoldKey,
+              body: LoadingContainer(
+                isLoading: this._songs.length == 0,
+                cover: true,
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    _buildAppBar(),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          return SongItemTile(this._songs, index);
+                        },
+                        childCount: _songs.length,
+                      ),
+                    ),
+                  ],
+                  controller: _controller,
+                ),
+              ),
+            )));
   }
 
   Widget _buildAppBar() {
