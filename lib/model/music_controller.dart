@@ -182,6 +182,14 @@ class MusicController with ChangeNotifier {
     await audioPlayer?.stop();
   }
 
+  Future toggle() async {
+    if (playerState == PlayerState.playing) {
+      await pause();
+    } else {
+      await play();
+    }
+  }
+
   Map next() {
     saveHistory();
     Map nextSong = playList.next();

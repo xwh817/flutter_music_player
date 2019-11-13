@@ -71,7 +71,15 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
 
     _buildAnim();
 
-    return Container(
+    return GestureDetector(
+      onDoubleTap: (){
+        print('onDoubleTap');
+        musicController.toggle();
+      },
+      onLongPress: (){
+        print('onLongPress');
+      },
+      child:Container(
       width: 70.0,
       height: 70.0,
       child:FloatingActionButton(
@@ -97,7 +105,7 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
                         imageUrl: SongUtil.getSongImage(song),
                         fit: BoxFit.cover),
               ))),
-    ));
+    )));
   }
 
   void _buildAnim() {
