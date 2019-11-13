@@ -46,7 +46,7 @@ class _GradientTextState extends State<GradientText> {
   @override
   Widget build(BuildContext context) {
     final Gradient gradient = LinearGradient(
-      colors: [Provider.of<ColorStyleProvider>(context).getLightColor(), Colors.white], 
+      colors: [Provider.of<ColorStyleProvider>(context, listen: false).getLightColor(), Colors.white], 
       stops: [0.5, 0.6]   // 设置渐变的起始位置
     );
 

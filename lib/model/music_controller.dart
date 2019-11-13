@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_music_player/dao/music_db_history.dart';
 import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 
@@ -166,6 +167,7 @@ class MusicController with ChangeNotifier {
   }
 
   Future pause() async {
+    saveHistory();
     await audioPlayer?.pause();
   }
 
@@ -181,6 +183,7 @@ class MusicController with ChangeNotifier {
   }
 
   Map next() {
+    saveHistory();
     Map nextSong = playList.next();
     if (nextSong != null) {
       startSong();
@@ -189,6 +192,7 @@ class MusicController with ChangeNotifier {
   }
 
   Map previous() {
+    saveHistory();
     Map prev = playList.previous();
     if (prev != null) {
       startSong();
@@ -214,5 +218,14 @@ class MusicController with ChangeNotifier {
       notifyMusicListeners(
           (listener) => listener.onStateChanged(PlayerState.stopped));
     }
+  }
+
+  void saveHistory() {
+    // 将上一首保存到历史记录
+    print("saveHistory, 当前歌曲播放时长：${position~/1000}");
+    if (position > 30*1000) { // 超过30秒才保存
+      HistoryDB().addHistory(this.song);
+    }
+    
   }
 }

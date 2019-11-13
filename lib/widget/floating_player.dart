@@ -95,7 +95,6 @@ class _FloatingPlayerState extends State<FloatingPlayer> with SingleTickerProvid
                     ? Image.asset('images/music_2.jpg', fit: BoxFit.cover)
                     : CachedNetworkImage(
                         imageUrl: SongUtil.getSongImage(song),
-                        placeholder: (context, url) => Image.asset('images/music_2.jpg', fit: BoxFit.cover),
                         fit: BoxFit.cover),
               ))),
     ));

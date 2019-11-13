@@ -6,7 +6,19 @@ import 'model/color_provider.dart';
 import 'model/video_controller.dart';
 import 'pages/home_page.dart';
 
-void main() => runApp(_buildProvider());
+void main(){
+  initBeforeRunApp().then((re){
+    runApp(_buildProvider());
+  });
+}
+
+/// 在启动之前要做的异步任务
+/// 获取主题颜色
+Future<bool> initBeforeRunApp() async {
+  // 要去SharedPrefrence里面去颜色数据，但是为异步任务，修改main方法，首先完成异步任务再启动app；
+  await ColorStyleProvider.initColorStyle();
+  return true;
+}
 
 /// 遇到一个坑，一直报错：flutter Could not find the correct Provider
 /// 原来是Provider要加在App上面，而不是HomePage上面。
@@ -33,8 +45,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ColorStyle _style = ColorStyle.green;
-
   @override
   void initState() {
     super.initState();
@@ -42,22 +52,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    ColorStyleProvider colorStyleProvider =
-        Provider.of<ColorStyleProvider>(context);
-    colorStyleProvider.initColorStyle().then((style) {
-      if (style != _style) {
-        setState(() {
-          _style = style;
-        });
-      }
-    });
-
     return MaterialApp(
         title: 'Flutter Music',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
             primarySwatch:
-                colorStyleProvider.getCurrentColor(color: 'mainColor')),
+                Provider.of<ColorStyleProvider>(context).getCurrentColor(color: 'mainColor')),
         home: WillPopScope(
           onWillPop: () => _beforePop(context),
           child: HomePage(),

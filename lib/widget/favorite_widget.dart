@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/dao/music_db_favorite.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/song_util.dart';
-import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
+import 'package:provider/provider.dart';
 
 class FavoriteIcon extends StatefulWidget {
   final Map song;
@@ -24,7 +25,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
   }
 
   void _checkFavorite() {
-    MusicDB().getFavoriteById(song['id']).then((fav) {
+    FavoriteDB().getFavoriteById(song['id']).then((fav) {
       //print('getFavoriteById : $fav');
       setState(() {
         isFavorited = fav != null;
@@ -42,7 +43,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     return IconButton(
       icon: Icon(
         Icons.favorite,
-        color: isFavorited ? Colors.pink : Colors.white60,
+        color: isFavorited ? Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor() : Colors.white60,
       ),
       onPressed: () {
         if (this.isFavorited) {
@@ -68,7 +69,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
 
   void _favorite(context) {
     bool success = false;
-    MusicDB().addFavorite(widget.song).then((re) {
+    FavoriteDB().addFavorite(widget.song).then((re) {
       print('addFavorite re: $re , song: ${widget.song}');
     }).then((_) {
       return FileUtil.getSongLocalPath(widget.song);
@@ -107,9 +108,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
                   },
                 ),
                 new FlatButton(
-                  child: new Text("确定删除"),
+                  child: new Text("删除", style: TextStyle(color: Colors.red)),
                   onPressed: () {
-                    MusicDB().deleteFavorite(widget.song['id']).then((re) {
+                    FavoriteDB().deleteFavorite(widget.song['id']).then((re) {
                       return FileUtil.deleteLocalSong(widget.song);
                     }).then((re) {
                       success = true;

@@ -11,7 +11,7 @@ class ToastUtil {
           msg: msg,
           toastLength: toastLength,
           gravity: ToastGravity.CENTER,
-          backgroundColor: Provider.of<ColorStyleProvider>(context).getCurrentColor().withAlpha(200),
+          backgroundColor: Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor().withAlpha(200),
           textColor: Colors.white,
           fontSize: 14.0);
   }

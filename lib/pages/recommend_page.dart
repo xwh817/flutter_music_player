@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/dao/music_db_favorite.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/pages/history_page.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
 import 'package:flutter_music_player/pages/setting_page.dart';
-import 'package:flutter_music_player/utils/colors.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/mv_item.dart';
@@ -57,7 +57,7 @@ class _RecommendPageState extends State<RecommendPage> {
       // 第一次进来的时候，设置默认的播放列表
       MusicController musicController = Provider.of<MusicController>(context);
       if (musicController.getCurrentSong() == null) {
-        MusicDB().getFavoriteList().then((favList) {
+        FavoriteDB().getFavoriteList().then((favList) {
           List defaultList = favList.length > 0 ? favList : _topSongs;
           musicController.setPlayList(defaultList, 0);
         });
@@ -172,7 +172,9 @@ class _RecommendPageState extends State<RecommendPage> {
             children: <Widget>[
           TextIconWithBg(icon: Icons.date_range, title: '排行', onPressed: () {}),
           TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
-          TextIconWithBg(icon: Icons.history, title: '历史', onPressed: () {}),
+          TextIconWithBg(icon: Icons.history, title: '历史', onPressed: () {
+            NavigatorUtil.push(context, HistoryPage());
+          }),
           TextIconWithBg(icon: Icons.settings, title: '设置', onPressed: () {
             NavigatorUtil.push(context, SettingPage());
           }),

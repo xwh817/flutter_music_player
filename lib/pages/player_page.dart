@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/dao/music_db_favorite.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
@@ -88,7 +88,7 @@ class _PlayerPageState extends State<PlayerPage>
           });
           song['imageUrl'] = SongUtil.getSongImage(songDetail, size: 0);
           print('getSongDetail: $songImage');
-          MusicDB().updateFavorite(song);
+          FavoriteDB().updateFavorite(song);
         }
       });
     }
@@ -240,7 +240,7 @@ class _PlayerPageState extends State<PlayerPage>
             width: imageSize.toDouble(),
             height: imageSize.toDouble(),
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Provider.of<ColorStyleProvider>(context).getCurrentColor()),
+              valueColor: AlwaysStoppedAnimation(Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor()),
               strokeWidth: 2.0,
             ))
         : SizedBox(width: 0.0);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/dao/music_db.dart';
+import 'package:flutter_music_player/dao/music_db_favorite.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 
 class FavoritePage extends StatefulWidget {
@@ -12,7 +12,7 @@ class _FavoritePageState extends State<FavoritePage> {
   List _songs;
 
   _getSongs() async {
-    MusicDB().getFavoriteList().then((result) {
+    FavoriteDB().getFavoriteList().then((result) {
       // 界面未加载，返回。
       if (!mounted) return;
 

@@ -7,14 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum ColorStyle { green, pink, purple, orange, blue }
 
 class ColorStyleProvider with ChangeNotifier {
-  ColorStyle currentStyle = ColorStyle.green;
-
-  getStyle() {
-    return currentStyle;
-  }
+  static ColorStyle currentStyle;
 
   setStyle(ColorStyle style) {
-    this.currentStyle = style;
+    currentStyle = style;
     SharedPreferences.getInstance().then((prefs){
       prefs.setInt('colorStyle', style.index);
     });
@@ -50,19 +46,19 @@ class ColorStyleProvider with ChangeNotifier {
   };
 
   ColorStyle getCurrentStyle() {
-    return currentStyle;
+    return currentStyle??ColorStyle.green;
   }
 
   MaterialColor getCurrentColor({String color = 'mainColor'}) {
-    return getColor(currentStyle, color:color);
+    return getColor(getCurrentStyle(), color:color);
   }
 
   Color getLightColor() {
-    return getColor(currentStyle, color:'mainLightColor');
+    return getColor(getCurrentStyle(), color:'mainLightColor');
   }
   
   Color getIndicatorColor() {
-    return getColor(currentStyle, color:'indicatorColor');
+    return getColor(getCurrentStyle(), color:'indicatorColor');
   }
 
   Color getColor(ColorStyle style, {String color = 'mainColor'}) {
@@ -70,7 +66,7 @@ class ColorStyleProvider with ChangeNotifier {
     return group[color];
   }
 
-  Future<ColorStyle> initColorStyle() async {
+  static Future<ColorStyle> initColorStyle() async {
     if (currentStyle == null) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       int styleIndex = prefs.getInt('colorStyle') ?? 0;
