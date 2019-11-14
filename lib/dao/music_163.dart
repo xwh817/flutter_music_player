@@ -4,6 +4,7 @@ import 'package:flutter_music_player/utils/http_util.dart';
 
 class MusicDao {
   static const URL_ROOT = 'http://music.turingmao.com';
+  //static const URL_ROOT = 'http://172.16.45.44';
 /*   static const urls = {
     'play_list': '$URL_ROOT/top/playlist?cat=',
     'play_list_detail': '$URL_ROOT/playlist/detail?id=',
@@ -27,7 +28,7 @@ class MusicDao {
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
   static const URL_SEARCH = '$URL_ROOT/search?keywords=';
 
-  static const URL_GET_TOPLIST = '$URL_ROOT/toplist/detail'; // 获取排行和摘要
+  static const URL_GET_TOPLIST = '$URL_ROOT/toplist/detail'; // 获取排行和摘要，或者/toplist
 
   static const URL_TOP_ARTISTS = '$URL_ROOT/toplist/artist';
   static const URL_ARTIST_DETAIL = '$URL_ROOT/artists?id=';
@@ -51,6 +52,7 @@ class MusicDao {
   }
 
   static Future<List> getTopSongs(int listId) async {
+    print('$URL_TOP_SONGS$listId');
     var data = await HttpUtil.getJsonData('$URL_TOP_SONGS$listId');
     List songList = data['playlist']['tracks'];
     return songList;

@@ -16,9 +16,6 @@ class ArtistDetailPage extends StatefulWidget {
 }
 
 class _ArtistDetailPageState extends State<ArtistDetailPage> {
-  static final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
-
   double _appBarHeight;
   Map _artist;
   ScrollController _controller;
@@ -53,19 +50,13 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: _beforePop,
-        child: Theme(
-          data: ThemeData(
-            brightness: Brightness.light,
-            platform: Theme.of(context).platform,
-          ),
-          child: Scaffold(
-            key: _scaffoldKey,
+        child: Scaffold(
             body: CustomScrollView(
               slivers: _buildSlivers(),
               controller: _controller,
             ),
           ),
-        ));
+        );
   }
 
   List<Widget> _buildSlivers() {
@@ -89,7 +80,7 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
           "${_artist == null ? '' : _artist['name']}",
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 16.0),
+          style: TextStyle(fontSize: 16.0, color: Colors.white),
         ),
         centerTitle: false,
         titlePadding: EdgeInsetsDirectional.only(start: 46.0, bottom: 16.0),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/widget/loading_container.dart';
-import 'package:flutter_music_player/widget/play_iist_item.dart';
+import 'package:flutter_music_player/widget/play_list_item.dart';
 
 class PlayListTabPage extends StatefulWidget {
   final String type;

@@ -8,12 +8,13 @@ import 'package:flutter_music_player/pages/artist_list_page.dart';
 import 'package:flutter_music_player/pages/history_page.dart';
 import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/rank_page.dart';
+import 'package:flutter_music_player/pages/rank_song_list.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
 import 'package:flutter_music_player/pages/setting_page.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/mv_item.dart';
-import 'package:flutter_music_player/widget/play_iist_item.dart';
+import 'package:flutter_music_player/widget/play_list_item.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_grid.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
@@ -23,7 +24,8 @@ import 'package:provider/provider.dart';
 import '../dao/music_163.dart';
 
 class RecommendPage extends StatefulWidget {
-  RecommendPage({Key key}) : super(key: key);
+  final ValueChanged<int> tapCallback;
+  RecommendPage({Key key, this.tapCallback}) : super(key: key);
 
   _RecommendPageState createState() => _RecommendPageState();
 }
@@ -43,19 +45,10 @@ class _RecommendPageState extends State<RecommendPage> {
     // 宽高比2/1
     _appBarHeight = ScreenUtil.screenWidth / 2;
 
-    // 等待两个异步任务
-    Future.wait([
-      MusicDao.getNewSongs(),
-      MusicDao.getTopSongs(0),
-    ]).then((results) {
-      if (results[0].length > 5) {
-        _newSongs = results[0].sublist(0, 5);
-      }
-      if (results[1].length > 18) {
-        _topSongs = results[1].sublist(0, 18);
-      }
-      setState(() {});
-    }).then((_) {
+    MusicDao.getTopSongs(0).then((re) {
+      setState(() {
+        _topSongs = re.sublist(0, 15);
+      });
       // 第一次进来的时候，设置默认的播放列表
       MusicController musicController = Provider.of<MusicController>(context);
       if (musicController.getCurrentSong() == null) {
@@ -64,6 +57,12 @@ class _RecommendPageState extends State<RecommendPage> {
           musicController.setPlayList(defaultList, 0);
         });
       }
+    });
+
+    MusicDao.getNewSongs().then((re) {
+      setState(() {
+        _newSongs = re.sublist(0, 5);
+      });
     });
 
 // TODO 后面添加： 下拉刷新，滑到下面才加载更多。
@@ -75,11 +74,21 @@ class _RecommendPageState extends State<RecommendPage> {
     });
 
     MusicDao.getPlayList('流行').then((list) {
-      if (list.length > 16) {
-        list = list.sublist(0, 16);
+      if (list.length > 10) {
+        list = list.sublist(0, 10);
       }
       setState(() => this._playList = list);
     });
+  }
+
+  _onScrolled(ScrollNotification notification) {
+    double progress =
+        notification.metrics.pixels / notification.metrics.maxScrollExtent;
+
+    //print("${(progress * 100).toInt()}%");
+
+    //print("BottomEdge: ${notification.metrics.extentAfter == 0}");
+    //return true; //放开此行注释后，进度条将失效
   }
 
   @override
@@ -87,22 +96,31 @@ class _RecommendPageState extends State<RecommendPage> {
     return _topSongs.length == 0
         ? Center(child: CircularProgressIndicator())
         : Scaffold(
-            body: CustomScrollView(
+            body: NotificationListener<ScrollNotification>(
+            onNotification: (notification) => _onScrolled(notification),
+            child: CustomScrollView(
+              cacheExtent: 10.0,  // 缓存区域，滚出多远后回收item，调用其dispose
               slivers: <Widget>[
                 _buildHeader(),
                 _buildCenterGrid(),
                 _buildDivider(),
-                _buildSubHeader('推荐单曲', Icons.music_note),
+                _buildSubHeader('推荐单曲', Icons.music_note, onPressed: () {
+                  NavigatorUtil.push(context, RankSongList(0, '推荐单曲'));
+                }),
                 _buildSongGrid(),
                 _buildDivider(),
-                _buildSubHeader('推荐歌单', Icons.library_music),
+                _buildSubHeader('推荐歌单', Icons.library_music, onPressed: () {
+                  widget.tapCallback(1);
+                }),
                 _buildPlayListGrid(),
                 _buildDivider(),
-                _buildSubHeader('推荐MV', Icons.video_library),
+                _buildSubHeader('推荐MV', Icons.video_library, onPressed: () {
+                  widget.tapCallback(2);
+                }),
                 _buildMVList(),
               ],
             ),
-          );
+          ));
   }
 
   Widget _buildHeader() {
@@ -161,45 +179,35 @@ class _RecommendPageState extends State<RecommendPage> {
   }
 
   Widget _buildCenterGrid() {
-    // 加载固定数量的Grid
-    /*  return SliverGrid.count(crossAxisCount: 4, children: <Widget>[
-      TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
-      TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
-      TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
-      TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
-    ]); */
     return SliverToBoxAdapter(
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-          TextIconWithBg(icon: Icons.date_range, title: '排行', onPressed: () {
-            NavigatorUtil.push(context, RankPage());
-          }),
-          TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {
-            NavigatorUtil.push(context, ArtistListPage());
-          }),
-          TextIconWithBg(icon: Icons.history, title: '历史', onPressed: () {
-            NavigatorUtil.push(context, HistoryPage());
-          }),
-          TextIconWithBg(icon: Icons.settings, title: '设置', onPressed: () {
-            NavigatorUtil.push(context, SettingPage());
-          }),
+          TextIconWithBg(
+              icon: Icons.date_range,
+              title: '排行',
+              onPressed: () {
+                NavigatorUtil.push(context, RankPage());
+              }),
+          TextIconWithBg(
+              icon: Icons.people,
+              title: '歌手',
+              onPressed: () {
+                NavigatorUtil.push(context, ArtistListPage());
+              }),
+          TextIconWithBg(
+              icon: Icons.history,
+              title: '历史',
+              onPressed: () {
+                NavigatorUtil.push(context, HistoryPage());
+              }),
+          TextIconWithBg(
+              icon: Icons.settings,
+              title: '设置',
+              onPressed: () {
+                NavigatorUtil.push(context, SettingPage());
+              }),
         ]));
-
-    /* return SliverToBoxAdapter(
-        child: ListView(scrollDirection: Axis.horizontal, children: <Widget>[
-      TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
-      TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
-      TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
-      TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
-    ])); */
-
-    /*  return SliverGrid.count(crossAxisCount: 4, children: <Widget>[
-      TextIconWithBg(icon: Icons.people, title: '排行', onPressed: () {}),
-      TextIconWithBg(icon: Icons.person_add, title: '歌手', onPressed: () {}),
-      TextIconWithBg(icon: Icons.radio, title: '电台', onPressed: () {}),
-      TextIconWithBg(icon: Icons.people, title: '歌手', onPressed: () {}),
-    ]); */
   }
 
   Widget _buildSongList() {
@@ -251,7 +259,8 @@ class _RecommendPageState extends State<RecommendPage> {
         ));
   }
 
-  Widget _buildSubHeader(String title, IconData icon, {String action}) {
+  Widget _buildSubHeader(String title, IconData icon,
+      {String action, Function onPressed}) {
     return SliverToBoxAdapter(
         child: Container(
       padding: EdgeInsets.fromLTRB(8.0, 16.0, 16.0, 4.0),
@@ -270,37 +279,24 @@ class _RecommendPageState extends State<RecommendPage> {
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
             ),
-          )
-        ],
-      ),
-      /* child: Row(
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-            ),
           ),
           Expanded(
             child: Container(),
           ),
-          InkWell(
-            child: Container(
+          Container(
               height: 26,
-              alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
-              child: Text('更多 >'),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(color: Colors.green[300], width: 0.5),
-                borderRadius: BorderRadius.circular(13.0),
-              ),),
-            onTap: () {},
-          )
+              width: 60,
+              child: OutlineButton(
+                padding: EdgeInsets.all(0.0),
+                child: Text('更多..',
+                    maxLines: 1,
+                    style: TextStyle(fontSize: 11.0, color: Colors.black87)),
+                onPressed: onPressed,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(13.0)),
+              ))
         ],
-      ), */
+      ),
     ));
   }
 

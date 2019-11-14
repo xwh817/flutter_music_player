@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
+import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/tap_anim_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -12,10 +13,13 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   Color mainColor;
+  double itemSize;
 
   @override
   void initState() {
     super.initState();
+
+    itemSize = ScreenUtil.screenWidth / ColorStyleProvider.styles.length - 16.0;
   }
 
 
@@ -27,7 +31,7 @@ class _SettingPageState extends State<SettingPage> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0.0,
-        title: Text('自定义设置', style: TextStyle(fontSize: 16.0),),
+        title: Text('自定义设置', style: TextStyle(fontSize: 16.0)),
       ),
       body: Column(children: <Widget>[
         _buildTitle('皮肤颜色'),
@@ -65,8 +69,8 @@ class _SettingPageState extends State<SettingPage> {
         Provider.of<ColorStyleProvider>(context).setStyle(style);
       },
       child:Container(
-      width: 60,
-      height: 60,
+      width: itemSize,
+      height: itemSize,
       color: Provider.of<ColorStyleProvider>(context).getColor(style),
     ));
   }

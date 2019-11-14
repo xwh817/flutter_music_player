@@ -24,7 +24,7 @@ class _MVItemState extends State<MVItem> {
   @override
   void deactivate() {
     super.deactivate();
-    print('MVItem deactivate ${widget.mv['name']}');
+    //print('MVItem deactivate ${widget.mv['name']}');
   }
 
   @override

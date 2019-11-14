@@ -60,11 +60,20 @@ class _ArtistListPageState extends State<ArtistListPage> {
               placeholder: (context, url) =>
                   Image.asset('images/music_2.jpg', fit: BoxFit.cover))),
       title: Text(artist['name'], style: TextStyle(fontSize: 14.0)),
-      subtitle: new Text(
-        '单曲：${artist['musicSize']}, 专辑：${artist['albumSize']}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 12.0),
+      subtitle: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 4.0),
+            width: 100,
+            child: Text('单曲：${artist['musicSize']}',
+                style: TextStyle(fontSize: 12.0)),
+          ),
+          Text(
+            '专辑：${artist['albumSize']}',
+            style: TextStyle(fontSize: 12.0),
+          )
+        ],
       ),
       onTap: () {
         NavigatorUtil.push(context, ArtistDetailPage(artist['id']));

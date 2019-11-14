@@ -59,9 +59,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     SnackBar snackBar = SnackBar(
         content: ListTile(
           leading: Icon(icon),
-          title: Text(title, style: TextStyle(fontSize: 16.0)),
+          title: Text(title, style: TextStyle(fontSize: 14.0)),
           subtitle:
-              Text(subTitle, style: TextStyle(fontSize: 14.0, height: 2.0)),
+              Text(subTitle, style: TextStyle(fontSize: 13.0, height: 2.0)),
         ),
         duration: Duration(seconds: 3));
     Scaffold.of(context).showSnackBar(snackBar);

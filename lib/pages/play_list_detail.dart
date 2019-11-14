@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/widget/loading_container.dart';
@@ -16,8 +15,9 @@ class PlayListPage extends StatefulWidget {
 }
 
 class _PlayListPageState extends State<PlayListPage> {
-  static final GlobalKey<ScaffoldState> _scaffoldKey =
-      GlobalKey<ScaffoldState>();
+  /// 记录Scaffold状态
+  /// 针对context中没有这个Scafold的时候会报错的情况。
+  ///  static final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   double _appBarHeight;
   List _songs = [];
@@ -53,13 +53,7 @@ class _PlayListPageState extends State<PlayListPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: _beforePop,
-        child: Theme(
-            data: ThemeData(
-              brightness: Brightness.light,
-              platform: Theme.of(context).platform,
-            ),
-            child: Scaffold(
-              key: _scaffoldKey,
+        child: Scaffold(
               body: LoadingContainer(
                 isLoading: this._songs.length == 0,
                 cover: true,
@@ -78,7 +72,7 @@ class _PlayListPageState extends State<PlayListPage> {
                   controller: _controller,
                 ),
               ),
-            )));
+            ));
   }
 
   Widget _buildAppBar() {
@@ -92,7 +86,7 @@ class _PlayListPageState extends State<PlayListPage> {
           "${widget.playlist['name']}",
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 16.0),
+          style: TextStyle(fontSize: 16.0, color: Colors.white),
         ),
         centerTitle: false,
         titlePadding: EdgeInsetsDirectional.only(start: 46.0, bottom: 16.0),

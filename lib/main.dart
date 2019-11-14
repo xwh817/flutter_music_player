@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
-import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:provider/provider.dart';
 import 'model/color_provider.dart';
 import 'model/video_controller.dart';
 import 'pages/home_page.dart';
 
-void main(){
-  initBeforeRunApp().then((re){
+void main() {
+  initBeforeRunApp().then((re) {
     runApp(_buildProvider());
   });
 }
@@ -35,8 +34,6 @@ _buildProvider() {
   );
 }
 
-DateTime lastBackTime;
-
 class MyApp extends StatefulWidget {
   MyApp({Key key}) : super(key: key);
 
@@ -46,33 +43,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Flutter Music',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            primarySwatch:
-                Provider.of<ColorStyleProvider>(context).getCurrentColor(color: 'mainColor')),
-        home: WillPopScope(
-          onWillPop: () => _beforePop(context),
-          child: HomePage(),
-        ));
-  }
-
-  Future<bool> _beforePop(BuildContext context) async {
-    if (lastBackTime == null ||
-        DateTime.now().difference(lastBackTime) > Duration(seconds: 2)) {
-      ToastUtil.showToast(context, "再按一次退出");
-      lastBackTime = DateTime.now();
-      return false; // 不返回
-    }
-
-    Provider.of<MusicController>(context, listen: false).dispose();
-    return true;
+            brightness: Brightness.light,
+            appBarTheme: AppBarTheme(
+                brightness: Brightness.dark,
+                iconTheme: IconThemeData(color: Colors.white),
+                textTheme: TextTheme(title: TextStyle(color: Colors.white))),
+            primarySwatch: Provider.of<ColorStyleProvider>(context)
+                .getCurrentColor(color: 'mainColor')),
+        home: HomePage());
   }
 }

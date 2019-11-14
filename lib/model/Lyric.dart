@@ -81,7 +81,13 @@ class Lyric {
     }
     // 最后一行怎样计算长度？？
     if (items.length > 1) {
-      items[items.length -1].duration = items[items.length -2].duration;
+      LyricItem preItem = items[items.length -2];
+      LyricItem lastItem = items[items.length -1];
+      int duration = preItem.duration;
+      if (preItem.content.length > 0) {
+        duration = duration * lastItem.content.length ~/ preItem.content.length;
+      }
+      lastItem.duration = duration;
     }
     
   }

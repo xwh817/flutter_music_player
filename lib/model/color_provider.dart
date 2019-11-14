@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum ColorStyle { green, pink, purple, orange, blue }
+enum ColorStyle { pink, orange, lime, green, blue, indigo,  purple }
 
 class ColorStyleProvider with ChangeNotifier {
   static ColorStyle currentStyle;
@@ -17,32 +17,42 @@ class ColorStyleProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Map<ColorStyle, Map> styles = {
-    ColorStyle.green: {
-      'mainColor': Colors.green,
-      'mainLightColor': Colors.lightGreenAccent,
-      'indicatorColor': Colors.orange,
-    },
+  static final Map<ColorStyle, Map> styles = {
     ColorStyle.pink: {
       'mainColor': Colors.pink,
       'mainLightColor': Colors.pinkAccent,
       'indicatorColor': Colors.pink,
     },
-    ColorStyle.purple: {
-      'mainColor': Colors.purple,
-      'mainLightColor': Colors.purpleAccent,
-      'indicatorColor': Colors.purple,
-    },
     ColorStyle.orange: {
-      'mainColor': Colors.orange,
-      'mainLightColor': Colors.orangeAccent,
+      'mainColor': Colors.deepOrange,
+      'mainLightColor': Colors.deepOrangeAccent,
+      'indicatorColor': Colors.orange,
+    },
+    ColorStyle.lime: {
+      'mainColor': Colors.lightGreen,
+      'mainLightColor': Colors.limeAccent,
+      'indicatorColor': Colors.lime,
+    },
+    ColorStyle.green: {
+      'mainColor': Colors.green,
+      'mainLightColor': Colors.lightGreenAccent,
       'indicatorColor': Colors.orange,
     },
     ColorStyle.blue: {
       'mainColor': Colors.blue,
       'mainLightColor': Colors.blueAccent,
       'indicatorColor': Colors.blue,
-    }
+    },
+    ColorStyle.indigo: {
+      'mainColor': Colors.indigo,
+      'mainLightColor': Colors.indigoAccent,
+      'indicatorColor': Colors.indigo,
+    },
+    ColorStyle.purple: {
+      'mainColor': Colors.purple,
+      'mainLightColor': Colors.purpleAccent,
+      'indicatorColor': Colors.purple,
+    },
   };
 
   ColorStyle getCurrentStyle() {
