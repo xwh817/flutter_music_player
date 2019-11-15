@@ -237,8 +237,8 @@ class _PlayerPageState extends State<PlayerPage>
   Widget _buildProgressIndicator() {
     return playerState == PlayerState.loading
         ? SizedBox(
-            width: imageSize.toDouble(),
-            height: imageSize.toDouble(),
+            width: imageSize.toDouble() + 2.0,
+            height: imageSize.toDouble() + 2.0,
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation(Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor()),
               strokeWidth: 2.0,

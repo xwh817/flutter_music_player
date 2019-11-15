@@ -1,31 +1,29 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter_music_player/model/Lyric.dart';
+import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
+
+import 'api_cache.dart';
 
 class MusicDao {
   static const URL_ROOT = 'http://music.turingmao.com';
   //static const URL_ROOT = 'http://172.16.45.44';
-/*   static const urls = {
-    'play_list': '$URL_ROOT/top/playlist?cat=',
-    'play_list_detail': '$URL_ROOT/playlist/detail?id=',
-    'new_songs': '$URL_ROOT/personalized/newsong',
-    'top_songs': '$URL_ROOT/top/list?idx=',
-    'song_detail': '$URL_ROOT/song/detail?ids=',
-    'get_lyric': '$URL_ROOT/lyric?id=',
-    'mv_list': '$URL_ROOT/mv/first',
-    'mv_detail': '$URL_ROOT/mv/detail?mvid=',
-    'search': '$URL_ROOT/search?keywords=',
-  }; */
+
   static const URL_PLAY_LIST = '$URL_ROOT/top/playlist?cat=';
   static const URL_PLAY_LIST_DETAIL = '$URL_ROOT/playlist/detail?id=';
   static const URL_NEW_SONGS = '$URL_ROOT/personalized/newsong';
   static const URL_TOP_SONGS = '$URL_ROOT/top/list?idx=';
   static const URL_SONG_DETAIL = '$URL_ROOT/song/detail?ids=';
   static const URL_GET_LYRIC = '$URL_ROOT/lyric?id=';
+
   static const URL_MV_FIRST = '$URL_ROOT/mv/first';
   static const URL_MV_TOP = '$URL_ROOT/top/mv';
   static const URL_MV_PERSONAL = '$URL_ROOT/personalized/mv';
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
+  static const URL_MV_AREA = '$URL_ROOT/mv/all?area=';
+  static const URL_MV_163 = '$URL_ROOT/mv/exclusive/rcmd';  // 网易出品mv
+
   static const URL_SEARCH = '$URL_ROOT/search?keywords=';
 
   static const URL_GET_TOPLIST = '$URL_ROOT/toplist/detail'; // 获取排行和摘要，或者/toplist
@@ -60,13 +58,20 @@ class MusicDao {
 
   // 获取歌词
   static Future<Lyric> getLyric(int songId) async {
-    Map data = await HttpUtil.getJsonData('$URL_GET_LYRIC$songId',
-        checkCacheTimeout: false);
-    if (data.containsKey('nolyric')) {
-      // 无歌词
-      return Lyric.empty();
+    String url = '$URL_GET_LYRIC$songId';
+    File cache = await APICache.getLocalFile(url);
+    String str;
+    if (cache.existsSync()) { // 歌词缓存过
+      str = await cache.readAsString();
+    } else {
+      Map data = await HttpUtil.getJsonData(url, checkCacheTimeout: false);
+      if (data.containsKey('nolyric')) {
+        // 无歌词
+        return Lyric.empty();
+      }
+      str = data['lrc']['lyric'];
     }
-    String str = data['lrc']['lyric'];
+    
     return Lyric(str);
   }
 

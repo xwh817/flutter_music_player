@@ -10,11 +10,13 @@ class MVPage extends StatefulWidget {
   _MVPageState createState() => _MVPageState();
 }
 
-const types = {
+Map types = {
   "最新": MusicDao.URL_MV_FIRST,
   "Top": MusicDao.URL_MV_TOP,
   '推荐': MusicDao.URL_MV_PERSONAL,
 };
+
+const areas = ['内地', '港台', '欧美', '日本', '韩国'];
 
 class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
   TabController tabController; //tab控制器
@@ -22,6 +24,11 @@ class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    areas.forEach((item){
+      types[item] = MusicDao.URL_MV_AREA + item;
+    });
+
     //初始化controller并添加监听
     tabController = TabController(length: types.length, vsync: this);
     tabController.addListener(() => _onTabChanged());
@@ -34,7 +41,8 @@ class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
   Widget mWidget;
   @override
   Widget build(BuildContext context) {
-    ColorStyleProvider colorStyleProvider = Provider.of<ColorStyleProvider>(context);
+    ColorStyleProvider colorStyleProvider =
+        Provider.of<ColorStyleProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0x07000000),

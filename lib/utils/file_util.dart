@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
+  enum SongCache{songs, lyrics, images}
+
 /// 本地文件工具类
 class FileUtil{
   static final String songsDir = "songs";
+  static final String lyricDir = "lyrics";
   static final String music = ".mp3";
-
 
   /// 获取子目录路径
   static Future<String> getSubDirPath(String subDirPath) async {
@@ -34,19 +36,23 @@ class FileUtil{
   }
 
   /// 获取歌曲本地路径
-  static Future<String> getSongLocalPath(Map song) async {
-    String dir = await getSubDirPath(songsDir);
-    String fileName = '${song['id']}.mp3';
+  static Future<String> getSongLocalPath(Map song, {SongCache cacheType=SongCache.songs, String extention='.mp3'}) async {
+    String dir = await getSubDirPath(cacheType.toString());
+    String fileName = '${song['id']}$extention';
     String filePath = '$dir/$fileName';
     return filePath;
   }
   /// 删除文件
   static Future<bool> deleteLocalSong(Map song) async {
-    String path = await getSongLocalPath(song);
-    File file = File(path);
-    if (await file.exists()) {
-      await file.delete(recursive: true);
-    }
+    List<SongCache> types = [SongCache.songs, SongCache.lyrics];
+    types.forEach((type) async {
+      String path = await getSongLocalPath(song, cacheType: type);
+      File file = File(path);
+      if (await file.exists()) {
+        await file.delete(recursive: true);
+      }
+    });
+    
     return true;
   }
 
@@ -61,10 +67,15 @@ class FileUtil{
 
 
   /// 判断文件是否超时
-  static Future<bool> isFileTimeout(File file, Duration time) async {
-    DateTime lastModified = await file.lastModified();
+  static bool isFileTimeout(File file, Duration duration) {
+    DateTime lastModified = file.lastModifiedSync();
+    return isTimeOut(lastModified, duration);
+  }
+
+  /// 判断上一次事件是否超过
+  static bool isTimeOut(DateTime lastTime, Duration duration) {
     DateTime now = DateTime.now();
-    return now.isAfter(lastModified.add(time));
+    return now.isAfter(lastTime.add(duration));
   }
 
 }

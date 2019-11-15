@@ -84,6 +84,7 @@ class _LyricPageState extends State<LyricPage> {
       });
     }
     // 获取歌词
+    
     MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {

@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/dao/api_cache.dart';
+import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db_favorite.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/song_util.dart';
@@ -43,13 +47,16 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     return IconButton(
       icon: Icon(
         Icons.favorite,
-        color: isFavorited ? Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor() : Colors.white60,
+        color: isFavorited
+            ? Provider.of<ColorStyleProvider>(context, listen: false)
+                .getCurrentColor()
+            : Colors.white60,
       ),
       onPressed: () {
         if (this.isFavorited) {
           _cancelFavorite(context);
         } else {
-          _favorite(context);
+          _addFavorite(context);
         }
       },
     );
@@ -67,16 +74,14 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
-  void _favorite(context) {
+  void _addFavorite(context) {
     bool success = false;
     FavoriteDB().addFavorite(widget.song).then((re) {
       print('addFavorite re: $re , song: ${widget.song}');
     }).then((_) {
-      return FileUtil.getSongLocalPath(widget.song);
-    }).then((savePath) {
-      String url = SongUtil.getSongUrl(widget.song);
-      HttpUtil.download(url, savePath);
-      print('download: $url');
+      _downloadMp3();
+      _downloadLyric();
+
       setState(() {
         isFavorited = true;
       });
@@ -132,5 +137,26 @@ class _FavoriteIconState extends State<FavoriteIcon> {
                 ),
               ],
             ));
+  }
+
+  Future<void> _downloadMp3() async {
+    String savePath = await FileUtil.getSongLocalPath(widget.song);
+    String url = SongUtil.getSongUrl(widget.song);
+    HttpUtil.download(url, savePath);
+    print('download: $url');
+  }
+
+  Future<void> _downloadLyric() async {
+    String path = await FileUtil.getSongLocalPath(widget.song,
+        cacheType: SongCache.lyrics, extention: '.lyric');
+    String url = '$MusicDao.URL_GET_LYRIC${widget.song['id']}';
+    File cache = await APICache.getLocalFile(url);
+    if (cache.existsSync()) {
+      print('歌词已经缓存过');
+      cache.copySync(path);
+    } else {
+      print('下载歌词');
+      HttpUtil.download(url, path);
+    }
   }
 }

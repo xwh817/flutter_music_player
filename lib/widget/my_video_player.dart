@@ -53,7 +53,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     // 从其他页面而来，继续播放，现成的controller，但要添加进度监听。
     if (isFromOtherPage) {
       _addControllerListener();
+      _showButtonsAndAutoHide(autoHideTime);
     }
+
   }
 
   void _addControllerListener() {
@@ -156,7 +158,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
     if ((_playerState == VideoState.playing ||
         _playerState == VideoState.paused)) {
-      children.add(InkWell(
+      children.add(GestureDetector(
         onTap: () {
           if (isShowButton) {
             _showButtons(false);
@@ -164,7 +166,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
             _showButtonsAndAutoHide(autoHideTime, clearTimer: true);
           }
         },
-        child: VideoPlayer(_controller),
+        child: Container(
+          color: Colors.black,
+          child:VideoPlayer(_controller)),
       ));
 
       if (isShowButton) {
