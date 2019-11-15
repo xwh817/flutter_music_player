@@ -58,12 +58,12 @@ class MusicDao {
 
   // 获取歌词
   static Future<Lyric> getLyric(int songId) async {
-    String url = '$URL_GET_LYRIC$songId';
-    File cache = await APICache.getLocalFile(url);
+    File cache = File(await FileUtil.getLyricLocalPath(songId));
     String str;
     if (cache.existsSync()) { // 歌词缓存过
       str = await cache.readAsString();
     } else {
+      String url = '$URL_GET_LYRIC$songId';
       Map data = await HttpUtil.getJsonData(url, checkCacheTimeout: false);
       if (data.containsKey('nolyric')) {
         // 无歌词

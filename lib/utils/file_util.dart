@@ -42,6 +42,16 @@ class FileUtil{
     String filePath = '$dir/$fileName';
     return filePath;
   }
+
+    /// 获取收藏歌曲歌词
+  static Future<String> getLyricLocalPath(int songId) async {
+    String dir = await getSubDirPath(lyricDir);
+    String fileName = '$songId.lyric';
+    String filePath = '$dir/$fileName';
+    return filePath;
+  }
+
+
   /// 删除文件
   static Future<bool> deleteLocalSong(Map song) async {
     List<SongCache> types = [SongCache.songs, SongCache.lyrics];
