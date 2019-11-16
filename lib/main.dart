@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
+import 'package:flutter_music_player/utils/shared_preference_util.dart';
 import 'package:provider/provider.dart';
 import 'dao/api_cache.dart';
 import 'model/color_provider.dart';
@@ -17,7 +18,8 @@ void main() {
 /// 获取主题颜色
 Future<bool> _initBeforeRunApp() async {
   // 要去SharedPrefrence里面去颜色数据，但是为异步任务，修改main方法，首先完成异步任务再启动app；
-  await ColorStyleProvider.initColorStyle();
+  await SharedPreferenceUtil.init();
+  ColorStyleProvider.initColorStyle();
   return true;
 }
 

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/Lyric.dart';
-import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_music_player/utils/shared_preference_util.dart';
 
 import 'gradient_text.dart';
 
@@ -19,7 +18,7 @@ class LyricPage extends StatefulWidget {
   }
 
   // 对比发现，从外面调用触发build的次数要少，而不是从父控件传入position。
-  
+
   int updatePositionCount = 0;
   void updatePosition(int position, {isTaping: false}) {
     //print('updatePosition: $position');
@@ -65,6 +64,7 @@ class _LyricPageState extends State<LyricPage> {
   bool success = true;
   bool isFirst = true;
   bool isItemsEmpty = false;
+  bool islyricMask = true;
 
   @override
   void initState() {
@@ -73,18 +73,20 @@ class _LyricPageState extends State<LyricPage> {
     visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
     _controller = ScrollController();
 
+    islyricMask = SharedPreferenceUtil.getInstance().get('lyricMask') ?? true;
+
     print('LyricPage initState, 歌词可见行数：$visibleItemSize');
   }
 
   void _getLyric() {
-      // 进入加载中状态
+    // 进入加载中状态
     if (lyric != null) {
       setState(() {
         lyric = null;
       });
     }
     // 获取歌词
-    
+
     MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {
@@ -150,28 +152,29 @@ class _LyricPageState extends State<LyricPage> {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-          fontSize: 13.0,
-          color: isCurrent ? Colors.white : Colors.white60),
+          fontSize: 13.0, color: isCurrent ? Colors.white : Colors.white60),
     );
 
     if (isCurrent) {
-      itemText = GradientText(text:itemText);
-      if (item.content.isEmpty) {
-        currentLyricItem = null;
-      } else {
+      if (islyricMask) {
+        itemText = GradientText(text: itemText);
         currentLyricItem = itemText;
       }
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.0),
-      alignment: Alignment.center, height: itemHeight, child: itemText);
+        padding: EdgeInsets.symmetric(horizontal: 12.0),
+        alignment: Alignment.center,
+        height: itemHeight,
+        child: itemText);
   }
-
 
   GradientText currentLyricItem;
   void updateCurrentLyricItem() {
-    if (currentLyricItem != null && _currentIndex >=0 &&_currentIndex < lyric.items.length) {
+    if (islyricMask &&
+        currentLyricItem != null &&
+        _currentIndex >= 0 &&
+        _currentIndex < lyric.items.length) {
       LyricItem item = lyric.items[_currentIndex];
       double offsetX; // 遮住的比例
       if (item.duration > 0) {
@@ -181,8 +184,6 @@ class _LyricPageState extends State<LyricPage> {
       }
       currentLyricItem.setOffsetX(offsetX);
     }
-      
-
   }
 
   /// 比较播放位置和歌词时间戳，获取当前是哪条歌词。

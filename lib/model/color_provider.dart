@@ -2,20 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_music_player/utils/shared_preference_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// 集齐了７色：红橙黄绿青蓝紫
 enum ColorStyle { pink, orange, lime, green, blue, indigo,  purple }
 
 class ColorStyleProvider with ChangeNotifier {
-  static ColorStyle currentStyle;
-
-  setStyle(ColorStyle style) {
-    currentStyle = style;
-    SharedPreferences.getInstance().then((prefs){
-      prefs.setInt('colorStyle', style.index);
-    });
-    notifyListeners();
-  }
+  static ColorStyle currentStyle = ColorStyle.green;
+  static const pref_color = 'colorStyle';
 
   static final Map<ColorStyle, Map> styles = {
     ColorStyle.pink: {
@@ -56,7 +51,7 @@ class ColorStyleProvider with ChangeNotifier {
   };
 
   ColorStyle getCurrentStyle() {
-    return currentStyle??ColorStyle.green;
+    return currentStyle;
   }
 
   MaterialColor getCurrentColor({String color = 'mainColor'}) {
@@ -76,10 +71,16 @@ class ColorStyleProvider with ChangeNotifier {
     return group[color];
   }
 
-  static Future<ColorStyle> initColorStyle() async {
-    if (currentStyle == null) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      int styleIndex = prefs.getInt('colorStyle') ?? 0;
+  setStyle(ColorStyle style) {
+    currentStyle = style;
+    SharedPreferenceUtil.getInstance().setInt(pref_color, style.index);
+    notifyListeners();
+  }
+
+  static ColorStyle initColorStyle() {
+    SharedPreferences prefs = SharedPreferenceUtil.getInstance();
+    if (prefs.containsKey(pref_color)) {
+      int styleIndex = prefs.getInt(pref_color);
       currentStyle = ColorStyle.values[styleIndex];
     }
     return currentStyle;

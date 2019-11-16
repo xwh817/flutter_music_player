@@ -51,12 +51,12 @@ class MusicController with ChangeNotifier {
   }
 
   void removeMusicListener(MusicListener listener) {
-    print('removeMusicListener');
+    print('removeMusicListener ${listener.getName()}');
     this.musicListeners.remove(listener);
   }
 
   void notifyMusicListeners(Function event) {
-    //print('notifyMusicListeners, musicListeners: ${musicListeners.length}, event:$event.');
+    //print('notifyMusicListeners, musicListeners: ${musicListeners.length}');
     musicListeners.forEach((listener) => event(listener));
   }
 

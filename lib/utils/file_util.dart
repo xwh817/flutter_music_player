@@ -1,9 +1,6 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
-
-  enum SongCache{songs, lyrics, images}
-
 /// 本地文件工具类
 class FileUtil{
   static final String songsDir = "songs";
@@ -36,9 +33,9 @@ class FileUtil{
   }
 
   /// 获取歌曲本地路径
-  static Future<String> getSongLocalPath(Map song, {SongCache cacheType=SongCache.songs, String extention='.mp3'}) async {
-    String dir = await getSubDirPath(cacheType.toString());
-    String fileName = '${song['id']}$extention';
+  static Future<String> getSongLocalPath(int songId) async {
+    String dir = await getSubDirPath(songsDir);
+    String fileName = '$songId.mp3';
     String filePath = '$dir/$fileName';
     return filePath;
   }
@@ -54,15 +51,9 @@ class FileUtil{
 
   /// 删除文件
   static Future<bool> deleteLocalSong(Map song) async {
-    List<SongCache> types = [SongCache.songs, SongCache.lyrics];
-    types.forEach((type) async {
-      String path = await getSongLocalPath(song, cacheType: type);
-      File file = File(path);
-      if (await file.exists()) {
-        await file.delete(recursive: true);
-      }
-    });
-    
+    int songId = song['id'];
+    deleteFile(await getSongLocalPath(songId));
+    deleteFile(await getLyricLocalPath(songId));
     return true;
   }
 

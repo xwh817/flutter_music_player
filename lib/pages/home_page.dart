@@ -3,6 +3,7 @@ import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/pages/favorite_page.dart';
 import 'package:flutter_music_player/utils/network_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/utils/shared_preference_util.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/floating_player.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   List<Widget> pages = List();
   final NetworkUtil networkUtil = NetworkUtil();
   DateTime lastBackTime;
+  bool showFloatPlayer = true;
 
   final PageController _controller = PageController(
     initialPage: 0,
@@ -68,6 +70,10 @@ class _HomePageState extends State<HomePage> {
     // 获取屏幕大小,用于界面适配
     ScreenUtil.getScreenSize(context);
 
+    showFloatPlayer =
+        SharedPreferenceUtil.getInstance().getBool('showFloatPlayer') ?? true;
+    print('showFloatPlayer: $showFloatPlayer');
+
     return WillPopScope(
         onWillPop: () => _beforePop(context),
         child: Scaffold(
@@ -76,9 +82,9 @@ class _HomePageState extends State<HomePage> {
             children: pages,
             physics: NeverScrollableScrollPhysics(), // 设置为不能滚动
           ),
-          bottomNavigationBar:
-              BottomTabs(this._currentIndex, this._tapCallback),
-          floatingActionButton: FloatingPlayer(),
+          bottomNavigationBar: BottomTabs(
+              this._currentIndex, this._tapCallback, showFloatPlayer),
+          floatingActionButton: showFloatPlayer ? FloatingPlayer() : null,
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
         ));
@@ -101,4 +107,3 @@ class _HomePageState extends State<HomePage> {
     return true;
   }
 }
-

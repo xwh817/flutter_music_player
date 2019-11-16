@@ -140,16 +140,16 @@ class _FavoriteIconState extends State<FavoriteIcon> {
   }
 
   Future<void> _downloadMp3() async {
-    String savePath = await FileUtil.getSongLocalPath(widget.song);
+    String savePath = await FileUtil.getSongLocalPath(widget.song['id']);
     String url = SongUtil.getSongUrl(widget.song);
     HttpUtil.download(url, savePath);
     print('download: $url');
   }
 
   Future<void> _downloadLyric() async {
-    String path = await FileUtil.getSongLocalPath(widget.song,
-        cacheType: SongCache.lyrics, extention: '.lyric');
-    String url = '$MusicDao.URL_GET_LYRIC${widget.song['id']}';
+    int songId = widget.song['id'];
+    String path = await FileUtil.getLyricLocalPath(songId);
+    String url = '$MusicDao.URL_GET_LYRIC$songId';
     File cache = await APICache.getLocalFile(url);
     if (cache.existsSync()) {
       print('歌词已经缓存过');
