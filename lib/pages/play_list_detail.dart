@@ -9,7 +9,8 @@ import 'package:flutter_music_player/widget/song_item_tile.dart';
 ///
 class PlayListPage extends StatefulWidget {
   final Map playlist;
-  PlayListPage({Key key, @required this.playlist}) : super(key: key);
+  final String heroTag;
+  PlayListPage({Key key, @required this.playlist, this.heroTag}) : super(key: key);
 
   _PlayListPageState createState() => _PlayListPageState();
 }
@@ -94,7 +95,7 @@ class _PlayListPageState extends State<PlayListPage> {
           fit: StackFit.expand,
           children: <Widget>[
             Hero(
-                tag: "playListImage_${widget.playlist['id']}",
+                tag: widget.heroTag,
                 child: CachedNetworkImage(
                     imageUrl: "${widget.playlist['coverImgUrl']}?param=600y400",
                     fit: BoxFit.cover,

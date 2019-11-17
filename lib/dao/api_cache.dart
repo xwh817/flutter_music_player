@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class APICache {
   static const String dirName = 'cache';
-  static const Duration CACHE_TIMEOUT_API = Duration(hours: 6);  // api缓存超时时长。
-  static const Duration CACHE_TIMEOUT_FILE = Duration(days: 2);  // 文件缓存超时时长。
+  static const Duration CACHE_TIMEOUT_API = Duration(hours: 6); // api缓存超时时长。
+  static const Duration CACHE_TIMEOUT_FILE = Duration(days: 7); // 文件缓存超时时长。
 
   static Future<File> getLocalFile(String url) async {
     String fileName = md5.convert(utf8.encode(url)).toString();
@@ -17,13 +17,15 @@ class APICache {
     return new File('$dir/$fileName');
   }
 
-  static Future<String> getCache(String url, {checkCacheTimeout:true}) async{
+  static Future<String> getCache(String url, {checkCacheTimeout: true}) async {
     String cache;
     File file = await getLocalFile(url);
     if (await file.exists()) {
       // 判断网络和缓存时间
-      if (checkCacheTimeout && NetworkUtil().isNetworkAvailable()
-          && FileUtil.isFileTimeout(file, CACHE_TIMEOUT_API)) {  // 缓存超时了，并且网络可用，丢掉之前的。
+      if (checkCacheTimeout &&
+          NetworkUtil().isNetworkAvailable() &&
+          FileUtil.isFileTimeout(file, CACHE_TIMEOUT_API)) {
+        // 缓存超时了，并且网络可用，丢掉之前的。
         //file.delete(); // 网络请求成功才删除。
         print('缓存超时：$url');
       } else {
@@ -34,7 +36,7 @@ class APICache {
     return cache;
   }
 
-  static Future<bool> saveCache(String url, String cache) async{
+  static Future<bool> saveCache(String url, String cache) async {
     File file = await getLocalFile(url);
     print('saveCache to: ${file.path}');
     File fileCached;
@@ -46,8 +48,7 @@ class APICache {
     return fileCached?.exists();
   }
 
-
-  static Future<FileSystemEntity> deleteCache(String url) async{
+  static Future<FileSystemEntity> deleteCache(String url) async {
     File file = await getLocalFile(url);
     print('deleteCache: ${file.path}');
     return file.delete();
@@ -55,25 +56,27 @@ class APICache {
 
   /// 清理一段时间之前的缓存
   /// 例如歌词文件
-  static Future<int> clearCache() async{
-    
+  static Future<int> clearCache() async {
     int count = 0;
     // 两天才检查一次，不用每次启动都遍历一次文件夹。
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int lastTime = prefs.getInt('lastClearCacheTime') ?? 0;
     DateTime lastClearTime = DateTime.fromMillisecondsSinceEpoch(lastTime);
-    if (FileUtil.isTimeOut(lastClearTime, CACHE_TIMEOUT_FILE)) { 
+    if (FileUtil.isTimeOut(lastClearTime, CACHE_TIMEOUT_FILE)) {
       String path = await FileUtil.getSubDirPath(dirName);
       Directory dir = Directory(path);
       if (await dir.exists()) {
-        dir..listSync().forEach((item){
-          File file = File(item.path);
-          if (FileUtil.isFileTimeout(file, CACHE_TIMEOUT_FILE)) {
-            file.delete();
-            print('缓存文件过期，cache: ${file.path}');
-            count++;
-          }
-        });
+        List<FileSystemEntity> list = dir.listSync();
+        if (list.length > 100) {  // 文件太多才清理。
+          list.forEach((item) {
+            File file = File(item.path);
+            if (FileUtil.isFileTimeout(file, CACHE_TIMEOUT_FILE)) {
+              file.delete();
+              print('缓存文件过期，cache: ${file.path}');
+              count++;
+            }
+          });
+        }
       }
       prefs.setInt('lastClearCacheTime', DateTime.now().millisecondsSinceEpoch);
 

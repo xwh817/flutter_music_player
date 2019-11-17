@@ -6,17 +6,20 @@ import 'package:flutter_music_player/utils/navigator_util.dart';
 
 class PlayListItem extends StatelessWidget {
   final Map play;
-  const PlayListItem(this.play, {Key key}) : super(key: key);
+  final String heroTag;
+  const PlayListItem(this.play, {Key key, this.heroTag}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    //print('PlayListItem build: ${play['name']}, $hashCode');
+    String tag = '${play['id']}_$heroTag';
     return Stack(
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.all(Radius.circular(4.0)),
             child: Hero(
-              tag: "playListImage_${play['id']}", // 一个页面中tag名需唯一，所以list中要加上id
+              tag: tag, // 注意页面keepAlive之后全局唯一
               child: CachedNetworkImage(imageUrl: '${play['coverImgUrl']}?param=300y300'),
             )
           ),
@@ -42,7 +45,7 @@ class PlayListItem extends StatelessWidget {
                   splashColor: Colors.white.withOpacity(0.3),
                   highlightColor: Colors.white.withOpacity(0.1),
                   onTap: () {
-                    NavigatorUtil.push(context, PlayListPage(playlist: play));
+                    NavigatorUtil.push(context, PlayListPage(playlist: play, heroTag: tag));
                   }),
             ),
           ),

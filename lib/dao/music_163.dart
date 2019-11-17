@@ -1,10 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_music_player/model/Lyric.dart';
 import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
-
-import 'api_cache.dart';
 
 class MusicDao {
   static const URL_ROOT = 'http://music.turingmao.com';
@@ -22,11 +21,12 @@ class MusicDao {
   static const URL_MV_PERSONAL = '$URL_ROOT/personalized/mv';
   static const URL_MV_DETAIL = '$URL_ROOT/mv/detail?mvid=';
   static const URL_MV_AREA = '$URL_ROOT/mv/all?area=';
-  static const URL_MV_163 = '$URL_ROOT/mv/exclusive/rcmd';  // 网易出品mv
+  static const URL_MV_163 = '$URL_ROOT/mv/exclusive/rcmd'; // 网易出品mv
 
   static const URL_SEARCH = '$URL_ROOT/search?keywords=';
 
-  static const URL_GET_TOPLIST = '$URL_ROOT/toplist/detail'; // 获取排行和摘要，或者/toplist
+  static const URL_GET_TOPLIST =
+      '$URL_ROOT/toplist/detail'; // 获取排行和摘要，或者/toplist
 
   static const URL_TOP_ARTISTS = '$URL_ROOT/toplist/artist';
   static const URL_ARTIST_DETAIL = '$URL_ROOT/artists?id=';
@@ -59,20 +59,26 @@ class MusicDao {
   // 获取歌词
   static Future<Lyric> getLyric(int songId) async {
     File cache = File(await FileUtil.getLyricLocalPath(songId));
-    String str;
-    if (cache.existsSync()) { // 歌词缓存过
-      str = await cache.readAsString();
-    } else {
-      String url = '$URL_GET_LYRIC$songId';
-      Map data = await HttpUtil.getJsonData(url, checkCacheTimeout: false);
-      if (data.containsKey('nolyric')) {
-        // 无歌词
-        return Lyric.empty();
+    Map data;
+    try {
+      if (cache.existsSync()) {
+        // 歌词缓存过
+        String strCached = await cache.readAsString();
+        data = jsonDecode(strCached);
+      } else {
+        String url = '$URL_GET_LYRIC$songId';
+        data = await HttpUtil.getJsonData(url, checkCacheTimeout: false);
+        if (data.containsKey('nolyric')) {
+          // 无歌词
+          return Lyric.empty();
+        }
       }
-      str = data['lrc']['lyric'];
+      String str = data['lrc']['lyric'];
+      return Lyric(str);
+    } catch (e) {
+      print('$e');
+      return null;
     }
-    
-    return Lyric(str);
   }
 
   static Future<List> getMVList(String url) async {
@@ -129,7 +135,7 @@ class MusicDao {
     List songList = data['list']['artists'];
     return songList;
   }
-  
+
   static Future<Map> getArtistDetail(int id) async {
     Map detail = await HttpUtil.getJsonData('$URL_ARTIST_DETAIL$id');
     Map artist = detail['artist'];

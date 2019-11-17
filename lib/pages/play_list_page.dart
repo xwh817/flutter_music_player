@@ -27,9 +27,12 @@ const List<String> types = [
 ];
 
 class _PlayListPageState extends State<PlayListPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin  {
   TabController tabController; //tab控制器
 
+  @override
+  bool get wantKeepAlive => true;
+  
   @override
   void initState() {
     super.initState();
@@ -45,6 +48,7 @@ class _PlayListPageState extends State<PlayListPage>
   Widget mWidget;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     ColorStyleProvider colorStyleProvider = Provider.of<ColorStyleProvider>(context);
     return Scaffold(
       appBar: AppBar(

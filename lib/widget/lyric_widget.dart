@@ -23,12 +23,13 @@ class LyricPage extends StatefulWidget {
   void updatePosition(int position, {isTaping: false}) {
     //print('updatePosition: $position');
     if (_state == null || _state.lyric == null) {
+      if (updatePositionCount > 5) {
+        return;
+      }
       print('_LyricPageState is null, retryCount: $updatePositionCount');
       Future.delayed(Duration(milliseconds: 200)).then((_) {
         updatePositionCount++;
-        if (updatePositionCount < 5) {
-          updatePosition(position, isTaping: isTaping);
-        }
+        updatePosition(position, isTaping: isTaping);
       });
     } else {
       updatePositionCount = 0;
@@ -39,12 +40,13 @@ class LyricPage extends StatefulWidget {
   int updateSongCount = 0;
   void updateSong(Map song) {
     if (_state == null) {
+      if (updateSongCount > 5) {
+        return;
+      }
       print('_LyricPageState is null, retryCount: $updateSongCount');
       Future.delayed(Duration(milliseconds: 200)).then((_) {
         updateSongCount++;
-        if (updateSongCount < 5) {
-          updateSong(song);
-        }
+        updateSong(song);
       });
     } else {
       updateSongCount = 0;
@@ -86,7 +88,6 @@ class _LyricPageState extends State<LyricPage> {
       });
     }
     // 获取歌词
-
     MusicDao.getLyric(song['id']).then((result) {
       if (mounted && result != null) {
         setState(() {

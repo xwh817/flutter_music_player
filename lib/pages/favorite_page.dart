@@ -8,9 +8,12 @@ class FavoritePage extends StatefulWidget {
   _FavoritePageState createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
+class _FavoritePageState extends State<FavoritePage> with AutomaticKeepAliveClientMixin{
   List _songs;
 
+  @override
+  bool get wantKeepAlive => true;
+  
   _getSongs() async {
     FavoriteDB().getFavoriteList().then((result) {
       // 界面未加载，返回。
@@ -32,6 +35,7 @@ class _FavoritePageState extends State<FavoritePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_songs == null) {
       return Container();
     }

@@ -149,7 +149,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
   Future<void> _downloadLyric() async {
     int songId = widget.song['id'];
     String path = await FileUtil.getLyricLocalPath(songId);
-    String url = '$MusicDao.URL_GET_LYRIC$songId';
+    String url = '${MusicDao.URL_GET_LYRIC}$songId';
     File cache = await APICache.getLocalFile(url);
     if (cache.existsSync()) {
       print('歌词已经缓存过');

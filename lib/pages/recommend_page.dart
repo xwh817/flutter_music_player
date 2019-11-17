@@ -30,7 +30,7 @@ class RecommendPage extends StatefulWidget {
   _RecommendPageState createState() => _RecommendPageState();
 }
 
-class _RecommendPageState extends State<RecommendPage> {
+class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveClientMixin {
   List _newSongs = [];
   List _topSongs = [];
   List _mvList = [];
@@ -39,6 +39,9 @@ class _RecommendPageState extends State<RecommendPage> {
   /* static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); */
 
+  @override
+  bool get wantKeepAlive => true;
+  
   @override
   void initState() {
     super.initState();
@@ -93,6 +96,7 @@ class _RecommendPageState extends State<RecommendPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return _topSongs.length == 0
         ? Center(child: CircularProgressIndicator())
         : Scaffold(
@@ -252,7 +256,7 @@ class _RecommendPageState extends State<RecommendPage> {
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return PlayListItem(_playList[index]);
+              return PlayListItem(_playList[index], heroTag: 'from_recommend');
             },
             childCount: _playList.length,
           ),

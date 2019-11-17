@@ -18,14 +18,18 @@ Map types = {
 
 const areas = ['内地', '港台', '欧美', '日本', '韩国'];
 
-class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
+class _MVPageState extends State<MVPage>
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController tabController; //tab控制器
 
+  @override
+  bool get wantKeepAlive => true;
+  
   @override
   void initState() {
     super.initState();
 
-    areas.forEach((item){
+    areas.forEach((item) {
       types[item] = MusicDao.URL_MV_AREA + item;
     });
 
@@ -41,6 +45,7 @@ class _MVPageState extends State<MVPage> with SingleTickerProviderStateMixin {
   Widget mWidget;
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     ColorStyleProvider colorStyleProvider =
         Provider.of<ColorStyleProvider>(context);
     return Scaffold(

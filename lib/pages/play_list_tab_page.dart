@@ -62,7 +62,7 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
     Map play = _playlist[index];
     return Card(
       elevation: 4.0,
-      child: PlayListItem(play),
+      child: PlayListItem(play, heroTag: 'from_list'),
     );
   }
 }
