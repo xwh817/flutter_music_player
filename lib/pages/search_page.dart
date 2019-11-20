@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/model/speech_manager.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
@@ -16,12 +17,11 @@ class _SearchPageState extends State<SearchPage> {
   String keywords = '';
   bool isSearching = false;
   final TextEditingController _controller = TextEditingController();
-  //BaiduSpeechRecognition _speechRecognition = BaiduSpeechRecognition();
 
   @override
   void initState() {
     super.initState();
-    //_speechRecognition.init().then((value) => print(value));
+    AsrManager.init().then((re) => print('AsrManagerinit: $re'));
   }
 
   @override
@@ -33,8 +33,8 @@ class _SearchPageState extends State<SearchPage> {
           controller: _controller,
           onChanged: (text) => keywords = text,
           onSpeechPressed: (){
-            /* _speechRecognition.start().then((value){
-              print(value);
+            AsrManager.start().then((value){
+              print('Speech result: $value');
               if (value.isNotEmpty) {
                 setState(() {
                   keywords = value;
@@ -42,7 +42,7 @@ class _SearchPageState extends State<SearchPage> {
                 this._search();
               }
               
-            });  */ 
+            });
           },
         ),
         actions: [
