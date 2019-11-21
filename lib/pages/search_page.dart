@@ -4,6 +4,7 @@ import 'package:flutter_music_player/model/speech_manager.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
+import 'package:flutter_music_player/widget/wave_widget.dart';
 
 class SearchPage extends StatefulWidget {
   SearchPage({Key key}) : super(key: key);
@@ -62,13 +63,19 @@ class _SearchPageState extends State<SearchPage> {
           )
         ],
       ),
-      body: isSearching
+      body: 
+      Stack(
+        children: <Widget>[
+          isSearching
         ? Center(child: CircularProgressIndicator())
         : ListView.builder(
             itemCount: this._songs.length,
             itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
             itemBuilder: (context, index) => SongItemTile(_songs, index)
             ),
+          WaveWidget(),
+      ],)
+      
     );
   }
 

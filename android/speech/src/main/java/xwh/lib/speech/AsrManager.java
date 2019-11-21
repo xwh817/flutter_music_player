@@ -46,10 +46,10 @@ public class AsrManager {
      */
     public void initPermission(Activity context) {
         String permissions[] = {Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.ACCESS_NETWORK_STATE,
+                /* Manifest.permission.ACCESS_NETWORK_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE */
         };
 
         ArrayList<String> toApplyList = new ArrayList<String>();
