@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 
 class AsrManager {
-  static const MethodChannel _channel = const MethodChannel('asr_plugin');
+  static const MethodChannel _channel = const MethodChannel('speech_plugin');
 
   /// 初始化
-  static Future<String> init() async {
+  static Future<void> init() async {
     return await _channel.invokeMethod('init');
   }
 

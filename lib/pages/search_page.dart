@@ -16,12 +16,17 @@ class _SearchPageState extends State<SearchPage> {
   List _songs = List();
   String keywords = '';
   bool isSearching = false;
-  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    AsrManager.init().then((re) => print('AsrManagerinit: $re'));
+    AsrManager.init().then((_) => print('AsrManagerinit'));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    AsrManager.init();
   }
 
   @override
@@ -30,7 +35,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         titleSpacing: 0.0,
         title: SearchBar(
-          controller: _controller,
+          text: this.keywords,
           onChanged: (text) => keywords = text,
           onSpeechPressed: (){
             AsrManager.start().then((value){

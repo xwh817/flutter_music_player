@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
-import 'package:flutter_music_player/utils/colors.dart';
 import 'package:provider/provider.dart';
 
 class SearchBar extends StatefulWidget {
   final bool enable;
-  final TextEditingController controller;
+  final String text;
   final ValueChanged<String> onChanged;
   final Function onSpeechPressed;
   SearchBar({
     Key key,
     this.enable = true,
-    this.controller,
+    this.text,
     this.onChanged,
     this.onSpeechPressed,
   }) : super(key: key);
@@ -22,10 +21,21 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar> {
   bool showClear = false;
+  TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     Color mainColor = Provider.of<ColorStyleProvider>(context).getCurrentColor();
+    if (widget.text != null) {
+      _controller.text = widget.text;
+      print('SearchBar text: ${_controller.text}');
+    }
+
     return Container(
       height: 36.0,
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -38,7 +48,7 @@ class _SearchBarState extends State<SearchBar> {
           Icon(Icons.search, size: 22.0, color: mainColor),
           Expanded(
             child: TextField(
-                controller: widget.controller,
+                controller: _controller,
                 onChanged: _onChanged,
                 maxLines: 1,
                 enabled: widget.enable,
@@ -61,7 +71,7 @@ class _SearchBarState extends State<SearchBar> {
                   size: 22.0, color: mainColor),
               onTap: () {
                 if (showClear) {
-                  widget.controller.clear();
+                  _controller.clear();
                   setState(() {
                     showClear = false;
                   });
