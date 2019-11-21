@@ -138,7 +138,9 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
         onTap: () {
           NavigatorUtil.pushFade(context, SearchPage());
         },
-        child: SearchBar(enable: false),
+        child: SearchBar(enable: false, onSpeechPressed: (){
+          NavigatorUtil.pushFade(context, SearchPage(startSpeech: true));
+        },),
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: _buildSwiper(),

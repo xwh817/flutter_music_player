@@ -112,6 +112,9 @@ public class AsrManager {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        if (mSpeechListener != null) {
+                            mSpeechListener.onError(e.toString());
+                        }
                     }
 
 

@@ -4,12 +4,14 @@ import 'package:provider/provider.dart';
 
 class SearchBar extends StatefulWidget {
   final bool enable;
+  final bool autofocus;
   final String text;
   final ValueChanged<String> onChanged;
   final Function onSpeechPressed;
   SearchBar({
     Key key,
     this.enable = true,
+    this.autofocus = false,
     this.text,
     this.onChanged,
     this.onSpeechPressed,
@@ -52,7 +54,7 @@ class _SearchBarState extends State<SearchBar> {
                 onChanged: _onChanged,
                 maxLines: 1,
                 enabled: widget.enable,
-                autofocus: widget.enable,
+                autofocus: widget.autofocus,
                 textAlignVertical: TextAlignVertical.bottom,
                 style: TextStyle(
                     fontSize: 14.0,

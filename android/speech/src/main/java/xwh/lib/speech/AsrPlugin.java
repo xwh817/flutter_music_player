@@ -25,7 +25,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
         asrManager.setSpeechListener(new AsrManager.SpeechListener() {
             @Override
             public void onResult(String text) {
-                    AsrPlugin.this.result.success(text);
+                AsrPlugin.this.result.success(text);
             }
 
             @Override
