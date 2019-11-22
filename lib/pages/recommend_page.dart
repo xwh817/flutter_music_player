@@ -150,9 +150,10 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
 
   Widget _buildSwiper() {
     return Swiper(
-      autoplay: true,
       itemHeight: _appBarHeight,
-      autoplayDisableOnInteraction: false,
+      autoplay: true,
+      autoplayDelay: 6000,
+      autoplayDisableOnInteraction: true,
       itemBuilder: (BuildContext context, int index) {
         Map song = _newSongs[index];
         String picUrl = SongUtil.getSongImage(song, width: 600, height: 300);
