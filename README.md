@@ -12,22 +12,28 @@
 - [Flutter 移动应用](https://ninghao.net/package/flutter)
 
 ## 主要界面
-- 首页
-<img src="./screenShot/01_home_page.jpg">
-- 歌单
-<img src="./screenShot/02_play_list.jpg">
-- MV视频
-<img src="./screenShot/03_mv.jpg">
-- 歌单详情
-<img src="./screenShot/04_playlist_detail.jpg">
-- 歌手列表
-<img src="./screenShot/05_artists.jpg">
-- 播放页面，不同的主题色
-<img src="./screenShot/06_player.jpg">
-<img src="./screenShot/07_player.jpg">
-<img src="./screenShot/08_player.jpg">
-- 设置页
-<img src="./screenShot/09_setting.jpg">
+### 首页
+<img src="./screenShot/01_home_page.jpg" width="200">
+
+### 歌单
+<img src="./screenShot/02_play_list.jpg" width="200">
+
+### MV视频
+<img src="./screenShot/03_mv.jpg" width="200">
+
+### 歌单详情
+<img src="./screenShot/04_playlist_detail.jpg" width="200">
+
+### 歌手列表
+<img src="./screenShot/05_artists.jpg" width="200">
+
+### 播放页面，不同的主题色
+<img src="./screenShot/06_player.jpg" width="200">
+<img src="./screenShot/07_player.jpg" width="200">
+<img src="./screenShot/08_player.jpg" width="200">
+
+### 设置页
+<img src="./screenShot/09_setting.jpg" width="200">
 
 
 ## 知识点总结
