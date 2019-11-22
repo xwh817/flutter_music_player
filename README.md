@@ -11,30 +11,30 @@
 - [Flutter从入门到进阶 实战携程网App](https://coding.imooc.com/class/321.html)
 - [Flutter 移动应用](https://ninghao.net/package/flutter)
 
-## 主要界面
-### 首页
-<img src="./screenShot/01_home_page.jpg" width="200">
+## App界面
+### 首页、歌单、MV视频
+<p>
+  <img src="./screenShot/01_home_page.jpg" tilte="首页" width="200">
+  <img src="./screenShot/02_play_list.jpg" width="200">
+  <img src="./screenShot/03_mv.jpg" width="200">
+</p>
 
-### 歌单
-<img src="./screenShot/02_play_list.jpg" width="200">
-
-### MV视频
-<img src="./screenShot/03_mv.jpg" width="200">
-
-### 歌单详情
-<img src="./screenShot/04_playlist_detail.jpg" width="200">
-
-### 歌手列表
-<img src="./screenShot/05_artists.jpg" width="200">
-
+### 歌单详情、歌手列表
+<p>
+  <img src="./screenShot/04_playlist_detail.jpg" width="200">
+  <img src="./screenShot/05_artists.jpg" width="200">
+</p>
 ### 播放页面，不同的主题色
-<img src="./screenShot/06_player.jpg" width="200">
-<img src="./screenShot/07_player.jpg" width="200">
-<img src="./screenShot/08_player.jpg" width="200">
+<p>
+  <img src="./screenShot/06_player.jpg" width="200">
+  <img src="./screenShot/07_player.jpg" width="200">
+  <img src="./screenShot/08_player.jpg" width="200">
+</p>
 
 ### 设置页
-<img src="./screenShot/09_setting.jpg" width="200">
-
+<p>
+  <img src="./screenShot/09_setting.jpg" width="200">
+</p>
 
 ## 知识点总结
 - Dart语言基础学习:[Dart编程语言入门](https://www.imooc.com/learn/1035)
@@ -74,7 +74,7 @@
 - 自定义控件
   - 具有点击动画的控件
   - 圆角搜索框
-  - 
+  - 自定义http接口缓存，无网情况下仍能打开界面
   - 使用CustomPainter绘制语音动画
 - 状态管理
   - 子控件自己维护，StatefullWidget。
