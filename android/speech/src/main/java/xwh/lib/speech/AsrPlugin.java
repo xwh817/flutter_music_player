@@ -1,6 +1,7 @@
 package xwh.lib.speech;
 
 import android.app.Activity;
+import android.util.Log;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -11,7 +12,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
     private AsrManager asrManager;
     private Activity activity;
     private MethodChannel.Result result;
-
+    private boolean isFinished;
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "speech_plugin");
@@ -25,16 +26,24 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
         asrManager.setSpeechListener(new AsrManager.SpeechListener() {
             @Override
             public void onResult(String text) {
+                isFinished = true;
+                Log.d("AsrPlugin", "onResult: " + text);
                 AsrPlugin.this.result.success(text);
             }
 
             @Override
             public void onError(String error) {
+                isFinished = true;
+                Log.d("AsrPlugin", "onError: " + error);
                 AsrPlugin.this.result.error(error, null, null);
             }
 
             @Override
             public void onEnd() {
+                if (!isFinished) {
+                    AsrPlugin.this.result.error("未识别到内容", null, null);
+                }
+                Log.d("AsrPlugin", "onEnd");
             }
         });
     }
@@ -47,6 +56,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
                 break;
             case "start":
                 this.result = result;
+                isFinished = false;
                 asrManager.start();
                 break;
             case "stop":

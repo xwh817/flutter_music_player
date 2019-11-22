@@ -127,8 +127,7 @@ public class AsrManager {
                     }
                 }  else if (name.equals(SpeechConstant.CALLBACK_EVENT_ASR_ERROR)) {
                     // 识别结束， 最终识别结果或可能的错误
-                    result = "识别结束" ;
-
+                    result = "识别出错" ;
                     if (mSpeechListener != null) {
                         mSpeechListener.onError(name);
                     }
