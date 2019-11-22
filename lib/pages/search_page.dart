@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
+import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/speech_manager.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
@@ -30,7 +31,7 @@ class _SearchPageState extends State<SearchPage> {
     if (widget.startSpeech) {
       _startSpeech();
     }
-    
+
     AsrManager.init().then((_) => print('AsrManagerinit'));
   }
 
@@ -51,6 +52,7 @@ class _SearchPageState extends State<SearchPage> {
             //text: this.keywords,
             controller: _textController,
             onChanged: (text) => keywords = text,
+            autofocus: !widget.startSpeech,
             onSpeechPressed: () {
               _startSpeech();
             },
@@ -82,7 +84,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSpeechAnim() {
-    Color mainColor = Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor();
+    Color mainColor = Provider.of<ColorStyleProvider>(context, listen: false)
+        .getCurrentColor();
     return Align(
         alignment: Alignment.bottomCenter,
         child: Stack(alignment: Alignment.center, children: <Widget>[
@@ -97,7 +100,7 @@ class _SearchPageState extends State<SearchPage> {
                 if (isAnimRunning) {
                   _stopSpeech();
                 } else {
-                  ToastUtil.showToast(context, '按住说出歌名或歌手名');
+                  ToastUtil.showToast(context, '长按说出歌名或歌手名');
                 }
               },
               onLongPressUp: () {
@@ -109,7 +112,8 @@ class _SearchPageState extends State<SearchPage> {
               child: Container(
                 height: 60.0,
                 width: 60.0,
-                child: Icon(Icons.mic, color: Colors.white.withOpacity(0.8), size: 36),
+                child: Icon(Icons.mic,
+                    color: Colors.white.withOpacity(0.8), size: 36),
                 decoration: BoxDecoration(
                     color: mainColor,
                     borderRadius: BorderRadius.all(Radius.circular(30.0))),
@@ -129,6 +133,14 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   _startSpeech() {
+    // 语音识别时暂停和恢复正在播放的音乐
+    bool isMusicPaused = false;
+    MusicController musicController =
+        Provider.of<MusicController>(context, listen: false);
+    if (musicController.getCurrentState() == PlayerState.playing) {
+      isMusicPaused = true;
+      musicController.pause();
+    }
     _startAnim();
     AsrManager.start().then((value) {
       print('Speech result: $value');
@@ -139,13 +151,16 @@ class _SearchPageState extends State<SearchPage> {
       }
 
       _stopAnim();
-    }
-    ,onError: (error){
-        _stopAnim();
-        ToastUtil.showToast(context, "语音识别失败");
-        print("onError: $error");
+    }, onError: (error) {
+      _stopAnim();
+      ToastUtil.showToast(context, "未识别到语音内容");
+      print("onError: $error");
+    }).whenComplete(() {
+      if (isMusicPaused) {
+        // 恢复音乐
+        musicController.play();
       }
-    );
+    });
   }
 
   _stopSpeech() {

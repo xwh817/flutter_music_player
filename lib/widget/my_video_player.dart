@@ -90,7 +90,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   Future _play() async {
     // 播放视频的时候把正在播放的音乐和视频暂停
-    Provider.of<MusicController>(context).pause();
+    Provider.of<MusicController>(context, listen: false).pause();
     VideoPlayerController _oldController = Provider.of<VideoControllerProvider>(context).getController();
     if (_oldController != null) {
       _oldController.pause();

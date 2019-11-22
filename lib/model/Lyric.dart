@@ -27,26 +27,51 @@ class Lyric {
       return;
     }
 
-    List<String> strItems = lyric.split('\n');
+    List<String> lines = lyric.split('\n');
     int index = 0;
-    strItems.forEach((str) {
-      List<String> strs = str.split(']');
-      if (strs.length == 2) {
-        String time = strs[0].replaceAll('[', '');
-        int position = _getPositon(time);
-        String content = strs[1];
-        if(position>=0) {
-          this.items.add(new LyricItem(index, position, content));
-          index++;
-        } else {
-          /* position = this.items.length > 0 ? this.items.last.position : 0;
-          this.items.add(new LyricItem(index, position, str));
-          index++; */
+    lines.forEach((line) {
+      List<String> strs = line.split(']');
+      if (strs.length >= 2) {   // 可能一行多句歌词的情况
+        String content = strs[strs.length -1];
+
+        for(int i=0; i<strs.length -1; i++) {
+          String time = strs[i].replaceAll('[', '');
+          int position = _getPositon(time);
+          if(position>=0) { // 如果时间戳不正确就丢掉
+            this.items.add(new LyricItem(index, position, content));
+            index++;
+          } else {
+            //print('Lyric: 不解析的歌词：$line');
+          }
         }
+        
       }
     });
 
+    _sortPosition();
+
     _initDuraton();
+
+  }
+
+  /// 对position排序，有些SB歌词时间戳居然不是有序的。
+  /// 或者一行多句歌词的情况
+  _sortPosition(){
+    bool isSorted = true; // 大部分是有序的
+    for(int i=0; i<items.length-1; i++) {
+      if (items[i+1].position < items[i].position) {
+        isSorted = false;
+      }
+    }
+
+    if (!isSorted) {
+      print('歌词无序，进行排序');
+      items.sort((left, right) => left.position - right.position);
+
+      for(int i=0; i<items.length; i++) {
+        items[i].index = i;
+      }
+    }
 
   }
 
@@ -78,6 +103,8 @@ class Lyric {
     for(int i=0; i<items.length-1; i++) {
       LyricItem item = items[i];
       item.duration = items[i+1].position - item.position;
+
+      print(item);
     }
     // 最后一行怎样计算长度？？
     if (items.length > 1) {
@@ -100,4 +127,9 @@ class LyricItem {
   int duration; // 歌词显示的时间长度
 
   LyricItem(this.index, this.position, this.content);
+
+  @override
+  String toString() {
+    return '$index $position $content $duration';
+  }
 }

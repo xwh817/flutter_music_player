@@ -61,17 +61,26 @@ class MusicDao {
     File cache = File(await FileUtil.getLyricLocalPath(songId));
     Map data;
     try {
-      if (cache.existsSync()) {
+      bool isCached = cache.existsSync();
+      if (isCached) {
         // 歌词缓存过
         String strCached = await cache.readAsString();
-        data = jsonDecode(strCached);
-      } else {
+        //print('get lyric from cache: $strCached');
+        if (strCached.isNotEmpty) {
+          data = jsonDecode(strCached);
+        } else {
+          cache.delete();
+        }
+      } 
+      
+      if(data == null) {
         String url = '$URL_GET_LYRIC$songId';
         data = await HttpUtil.getJsonData(url, checkCacheTimeout: false);
-        if (data.containsKey('nolyric')) {
-          // 无歌词
-          return Lyric.empty();
-        }
+      } 
+      
+      if (data.containsKey('nolyric')) {
+        // 无歌词
+        return Lyric.empty();
       }
       String str = data['lrc']['lyric'];
       return Lyric(str);

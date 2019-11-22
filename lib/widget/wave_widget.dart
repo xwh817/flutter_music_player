@@ -22,7 +22,7 @@ class _WaveWidgetState extends State<WaveWidget>
         AnimationController(vsync: this, duration: Duration(milliseconds: 600));
     _doubleAnimation = Tween(begin: mInitRadius, end: mInitRadius + mItemMargin).animate(_controller);
     _listener = () {
-      //mFirstRadius = _controller.value; // 不要在controller取值!!!!
+      //mFirstRadius = _controller.value; // 不要在controller取值，永远为0~1 !!!!
 
       /// 如果动画是repeat执行，不会触发AnimationStatus
       /// 这里用值了判断，如果比新的值大，说明是下一次开始
@@ -42,7 +42,6 @@ class _WaveWidgetState extends State<WaveWidget>
 
     _doubleAnimation.addListener(_listener);
 
-    //startAnim();
   }
 
   void startAnim() {
@@ -63,7 +62,6 @@ class _WaveWidgetState extends State<WaveWidget>
     _controller.stop();
     _controller.dispose();
     _doubleAnimation.removeListener(_listener);
-    //_doubleAnimation.removeStatusListener(_statusListener);
     super.dispose();
   }
 

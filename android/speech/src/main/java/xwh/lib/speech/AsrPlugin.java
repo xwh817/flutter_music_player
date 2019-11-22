@@ -11,7 +11,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
 
     private AsrManager asrManager;
     private Activity activity;
-    private MethodChannel.Result result;
+    private MethodChannel.Result result;    // 注意result对象时一次性的。
     private boolean isFinished;
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
@@ -26,6 +26,9 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
         asrManager.setSpeechListener(new AsrManager.SpeechListener() {
             @Override
             public void onResult(String text) {
+                if (isFinished) {   // result对象不能重复回复，不然报错
+                    return;
+                }
                 isFinished = true;
                 Log.d("AsrPlugin", "onResult: " + text);
                 AsrPlugin.this.result.success(text);
@@ -33,6 +36,9 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
 
             @Override
             public void onError(String error) {
+                if (isFinished) {
+                    return;
+                }
                 isFinished = true;
                 Log.d("AsrPlugin", "onError: " + error);
                 AsrPlugin.this.result.error(error, null, null);
