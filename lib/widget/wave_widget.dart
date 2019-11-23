@@ -72,7 +72,7 @@ class _WaveWidgetState extends State<WaveWidget>
       isRunning ? startAnim() : stopAnim();
     }
     return CustomPaint(
-      size: Size(maxRadius * 2, maxRadius),// 画布宽高
+      size: Size(80, 80),// 画布宽高，发现其实绘制范围可以超出
       painter: _WavePainter(isRunning:isRunning),
     );
   }

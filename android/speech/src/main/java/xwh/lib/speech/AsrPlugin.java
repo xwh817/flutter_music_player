@@ -12,7 +12,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
     private AsrManager asrManager;
     private Activity activity;
     private MethodChannel.Result result;    // 注意result对象时一次性的。
-    private boolean isFinished;
+    private boolean isFinished = false;
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         MethodChannel methodChannel = new MethodChannel(registrar.messenger(), "speech_plugin");
@@ -47,6 +47,7 @@ public class AsrPlugin implements MethodChannel.MethodCallHandler{
             @Override
             public void onEnd() {
                 if (!isFinished) {
+                    isFinished = true;
                     AsrPlugin.this.result.error("未识别到内容", null, null);
                 }
                 Log.d("AsrPlugin", "onEnd");

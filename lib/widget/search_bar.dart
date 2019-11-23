@@ -60,7 +60,7 @@ class _SearchBarState extends State<SearchBar> {
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(3.0), // 可控制文字在框中的位置
                   border: InputBorder.none,
-                  hintText: '请输入歌名或歌手名',
+                  hintText: '请输入你想听的',
                   hintStyle: TextStyle(fontSize: 14.0),
                 )),
           ),

@@ -157,14 +157,18 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
       itemBuilder: (BuildContext context, int index) {
         Map song = _newSongs[index];
         String picUrl = SongUtil.getSongImage(song, width: 600, height: 300);
-        return GestureDetector(
+        return CachedNetworkImage(
+          imageUrl: picUrl,
+          fit: BoxFit.cover,
+        );
+        /* return GestureDetector(
           onTap: () =>
               PlayerPage.gotoPlayer(context, list: _newSongs, index: index),
           child: CachedNetworkImage(
             imageUrl: picUrl,
             fit: BoxFit.cover,
           ),
-        );
+        ); */
       },
       itemCount: _newSongs.length,
       pagination: new SwiperPagination(

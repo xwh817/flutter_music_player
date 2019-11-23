@@ -49,10 +49,9 @@ class _SearchPageState extends State<SearchPage> {
         appBar: AppBar(
           titleSpacing: 0.0,
           title: SearchBar(
-            //text: this.keywords,
             controller: _textController,
             onChanged: (text) => keywords = text,
-            autofocus: !widget.startSpeech,
+            //autofocus: !widget.startSpeech,
             onSpeechPressed: () {
               _startSpeech();
             },
@@ -87,12 +86,12 @@ class _SearchPageState extends State<SearchPage> {
     Color mainColor = Provider.of<ColorStyleProvider>(context, listen: false)
         .getCurrentColor();
     return Align(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment(0.0, 0.9),  // 自定义对齐位置
         child: Stack(alignment: Alignment.center, children: <Widget>[
           WaveWidget(isRunning: this.isAnimRunning),
           GestureDetector(
               onLongPressStart: (detail) {
-                print('onTapDown');
+                print('onLongPressStart');
                 HapticFeedback.vibrate();
                 _startSpeech();
               },
@@ -100,7 +99,7 @@ class _SearchPageState extends State<SearchPage> {
                 if (isAnimRunning) {
                   _stopSpeech();
                 } else {
-                  ToastUtil.showToast(context, '长按说出歌名或歌手名');
+                  ToastUtil.showToast(context, '长按说出你想听的');
                 }
               },
               onLongPressUp: () {

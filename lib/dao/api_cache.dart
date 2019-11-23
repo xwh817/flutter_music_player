@@ -67,7 +67,7 @@ class APICache {
       Directory dir = Directory(path);
       if (await dir.exists()) {
         List<FileSystemEntity> list = dir.listSync();
-        if (list.length > 100) {  // 文件太多才清理。
+        if (list.length > 300) {  // 文件太多才清理。
           list.forEach((item) {
             File file = File(item.path);
             if (FileUtil.isFileTimeout(file, CACHE_TIMEOUT_FILE)) {
