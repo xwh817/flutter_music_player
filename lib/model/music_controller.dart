@@ -109,6 +109,11 @@ class MusicController with ChangeNotifier {
 
   void setPlayList(List list, int currentIndex) {
     playList.setPlayList(list, currentIndex);
+  }
+
+  void playIndex(int index) {
+    playList.setCurrentIndex(index);
+    startSong();
     notifyListeners();
   }
 
@@ -206,6 +211,10 @@ class MusicController with ChangeNotifier {
       startSong();
     }
     return prev;
+  }
+
+  int getCurrentIndex() {
+    return this.playList.getIndex();
   }
 
   Map getCurrentSong() {

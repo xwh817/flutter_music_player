@@ -9,10 +9,12 @@ import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
+import 'package:flutter_music_player/widget/current_play_list.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
+import 'package:flutter_music_player/widget/song_item_text.dart';
 import 'package:provider/provider.dart';
 
 class PlayerPage extends StatefulWidget {
@@ -141,7 +143,6 @@ class _PlayerPageState extends State<PlayerPage>
     print("AudioPlayer onError: $msg");
 
     ToastUtil.showToast(context, "歌曲播放失败！");
-
   }
 
   @override
@@ -240,7 +241,9 @@ class _PlayerPageState extends State<PlayerPage>
             width: imageSize.toDouble() + 2.0,
             height: imageSize.toDouble() + 2.0,
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Provider.of<ColorStyleProvider>(context, listen: false).getCurrentColor()),
+              valueColor: AlwaysStoppedAnimation(
+                  Provider.of<ColorStyleProvider>(context, listen: false)
+                      .getCurrentColor()),
               strokeWidth: 2.0,
             ))
         : SizedBox(width: 0.0);
@@ -277,7 +280,7 @@ class _PlayerPageState extends State<PlayerPage>
                           borderRadius: BorderRadius.all(Radius.circular(imageSize/2)),
                         ),
                       ) */
-                    )),
+                      )),
             ),
             //_buildCDCover(),  // cd控件会挡住点击事件
             _buildProgressIndicator(),
@@ -314,10 +317,17 @@ class _PlayerPageState extends State<PlayerPage>
 
   Widget _buildControllerBar() {
     return Container(
-        padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
+        padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 24.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            MyIconButton(
+              icon: Icons.refresh,
+              size: 30,
+              onPressed: () {
+              },
+            ),
+            SizedBox(width: 24.0),
             MyIconButton(
               icon: Icons.skip_previous,
               size: 40,
@@ -342,6 +352,24 @@ class _PlayerPageState extends State<PlayerPage>
               size: 40,
               onPressed: () {
                 musicController.next();
+              },
+            ),
+            SizedBox(width: 24.0),
+            /* IconButton(
+                icon: Icon(Icons.list,
+                    size: 30, color: Colors.white.withOpacity(0.8)),
+                onPressed: (){
+
+                }), */
+            MyIconButton(
+              icon: Icons.list,
+              size: 30,
+              onPressed: () {
+                showModalBottomSheet<void>(context: context, 
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) {
+                  return CurrentPlayList();
+                });
               },
             )
           ],

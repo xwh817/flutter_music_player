@@ -1,14 +1,14 @@
-
-import 'package:flutter/foundation.dart';
-
-class PlayList with ChangeNotifier{
+class PlayList {
   List songList = [];
   int index = 0;
 
   setPlayList(List list, int currentIndex){
     songList = list;
-    index = currentIndex;
-    notifyListeners();
+    this.index = currentIndex;
+  }
+
+  setCurrentIndex(int index) {
+    this.index = index;
   }
 
   Map getCurrentSong() {
@@ -26,7 +26,6 @@ class PlayList with ChangeNotifier{
     if (index >= songList.length) {
       index = 0;
     }
-    notifyListeners();
     return songList[index];
   }
 
@@ -38,12 +37,11 @@ class PlayList with ChangeNotifier{
     if (index < 0) {
       index = songList.length -1;
     }
-    notifyListeners();
     return songList[index];
   }
 
   int getIndex(){
-    return index;
+    return this.index;
   }
 
 

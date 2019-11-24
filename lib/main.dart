@@ -36,8 +36,7 @@ _doSomethingInBackground() async {
 _buildProvider() {
   return MultiProvider(
     providers: [
-      ChangeNotifierProvider<ColorStyleProvider>.value(
-          value: ColorStyleProvider()),
+      ChangeNotifierProvider<ColorStyleProvider>.value(value: ColorStyleProvider()),
       ChangeNotifierProvider<MusicController>.value(value: MusicController()),
       ChangeNotifierProvider<VideoControllerProvider>.value(
           value: VideoControllerProvider()),
