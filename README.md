@@ -14,26 +14,27 @@
 ## App界面
 ### 首页、歌单、MV视频
 <p>
-  <img src="./screenShot/01_home_page.jpg" tilte="首页" width="200">
-  <img src="./screenShot/02_play_list.jpg" width="200">
+  <img src="./screenShot/01_home_page.jpg" width="200"> &nbsp;&nbsp;
+  <img src="./screenShot/02_play_list.jpg" width="200"> &nbsp;&nbsp;
   <img src="./screenShot/03_mv.jpg" width="200">
 </p>
 
 ### 歌单详情、歌手列表
 <p>
-  <img src="./screenShot/04_playlist_detail.jpg" width="200">
-  <img src="./screenShot/05_artists.jpg" width="200">
+  <img src="./screenShot/04_playlist_detail.jpg" width="200"> &nbsp;&nbsp;
+  <img src="./screenShot/05_artists.jpg" width="200"> &nbsp;&nbsp;
 </p>
 ### 播放页面，不同的主题色
 <p>
-  <img src="./screenShot/06_player.jpg" width="200">
-  <img src="./screenShot/07_player.jpg" width="200">
-  <img src="./screenShot/08_player.jpg" width="200">
+  <img src="./screenShot/06_player.jpg" width="200"> &nbsp;&nbsp;
+  <img src="./screenShot/07_player.jpg" width="200"> &nbsp;&nbsp;
+  <img src="./screenShot/08_player.jpg" width="200"> &nbsp;&nbsp;
 </p>
 
 ### 设置页
 <p>
-  <img src="./screenShot/09_setting.jpg" width="200">
+  <img src="./screenShot/09_setting.jpg" width="200"> &nbsp;&nbsp;
+  <img src="./screenShot/10_search.jpg" width="200"> &nbsp;&nbsp;
 </p>
 
 ## 知识点总结

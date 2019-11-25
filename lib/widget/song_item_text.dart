@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
-import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +38,20 @@ class _SongItemTextState extends State<SongItemText> {
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 32),
-          child: Row(
+          child: RichText(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            text: TextSpan(children: <TextSpan>[
+              TextSpan(
+                text: song['name'],
+                style: TextStyle(fontSize: 15.0, color: itemColor),
+              ),
+              TextSpan(
+                text: ' - ' + SongUtil.getArtistNames(song),
+                style: TextStyle(fontSize: 13.0, color: itemColor)
+              )
+            ])),
+          /* child: Row(
             children: <Widget>[
               Text(
                 "${song['name']}",
@@ -54,7 +66,7 @@ class _SongItemTextState extends State<SongItemText> {
                 style: TextStyle(fontSize: 12.0, color: itemColor),
               )
             ],
-          ),
+          ), */
         ));
   }
 }

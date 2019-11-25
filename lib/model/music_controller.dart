@@ -197,24 +197,36 @@ class MusicController with ChangeNotifier {
 
   Map next() {
     saveHistory();
-    Map nextSong = playList.next();
-    if (nextSong != null) {
+    Map item;
+    if (playList.cycleType == CycleType.random) {
+      item = playList.randomNext();
+    } else{
+      item = playList.next();
+    }
+    
+    if (item != null) {
       startSong();
     }
-    return nextSong;
+    return item;
   }
 
   Map previous() {
     saveHistory();
-    Map prev = playList.previous();
-    if (prev != null) {
+    Map item;
+    if (playList.cycleType == CycleType.random) {
+      item = playList.randomNext();
+    } else{
+      item = playList.previous();
+    }
+    
+    if (item != null) {
       startSong();
     }
-    return prev;
+    return item;
   }
 
   int getCurrentIndex() {
-    return this.playList.getIndex();
+    return this.playList.getCurrentIndex();
   }
 
   Map getCurrentSong() {
@@ -230,11 +242,19 @@ class MusicController with ChangeNotifier {
   }
 
   void onComplete() {
-    Map nextSong = next();
+    Map nextSong;
+    // 如果单曲循环，就还是当前歌曲。
+    if (playList.cycleType == CycleType.one) {
+      nextSong = this.getCurrentSong();
+      startSong();
+    } else {
+      nextSong = next();
+    }
     if (nextSong == null) {
       notifyMusicListeners(
           (listener) => listener.onStateChanged(PlayerState.stopped));
     }
+    notifyListeners();
   }
 
   void saveHistory() {

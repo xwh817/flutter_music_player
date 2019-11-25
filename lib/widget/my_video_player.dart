@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/video_controller.dart';
+import 'package:flutter_music_player/utils/my_icons.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -249,11 +250,11 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     return Align(
         alignment: Alignment.topRight,
         child: IconButton(
-          icon: Image.asset(
+          icon: Icon(
             widget.isFullScreen
-                ? 'images/full_screen_exist.png'
-                : 'images/full_screen.png',
-            width: 20.0,
+                ? MyIcons.full_screen_exit
+                : MyIcons.full_screen,
+            size: 20.0,
           ),
           color: Colors.white,
           padding: EdgeInsets.all(8.0),

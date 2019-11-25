@@ -8,6 +8,7 @@ class MyIconButton extends StatefulWidget {
   final int iconIndex;
   final double size;
   final Color color;
+  final bool animEnable;
 
   ///   * [icon], 如果只需要展示一张图片。
   ///   * [icons], 如果要展示多张图片，点击时会依次向后切换。
@@ -18,6 +19,7 @@ class MyIconButton extends StatefulWidget {
       this.iconIndex: 0,
       this.size: 24,
       this.onPressed,
+      this.animEnable: true,
       this.color: Colors.white});
 
   @override
@@ -30,6 +32,7 @@ class _MyIconButtonState extends State<MyIconButton>
   AnimationController _controller;
   int iconIndex = 0;
   bool isAnimRunning = false; // 动画中途不要被打断，避免闪烁的情况。
+  final double defaultOpacity = 0.8;
 
   @override
   void initState() {
@@ -86,9 +89,11 @@ class _MyIconButtonState extends State<MyIconButton>
       startAnim();
     }
 
-    return InkWell(
+    return GestureDetector(
         onTap: () {
-          startAnim();
+          if (widget.animEnable) {
+            startAnim();
+          }
           widget.onPressed();
         },
         child: Transform.scale(
@@ -97,6 +102,6 @@ class _MyIconButtonState extends State<MyIconButton>
                 widget.icons == null ? widget.icon : widget.icons[iconIndex],
                 size: widget.size,
                 color: widget.color
-                    .withOpacity((1.0 - _controller.value) * 0.8))));
+                    .withOpacity((1.0 - _controller.value) * defaultOpacity))));
   }
 }

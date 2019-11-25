@@ -48,7 +48,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
     // 宽高比2/1
     _appBarHeight = ScreenUtil.screenWidth / 2;
 
-    MusicDao.getTopSongs(0).then((re) {
+    MusicDao.getTopSongs(1).then((re) {
       setState(() {
         _topSongs = re.sublist(0, 15);
       });

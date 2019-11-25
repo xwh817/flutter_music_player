@@ -5,7 +5,9 @@ import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/dao/music_db_favorite.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/music_controller.dart';
+import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
+import 'package:flutter_music_player/utils/my_icons.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
@@ -316,18 +318,29 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   Widget _buildControllerBar() {
+    // 循环方式
+    CycleType cycleType = musicController.playList.cycleType;
     return Container(
-        padding: EdgeInsets.fromLTRB(12.0, 8.0, 12.0, 24.0),
+        padding: EdgeInsets.only(top:8.0, bottom:24.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             MyIconButton(
-              icon: Icons.refresh,
+              icons: [
+                MyIcons.player_cycle,
+                MyIcons.player_single,
+                MyIcons.player_random
+              ],
+              iconIndex: cycleType.index,
               size: 30,
               onPressed: () {
+                musicController.playList.changCycleType();
+                ToastUtil.showToast(
+                    context, musicController.playList.getCycleName());
+                setState(() {});
               },
             ),
-            SizedBox(width: 24.0),
+            SizedBox(width: 30.0),
             MyIconButton(
               icon: Icons.skip_previous,
               size: 40,
@@ -354,22 +367,18 @@ class _PlayerPageState extends State<PlayerPage>
                 musicController.next();
               },
             ),
-            SizedBox(width: 24.0),
-            /* IconButton(
-                icon: Icon(Icons.list,
-                    size: 30, color: Colors.white.withOpacity(0.8)),
-                onPressed: (){
-
-                }), */
+            SizedBox(width: 30.0),
             MyIconButton(
-              icon: Icons.list,
+              icon: MyIcons.player_list,
               size: 30,
+              animEnable: false,
               onPressed: () {
-                showModalBottomSheet<void>(context: context, 
-                backgroundColor: Colors.transparent,
-                builder: (BuildContext context) {
-                  return CurrentPlayList();
-                });
+                showModalBottomSheet<void>(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (BuildContext context) {
+                      return CurrentPlayList();
+                    });
               },
             )
           ],
