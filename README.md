@@ -1,6 +1,9 @@
 # flutter_music_player
 
 一款使用Flutter实现的音乐播放器，全面学习并运用Flutter各知识点。
+- 试用apk下载地址：[flutter_music_release_1.0.apk](https://xwh817.github.io/apks/flutter_music_1.0.apk
+)
+- 说明：本App播放源采用了开源项目[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，如想稳定运行请自行下载并搭建本地服务；本App仅限于学习，不得用于商业用途。
 
 ## 参考资料
 - [Flutter中文网：Flutter实战](https://book.flutterchina.club/)
@@ -32,6 +35,10 @@
 | :------: | :----: | :----: |
 | ![](./screenShot/01_home_page.jpg)|  ![](./screenShot/02_play_list.jpg)    | ![](./screenShot/03_mv.jpg) |
 
+### 视频全屏播放
+- 播放、暂停、可拖动进度条
+- 可切换全屏/非全屏
+<p><img src="./screenShot/fullscreen.jpg" width="900"></p>
 
 
 ### 歌单详情、歌手列表
