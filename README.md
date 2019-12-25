@@ -11,11 +11,15 @@
 - [Flutter从入门到进阶 实战携程网App](https://coding.imooc.com/class/321.html)
 - [Flutter 移动应用](https://ninghao.net/package/flutter)
 
+
+## 功能结构图
+<p><img src="./screenShot/functions.png" width="900"></p>
+
 ## App界面
 
 ### 播放页面
 - 播放、暂停、上一首、下一首。
-- 歌词渐进显示、自动滚动效果。
+- 歌词同步渐进显示、自动滚动效果。
 <p><img src="./screenShot/player.jpg" width="300"></p>
 
 
@@ -35,22 +39,22 @@
 | :------: | :----: |
 | ![](./screenShot/04_playlist_detail.jpg)|  ![](./screenShot/05_artists.jpg)    |
 
-### 播放页面，不同的主题色
+### 不同的主题色
 - 可修改主题色，集齐“红橙黄绿青蓝紫”七色，总有一色属于你。
-<p>
-  <img src="./screenShot/06_player.jpg" width="300"> &nbsp;&nbsp;
-  <img src="./screenShot/07_player.jpg" width="300"> &nbsp;&nbsp;
-  <img src="./screenShot/08_player.jpg" width="300"> &nbsp;&nbsp;
-</p>
 
-### 设置页
-<p><img src="./screenShot/09_setting.jpg" width="300"></p>
+| 绿色 |  红色    | 紫色 |
+| :------: | :----: | :----: |
+| ![](./screenShot/06_player.jpg)|  ![](./screenShot/07_player.jpg)    | ![](./screenShot/08_player.jpg) |
 
 
-### 搜索页
-- 支持文本输入搜索
-- 语音识别搜索
-<p><img src="./screenShot/10_search.jpg" width="300"></p>
+### 其他页面
+- 设置页：可设置主题色、浮动播放器、歌词效果。
+- 搜索页：支持文本输入搜索、语音识别搜索
+
+| 设置页 |  搜索页 |
+| :------: | :----: |
+| ![](./screenShot/09_setting.jpg)|  ![](./screenShot/10_search.jpg)    |
+
 
 
 ## 知识点总结
