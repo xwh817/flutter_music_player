@@ -54,9 +54,9 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        // 选择打包时选取的so文件，x86时模拟上的环境
+        // 选择打包时选取的so文件，x86时模拟上的环境。尽量只选一个，不然安装包会太大
         ndk {
-            abiFilters "armeabi-v7a","arm64-v8a","x86_64","x86"
+            abiFilters "arm64-v8a" //,"armeabi-v7a","x86_64","x86"
         }
     }
 
@@ -72,11 +72,15 @@ android {
     }
 
     // 插件和app都依赖了libflutter.so文件，这里指定一下
+    // 如果编译失败，修改这里！！！！
     packagingOptions {
         pickFirst 'lib/x86_64/libflutter.so'
         pickFirst 'lib/x86/libflutter.so'
         pickFirst 'lib/arm64-v8a/libflutter.so'
         pickFirst 'lib/armeabi-v7a/libflutter.so'
+        pickFirst 'lib/arm64-v8a/libapp.so'
+        exclude 'lib/armeabi-v7a/libapp.so'
+        exclude 'lib/arm64-v8a/libapp.so'
     }
 }
 

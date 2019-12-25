@@ -101,6 +101,3 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
 }
-
-class HistroyDB {
-}

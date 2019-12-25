@@ -12,30 +12,46 @@
 - [Flutter 移动应用](https://ninghao.net/package/flutter)
 
 ## App界面
+
+### 播放页面
+- 播放、暂停、上一首、下一首。
+- 歌词渐进显示、自动滚动效果。
+<p><img src="./screenShot/player.jpg" width="300"></p>
+
+
 ### 首页、歌单、MV视频
-<p>
-  <img src="./screenShot/01_home_page.jpg" width="200"> &nbsp;&nbsp;
-  <img src="./screenShot/02_play_list.jpg" width="200"> &nbsp;&nbsp;
-  <img src="./screenShot/03_mv.jpg" width="200">
-</p>
+- 首页：顶部轮播图、搜索框、推荐（单曲、歌单、MV）。
+- 歌单：按类别显示的歌单网格列表。
+- MV视频：可直接点击播放，也可进入全屏播放。
+
+| 首页 |  歌单    | MV视频 |
+| :------: | :----: | :----: |
+| ![](./screenShot/01_home_page.jpg)|  ![](./screenShot/02_play_list.jpg)    | ![](./screenShot/03_mv.jpg) |
+
+
 
 ### 歌单详情、歌手列表
-<p>
-  <img src="./screenShot/04_playlist_detail.jpg" width="200"> &nbsp;&nbsp;
-  <img src="./screenShot/05_artists.jpg" width="200"> &nbsp;&nbsp;
-</p>
+| 歌单详情 |  歌手列表 |
+| :------: | :----: |
+| ![](./screenShot/04_playlist_detail.jpg)|  ![](./screenShot/05_artists.jpg)    |
+
 ### 播放页面，不同的主题色
+- 可修改主题色，集齐“红橙黄绿青蓝紫”七色，总有一色属于你。
 <p>
-  <img src="./screenShot/06_player.jpg" width="200"> &nbsp;&nbsp;
-  <img src="./screenShot/07_player.jpg" width="200"> &nbsp;&nbsp;
-  <img src="./screenShot/08_player.jpg" width="200"> &nbsp;&nbsp;
+  <img src="./screenShot/06_player.jpg" width="300"> &nbsp;&nbsp;
+  <img src="./screenShot/07_player.jpg" width="300"> &nbsp;&nbsp;
+  <img src="./screenShot/08_player.jpg" width="300"> &nbsp;&nbsp;
 </p>
 
 ### 设置页
-<p>
-  <img src="./screenShot/09_setting.jpg" width="200"> &nbsp;&nbsp;
-  <img src="./screenShot/10_search.jpg" width="200"> &nbsp;&nbsp;
-</p>
+<p><img src="./screenShot/09_setting.jpg" width="300"></p>
+
+
+### 搜索页
+- 支持文本输入搜索
+- 语音识别搜索
+<p><img src="./screenShot/10_search.jpg" width="300"></p>
+
 
 ## 知识点总结
 - Dart语言基础学习:[Dart编程语言入门](https://www.imooc.com/learn/1035)
@@ -58,7 +74,7 @@
     - floatingActionButton
   - 路由跳转和页面跳转效果设置
 - 基础控件
-  - Text style样式
+  - Text style样式 多样式混排
   - Card 圆角阴影
   - Container 设置宽高、设置边框样式
   - ListTile

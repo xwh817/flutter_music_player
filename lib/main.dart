@@ -58,6 +58,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         title: 'Flutter Music',
         debugShowCheckedModeBanner: false,
+        //showPerformanceOverlay: true, // 是否打开性能测试层
         theme: ThemeData(
             brightness: Brightness.light,
             appBarTheme: AppBarTheme(

@@ -82,11 +82,12 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
       }
       setState(() => this._playList = list);
     });
+
+    //print("imageSize: ${_appBarHeight}, ${ScreenUtil.screenWidth}");
   }
 
   _onScrolled(ScrollNotification notification) {
-    double progress =
-        notification.metrics.pixels / notification.metrics.maxScrollExtent;
+    //double progress = notification.metrics.pixels / notification.metrics.maxScrollExtent;
 
     //print("${(progress * 100).toInt()}%");
 
@@ -172,7 +173,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
       },
       itemCount: _newSongs.length,
       pagination: new SwiperPagination(
-          builder: DotSwiperPaginationBuilder(size: 8.0, activeSize: 8.0)),
+          builder: DotSwiperPaginationBuilder(size: 8.0, activeSize: 8.0, color: Colors.white60)),
     );
   }
 

@@ -16,7 +16,6 @@ import 'package:flutter_music_player/widget/favorite_widget.dart';
 import 'package:flutter_music_player/widget/lyric_widget.dart';
 import 'package:flutter_music_player/widget/music_progress_bar_2.dart';
 import 'package:flutter_music_player/widget/my_icon_button.dart';
-import 'package:flutter_music_player/widget/song_item_text.dart';
 import 'package:provider/provider.dart';
 
 class PlayerPage extends StatefulWidget {
