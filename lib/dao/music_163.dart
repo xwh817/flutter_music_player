@@ -6,8 +6,7 @@ import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
 
 class MusicDao {
-  static const URL_ROOT = 'http://music.turingmao.com';
-  //static const URL_ROOT = 'http://172.16.45.44';
+  static const URL_ROOT = 'http://120.24.162.39:20195';
 
   static const URL_PLAY_LIST = '$URL_ROOT/top/playlist?cat=';
   static const URL_PLAY_LIST_DETAIL = '$URL_ROOT/playlist/detail?id=';

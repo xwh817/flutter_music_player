@@ -3,7 +3,8 @@
 一款使用Flutter实现的音乐播放器，全面学习并运用Flutter各知识点。
 - 试用apk下载地址：[flutter_music_release_1.0.apk](https://xwh817.github.io/apks/flutter_music_1.0.apk
 )
-- 说明：本App播放源采用了开源项目[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，如想稳定运行请自行下载并搭建本地服务；本App仅限于学习，不得用于商业用途。
+- 关于播放源：采用了开源项目[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，如想稳定运行请自行下载并搭建自己的服务。
+- 说明：本App仅限于学习，不得用于商业用途。
 
 ## 参考资料
 - [Flutter中文网：Flutter实战](https://book.flutterchina.club/)
@@ -16,7 +17,7 @@
 
 
 ## 功能结构图
-<p><img src="./screenShot/functions.png" width="900"></p>
+<p><img src="./screenShot/FlutterMusic.png" width="900"></p>
 
 ## App界面
 
@@ -47,7 +48,8 @@
 | ![](./screenShot/04_playlist_detail.jpg)|  ![](./screenShot/05_artists.jpg)    |
 
 ### 不同的主题色
-- 可修改主题色，集齐“红橙黄绿青蓝紫”七色，总有一色属于你。
+- 集齐“红橙黄绿青蓝紫”七色，总有一色属于你。
+- 在设置页设置，效果如下图：
 
 | 绿色 |  红色    | 紫色 |
 | :------: | :----: | :----: |
@@ -102,13 +104,17 @@
 - 自定义控件
   - 具有点击动画的控件
   - 圆角搜索框
-  - 自定义http接口缓存，无网情况下仍能打开界面
   - 使用CustomPainter绘制语音动画
 - 状态管理
   - 子控件自己维护，StatefullWidget。
   - 由父控件维护，状态通过参数传入子组件。
   - 子控件回调，将回调Function传入子控件，例如底部菜单点击。
   - Provider全局状态维护，全局皮肤、播放状态等。
+- 离线缓存
+  - 音乐App接口变化实时性不高，因此封装了离线模块。
+  - 将访问过的Json数据保存到本地，下次重复请求时，直接从本地获取。
+  - 使App体验更好，减少网络卡顿，节约流量。
+  - 无网情况下仍能打开之前访问过的界面。
 - 开发利器，插件使用
   - 图片缓存CachedNetworkImage实现图片持久化到本地，Flutter默认缓存到内存，但不持久化。
   - 音乐播放：audioplayer
@@ -121,3 +127,9 @@
   - HTTP网络请求：dio
   - Toast提示：fluttertoast
   - 配置信息持久化：shared_preferences
+- 自定义插件
+  - 有些功能可能在插件库中找不到，需要自定义插件
+  - 例如语音识别，实现步骤：
+    - dart端：定义插件接口，约定要访问的方法、参数。
+    - java端：新建对应项目，导入so文件；实现接口对应功能；实现方法调用回调；
+    - ios端：和java端类似。
