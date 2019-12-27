@@ -11,6 +11,7 @@ enum ColorStyle { pink, orange, lime, green, blue, indigo,  purple }
 class ColorStyleProvider with ChangeNotifier {
   static ColorStyle currentStyle = ColorStyle.green;
   static const pref_color = 'colorStyle';
+  bool showPerformanceOverlay = false; // 是否在界面上显示性能调试层
 
   static final Map<ColorStyle, Map> styles = {
     ColorStyle.pink: {
@@ -84,6 +85,11 @@ class ColorStyleProvider with ChangeNotifier {
       currentStyle = ColorStyle.values[styleIndex];
     }
     return currentStyle;
+  }
+
+  setShowPerformanceOverlay(bool visible) {
+    this.showPerformanceOverlay = visible;
+    notifyListeners();
   }
 
 }

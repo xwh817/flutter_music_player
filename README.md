@@ -1,10 +1,17 @@
 # flutter_music_player
 
+## 简介
 一款使用Flutter实现的音乐播放器，全面学习并运用Flutter各知识点。
-- 试用apk下载地址：[flutter_music_release_1.0.apk](https://xwh817.github.io/apks/flutter_music_1.0.apk
-)
+
+- 试用apk下载地址：[flutter_music_release_1.0.apk](https://xwh817.github.io/apks/flutter_music_release.apk)
+- 扫描二维码下载：<img src="./screenshot/qr_flutter_music.png">
 - 关于播放源：采用了开源项目[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，如想稳定运行请自行下载并搭建自己的服务。
 - 说明：本App仅限于学习，不得用于商业用途。
+
+## 其他实现方式
+> [React Native版](https://github.com/xwh817/RNMusicPlayer)
+
+> [Java版](https://github.com/xwh817/MyMusicPlayer)
 
 ## 参考资料
 - [Flutter中文网：Flutter实战](https://book.flutterchina.club/)
@@ -17,14 +24,14 @@
 
 
 ## 功能结构图
-<p><img src="./screenShot/FlutterMusic.png" width="900"></p>
+<p><img src="./screenshot/FlutterMusic.png"></p>
 
 ## App界面
 
 ### 播放页面
 - 播放、暂停、上一首、下一首。
 - 歌词同步渐进显示、自动滚动效果。
-<p><img src="./screenShot/player.jpg" width="300"></p>
+<p><img src="./screenshot/player.jpg" width="300"></p>
 
 
 ### 首页、歌单、MV视频
@@ -34,26 +41,26 @@
 
 | 首页 |  歌单    | MV视频 |
 | :------: | :----: | :----: |
-| ![](./screenShot/01_home_page.jpg)|  ![](./screenShot/02_play_list.jpg)    | ![](./screenShot/03_mv.jpg) |
+| ![](./screenshot/01_home_page.jpg)|  ![](./screenshot/02_play_list.jpg)    | ![](./screenshot/03_mv.jpg) |
 
 ### 视频全屏播放
 - 播放、暂停、可拖动进度条
 - 可切换全屏/非全屏
-<p><img src="./screenShot/fullscreen.jpg" width="900"></p>
+<p><img src="./screenshot/fullscreen.jpg" width="900"></p>
 
 
 ### 歌单详情、歌手列表
 | 歌单详情 |  歌手列表 |
 | :------: | :----: |
-| ![](./screenShot/04_playlist_detail.jpg)|  ![](./screenShot/05_artists.jpg)    |
+| ![](./screenshot/04_playlist_detail.jpg)|  ![](./screenshot/05_artists.jpg)    |
 
 ### 不同的主题色
-- 集齐“红橙黄绿青蓝紫”七色，总有一色属于你。
-- 在设置页设置，效果如下图：
+- 使用Provider来管理全局状态，做到实时更新所有界面。
+- 集齐“红橙黄绿青蓝紫”七色，总有一色属于你：
 
 | 绿色 |  红色    | 紫色 |
 | :------: | :----: | :----: |
-| ![](./screenShot/06_player.jpg)|  ![](./screenShot/07_player.jpg)    | ![](./screenShot/08_player.jpg) |
+| ![](./screenshot/06_player.jpg)|  ![](./screenshot/07_player.jpg)    | ![](./screenshot/08_player.jpg) |
 
 
 ### 其他页面
@@ -62,7 +69,7 @@
 
 | 设置页 |  搜索页 |
 | :------: | :----: |
-| ![](./screenShot/09_setting.jpg)|  ![](./screenShot/10_search.jpg)    |
+| ![](./screenshot/09_setting.jpg)|  ![](./screenshot/10_search.jpg)    |
 
 
 
@@ -102,6 +109,8 @@
   - Future使用，熟练ascyn、await
   - AnimationController 动画控件，类似Android的值动画
 - 自定义控件
+  - 初接触Flutter会感觉控件嵌套层次会很深（地狱嵌套），其实多进行功能抽取就不会了。
+  - 例如播放界面，页面结构复杂，但是将功能块抽出为单独控件，页面就很清晰了。
   - 具有点击动画的控件
   - 圆角搜索框
   - 使用CustomPainter绘制语音动画
@@ -133,3 +142,8 @@
     - dart端：定义插件接口，约定要访问的方法、参数。
     - java端：新建对应项目，导入so文件；实现接口对应功能；实现方法调用回调；
     - ios端：和java端类似。
+- 打包发布
+  - flutter build apk
+  - 修改gradle配置，解决so包冲突问题
+  - 开启调试，查看页面绘制效率。
+  - 发现debug版的App会运行卡顿，打包成release版本时就没问题了。

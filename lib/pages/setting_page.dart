@@ -50,6 +50,8 @@ class _SettingPageState extends State<SettingPage> {
           _buildLyricMask(),
           _buildTitle('浮动播放器'),
           _buildFloatPlayer(),
+          _buildTitle('开发者选项'),
+          _buildDebugs(),
         ],
       ),
     );
@@ -145,6 +147,33 @@ class _SettingPageState extends State<SettingPage> {
               SharedPreferenceUtil.getInstance()
                   .setBool('showFloatPlayer', showFloatPlayer);
               setState(() {});
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  
+  Widget _buildDebugs() {
+    bool showPerformanceOverlay = colorStyleProvider.showPerformanceOverlay;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+      height: 36.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            "性能调试：" + (showPerformanceOverlay ? '已开启' : '已关闭'),
+            style: TextStyle(
+                color: showPerformanceOverlay ? mainColor : Colors.black45,
+                fontSize: 15.0),
+          ),
+          Switch(
+            value: showPerformanceOverlay,
+            activeColor: mainColor,
+            onChanged: (selected) {
+              colorStyleProvider.setShowPerformanceOverlay(selected);
             },
           )
         ],

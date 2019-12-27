@@ -55,18 +55,18 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    ColorStyleProvider colorStyleProvider = Provider.of<ColorStyleProvider>(context);
     return MaterialApp(
         title: 'Flutter Music',
         debugShowCheckedModeBanner: false,
-        //showPerformanceOverlay: true, // 是否打开性能测试层
+        showPerformanceOverlay: colorStyleProvider.showPerformanceOverlay, // 是否打开性能测试层
         theme: ThemeData(
             brightness: Brightness.light,
             appBarTheme: AppBarTheme(
                 brightness: Brightness.dark,
                 iconTheme: IconThemeData(color: Colors.white),
                 textTheme: TextTheme(title: TextStyle(color: Colors.white))),
-            primarySwatch: Provider.of<ColorStyleProvider>(context)
-                .getCurrentColor(color: 'mainColor')),
+            primarySwatch: colorStyleProvider.getCurrentColor(color: 'mainColor')),
         home: HomePage());
   }
 }
