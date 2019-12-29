@@ -3,15 +3,13 @@
 ## 简介
 一款使用Flutter实现的音乐播放器，全面学习并运用Flutter各知识点。
 
-- 试用apk下载地址：[flutter_music_release_1.0.apk](https://xwh817.github.io/apks/flutter_music_release.apk)
-- 扫描二维码下载：<img src="./screenshot/qr_flutter_music.png">
+- 其他实现方式
+  - [React Native版](https://github.com/xwh817/RNMusicPlayer)
+  - [Java版](https://github.com/xwh817/MyMusicPlayer)
+- 试用apk下载地址：[flutter_music_release_1.0.apk](http://xwh817.gitee.io/files/apks/flutter_music_release.apk)
+- 扫描二维码下载：<img src="http://xwh817.gitee.io/files/images/flutter_music/qr_flutter_music.png">
 - 关于播放源：采用了开源项目[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，如想稳定运行请自行下载并搭建自己的服务。
 - 说明：本App仅限于学习，不得用于商业用途。
-
-## 其他实现方式
-> [React Native版](https://github.com/xwh817/RNMusicPlayer)
-
-> [Java版](https://github.com/xwh817/MyMusicPlayer)
 
 ## 参考资料
 - [Flutter中文网：Flutter实战](https://book.flutterchina.club/)
@@ -24,14 +22,14 @@
 
 
 ## 功能结构图
-<p><img src="./screenshot/FlutterMusic.png"></p>
+<p><img src="http://xwh817.gitee.io/files/images/flutter_music/FlutterMusic.png"></p>
 
 ## App界面
 
 ### 播放页面
 - 播放、暂停、上一首、下一首。
 - 歌词同步渐进显示、自动滚动效果。
-<p><img src="./screenshot/player.jpg" width="300"></p>
+<p><img src="http://xwh817.gitee.io/files/images/flutter_music/player.jpg" width="300"></p>
 
 
 ### 首页、歌单、MV视频
@@ -41,18 +39,18 @@
 
 | 首页 |  歌单    | MV视频 |
 | :------: | :----: | :----: |
-| ![](./screenshot/01_home_page.jpg)|  ![](./screenshot/02_play_list.jpg)    | ![](./screenshot/03_mv.jpg) |
+| ![](http://xwh817.gitee.io/files/images/flutter_music/01_home_page.jpg)|  ![](http://xwh817.gitee.io/files/images/flutter_music/02_play_list.jpg)    | ![](http://xwh817.gitee.io/files/images/flutter_music/03_mv.jpg) |
 
 ### 视频全屏播放
 - 播放、暂停、可拖动进度条
 - 可切换全屏/非全屏
-<p><img src="./screenshot/fullscreen.jpg" width="900"></p>
+<p><img src="http://xwh817.gitee.io/files/images/flutter_music/fullscreen.jpg" width="900"></p>
 
 
 ### 歌单详情、歌手列表
 | 歌单详情 |  歌手列表 |
 | :------: | :----: |
-| ![](./screenshot/04_playlist_detail.jpg)|  ![](./screenshot/05_artists.jpg)    |
+| ![](http://xwh817.gitee.io/files/images/flutter_music/04_playlist_detail.jpg)|  ![](http://xwh817.gitee.io/files/images/flutter_music/05_artists.jpg)    |
 
 ### 不同的主题色
 - 使用Provider来管理全局状态，做到实时更新所有界面。
@@ -60,7 +58,7 @@
 
 | 绿色 |  红色    | 紫色 |
 | :------: | :----: | :----: |
-| ![](./screenshot/06_player.jpg)|  ![](./screenshot/07_player.jpg)    | ![](./screenshot/08_player.jpg) |
+| ![](http://xwh817.gitee.io/files/images/flutter_music/06_player.jpg)|  ![](http://xwh817.gitee.io/files/images/flutter_music/07_player.jpg)    | ![](http://xwh817.gitee.io/files/images/flutter_music/08_player.jpg) |
 
 
 ### 其他页面
@@ -69,7 +67,7 @@
 
 | 设置页 |  搜索页 |
 | :------: | :----: |
-| ![](./screenshot/09_setting.jpg)|  ![](./screenshot/10_search.jpg)    |
+| ![](http://xwh817.gitee.io/files/images/flutter_music/09_setting.jpg)|  ![](http://xwh817.gitee.io/files/images/flutter_music/10_search.jpg)    |
 
 
 
