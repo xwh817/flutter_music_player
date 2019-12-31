@@ -21,7 +21,7 @@ dependencies:
     sdk: flutter
   audioplayer:
   flutter_swiper: ^1.1.6
-  cached_network_image: ^1.1.2+1
+  cached_network_image: 2.0.0-rc
   video_player: ^0.10.2+5
   crypto: ^2.1.3
   connectivity: ^0.4.5+2 # 网络监测

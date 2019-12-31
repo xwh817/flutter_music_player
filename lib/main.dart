@@ -8,6 +8,7 @@ import 'model/video_controller.dart';
 import 'pages/home_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   _initBeforeRunApp().then((re) {
     runApp(_buildProvider());
     _doSomethingInBackground();
