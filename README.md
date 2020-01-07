@@ -9,6 +9,7 @@
 - 试用apk下载地址：[flutter_music_release_1.0.apk](http://xwh817.gitee.io/files/apks/flutter_music_release.apk)
 - 扫描二维码下载：<img src="http://xwh817.gitee.io/files/images/flutter_music/qr_flutter_music.png">
 - 关于播放源：采用了开源项目[NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)，如想稳定运行请自行下载并搭建自己的服务。
+- 本项目Android端已迁移到AndroidX，请升级到最新版本的Flutter SDK（目前为：1.12.13+hotfix.5）。
 - 说明：本App仅限于学习，不得用于商业用途。
 
 ## 参考资料
