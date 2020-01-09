@@ -270,17 +270,17 @@ class _PlayerPageState extends State<PlayerPage>
                       },
                   child: Hero(
                       tag: 'FloatingPlayer',
-                      child: ClipOval(child: _getSongImage(BoxFit.cover))
+                      //child: ClipOval(child: _getSongImage(BoxFit.cover))
                       // 加边框的效果
-                      /* child:Container(
+                      child:Container(
                         width: imageSize.toDouble(),
                         height: imageSize.toDouble(),
                         child:ClipOval(child: _getSongImage(BoxFit.cover)),
                         decoration: BoxDecoration(
-                          border: Border.all(width: 4.0, color: Colors.black12),
+                          border: Border.all(width: 6.0, color: Colors.black12),
                           borderRadius: BorderRadius.all(Radius.circular(imageSize/2)),
                         ),
-                      ) */
+                      )
                       )),
             ),
             //_buildCDCover(),  // cd控件会挡住点击事件
