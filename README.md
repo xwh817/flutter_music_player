@@ -148,7 +148,10 @@
   - 发现debug版的App会运行卡顿，打包成release版本时就没问题了。
   
 
-### LICENSE
+
+
+
+## LICENSE
 
        Copyright 2020 xwh817
 
