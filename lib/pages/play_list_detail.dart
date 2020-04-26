@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/widget/favorite_icon_playlist.dart';
 import 'package:flutter_music_player/widget/loading_container.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 
@@ -82,6 +83,9 @@ class _PlayListPageState extends State<PlayListPage> {
       pinned: true,
       floating: false,
       snap: false,
+      actions: [
+        FavoritePlayListIcon(widget.playlist)
+      ],
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           "${widget.playlist['name']}",

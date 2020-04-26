@@ -56,7 +56,7 @@ android {
 
         // 选择打包时选取的so文件，x86时模拟上的环境。尽量只选一个，不然安装包会太大
         ndk {
-            abiFilters "arm64-v8a" //,"armeabi-v7a","x86_64","x86"
+            abiFilters "arm64-v8a" ,"armeabi-v7a"//,"x86_64","x86"
         }
     }
 
@@ -81,6 +81,7 @@ android {
         pickFirst 'lib/arm64-v8a/libapp.so'
         exclude 'lib/armeabi-v7a/libapp.so'
         exclude 'lib/arm64-v8a/libapp.so'
+        exclude 'lib/x86_64/libapp.so'
     }
 }
 

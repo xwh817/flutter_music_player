@@ -1,10 +1,11 @@
 import 'package:flutter_music_player/dao/music_db_history.dart';
+import 'package:flutter_music_player/dao/music_db_playlist.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'music_db_favorite.dart';
 
 class MusicDB {
-  static const db_version = 3;
+  static const db_version = 4;
   static const db_file = 'music.db';
 
   /// 单例对象的写法
@@ -48,6 +49,8 @@ class MusicDB {
             .execute('ALTER TABLE ${FavoriteDB.table_name} ADD COLUMN createTime integer');
       } else if (oldVersion == 2) {
         HistoryDB().createTable(db);
+      } else if (oldVersion == 3) {
+        PlayListDB().createTable(db);
       }
     });
   }

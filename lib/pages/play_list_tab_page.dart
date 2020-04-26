@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
+import 'package:flutter_music_player/dao/music_db_playlist.dart';
 import 'package:flutter_music_player/widget/loading_container.dart';
 import 'package:flutter_music_player/widget/play_list_item.dart';
 
 class PlayListTabPage extends StatefulWidget {
+  static const TYPE_DB = 'db'; // 表示从数据库去取
   final String type;
-  PlayListTabPage({Key key, @required this.type}) : super(key: key);
+  final String heroTag;
+  PlayListTabPage({Key key, @required this.type, this.heroTag='from_list'}) : super(key: key);
 
   @override
   _PlayListTabPageState createState() => _PlayListTabPageState();
@@ -15,16 +18,20 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
   List _playlist = List();
 
   _getPlaylists() async {
-    await MusicDao.getPlayList(widget.type).then((result) {
-      // 界面未加载或者已关闭，返回。
-      if (!mounted) return;
+    try {
+      if (widget.type == PlayListTabPage.TYPE_DB) {
+        _playlist = await PlayListDB().getPlayList();
+      } else {
+        _playlist = await MusicDao.getPlayList(widget.type);
+      }
+    } catch (e) {
+      print('Failed: $e');
+    }
 
-      print("getPlayList result");
-      setState(() {
-        _playlist = result;
-      });
-    }).catchError((e) {
-      print('Failed: ${e.toString()}');
+    // 界面未加载或者已关闭，返回。
+    if (!mounted) return;
+    setState(() {
+      _playlist = _playlist;
     });
   }
 
@@ -62,7 +69,7 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
     Map play = _playlist[index];
     return Card(
       elevation: 4.0,
-      child: PlayListItem(play, heroTag: 'from_list'),
+      child: PlayListItem(play, heroTag: widget.heroTag),
     );
   }
 }

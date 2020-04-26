@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_music_player/dao/music_db_favorite.dart';
-import 'package:flutter_music_player/widget/song_item_tile.dart';
+import 'package:flutter_music_player/model/color_provider.dart';
+import 'package:flutter_music_player/pages/play_list_tab_page.dart';
+import 'package:provider/provider.dart';
+import 'favorite_music.dart';
 
 class FavoritePage extends StatefulWidget {
   FavoritePage({Key key}) : super(key: key);
@@ -8,47 +10,58 @@ class FavoritePage extends StatefulWidget {
   _FavoritePageState createState() => _FavoritePageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
-  List _songs;
 
-  _getSongs() async {
-    FavoriteDB().getFavoriteList().then((result) {
-      // 界面未加载，返回。
-      if (!mounted) return;
+const types = ['单曲', '歌单'];
 
-      setState(() {
-        _songs = result;
-      });
-    }).catchError((e) {
-      print('Failed: ${e.toString()}');
-    });
-  }
+class _FavoritePageState extends State<FavoritePage>
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  TabController tabController; //tab控制器
 
+  @override
+  bool get wantKeepAlive => false;
+  
   @override
   void initState() {
     super.initState();
-    _getSongs();
+    //初始化controller并添加监听
+    tabController = TabController(length: types.length, vsync: this);
   }
 
+  Widget mWidget;
   @override
   Widget build(BuildContext context) {
-    if (_songs == null) {
-      return Container();
-    }
-    if (_songs.length == 0) {
-      return Center(
-          child: Text(
-        '您还没有收藏歌曲\n可点击播放页右上角进行收藏。',
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.grey, height: 1.5),
-      ));
-    } else {
-      return ListView.builder(
-        itemCount: this._songs.length,
-        itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
-        itemBuilder: (context, index) => SongItemTile(_songs, index),
-      );
-    }
+    super.build(context);
+    ColorStyleProvider colorStyleProvider =
+        Provider.of<ColorStyleProvider>(context);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0x07000000),
+        elevation: 0,
+        title: TabBar(
+          controller: tabController, //控制器
+          indicatorColor: colorStyleProvider.getIndicatorColor(),
+          labelColor: colorStyleProvider.getCurrentColor(),
+          unselectedLabelColor: Colors.black45,
+          labelStyle: TextStyle(fontWeight: FontWeight.w600), //选中的样式
+          unselectedLabelStyle: TextStyle(fontSize: 14), //未选中的样式
+          isScrollable: true, //是否可滑动
+          //tab标签
+          tabs: types.map((name) => Tab(
+              text: name,
+            )).toList(),
+          //点击事件
+          onTap: (int i) {
+            tabController.animateTo(i);
+          },
+        ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: [
+          FavoriteMusic(),
+          PlayListTabPage(type: PlayListTabPage.TYPE_DB, heroTag: 'from_fav')
+        ],
+      ),
+    );
   }
-
 }
