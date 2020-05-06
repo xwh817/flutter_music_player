@@ -42,22 +42,26 @@ class MusicDB {
       // 初始化，创建表
       FavoriteDB().createTable(db);
       HistoryDB().createTable(db);
+      PlayListDB().createTable(db);
     }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
       // 数据库升级，修改表结构。
       if (oldVersion == 1) {
-        await db
-            .execute('ALTER TABLE ${FavoriteDB.table_name} ADD COLUMN createTime integer');
-      } else if (oldVersion == 2) {
+        oldVersion++;
+        await db.execute(
+            'ALTER TABLE ${FavoriteDB.table_name} ADD COLUMN createTime integer');
+      }
+      if (oldVersion == 2) {
+        oldVersion++;
         HistoryDB().createTable(db);
-      } else if (oldVersion == 3) {
+      }
+      if (oldVersion == 3) {
+        oldVersion++;
         PlayListDB().createTable(db);
       }
     });
   }
 
-  
   closeDB() async {
     await db?.close();
   }
-
 }

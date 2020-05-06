@@ -10,7 +10,6 @@ class FavoritePage extends StatefulWidget {
   _FavoritePageState createState() => _FavoritePageState();
 }
 
-
 const types = ['单曲', '歌单'];
 
 class _FavoritePageState extends State<FavoritePage>
@@ -19,7 +18,7 @@ class _FavoritePageState extends State<FavoritePage>
 
   @override
   bool get wantKeepAlive => false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -46,9 +45,11 @@ class _FavoritePageState extends State<FavoritePage>
           unselectedLabelStyle: TextStyle(fontSize: 14), //未选中的样式
           isScrollable: true, //是否可滑动
           //tab标签
-          tabs: types.map((name) => Tab(
-              text: name,
-            )).toList(),
+          tabs: types
+              .map((name) => Tab(
+                    text: name,
+                  ))
+              .toList(),
           //点击事件
           onTap: (int i) {
             tabController.animateTo(i);
@@ -59,7 +60,10 @@ class _FavoritePageState extends State<FavoritePage>
         controller: tabController,
         children: [
           FavoriteMusic(),
-          PlayListTabPage(type: PlayListTabPage.TYPE_DB, heroTag: 'from_fav')
+          PlayListTabPage(
+              type: PlayListTabPage.TYPE_DB,
+              heroTag: 'from_fav',
+              error: '您还没有收藏歌单\n可在歌单页右上角进行收藏。')
         ],
       ),
     );

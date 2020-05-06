@@ -8,6 +8,7 @@ import 'package:flutter_music_player/model/color_provider.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
+import 'package:flutter_music_player/utils/shared_preference_util.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteIcon extends StatefulWidget {
@@ -76,11 +77,16 @@ class _FavoriteIconState extends State<FavoriteIcon> {
 
   void _addFavorite(context) {
     bool success = false;
+    bool downloadOnFav =
+        SharedPreferenceUtil.getInstance().getBool('downloadOnFav') ?? false;
+
     FavoriteDB().addFavorite(widget.song).then((re) {
       print('addFavorite re: $re , song: ${widget.song}');
     }).then((_) {
-      _downloadMp3();
-      _downloadLyric();
+      if (downloadOnFav) {
+        _downloadMp3();
+        _downloadLyric();
+      }
 
       setState(() {
         isFavorited = true;
@@ -91,9 +97,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
       success = false;
     }).whenComplete(() {
       _showSnackBar(
-          icon: Icons.file_download,
+          icon: downloadOnFav ? Icons.file_download : Icons.favorite,
           title: success ? '已添加收藏' : '添加收藏失败',
-          subTitle: success ? '正在下载歌曲...' : '');
+          subTitle: success && downloadOnFav ? '正在下载歌曲...' : '');
     });
   }
 

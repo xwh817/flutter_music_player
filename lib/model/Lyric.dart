@@ -104,7 +104,7 @@ class Lyric {
       LyricItem item = items[i];
       item.duration = items[i+1].position - item.position;
 
-      print(item);
+      //print(item);
     }
     // 最后一行怎样计算长度？？
     if (items.length > 1) {

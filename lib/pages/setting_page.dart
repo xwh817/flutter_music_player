@@ -19,6 +19,7 @@ class _SettingPageState extends State<SettingPage> {
   double itemSize;
   bool lyricMask = true;
   bool showFloatPlayer = true;
+  bool downloadOnFav = false; // 收藏时自动下载到本地
 
   @override
   void initState() {
@@ -29,6 +30,8 @@ class _SettingPageState extends State<SettingPage> {
     lyricMask = SharedPreferenceUtil.getInstance().getBool('lyricMask') ?? true;
     showFloatPlayer =
         SharedPreferenceUtil.getInstance().getBool('showFloatPlayer') ?? true;
+    downloadOnFav =
+        SharedPreferenceUtil.getInstance().getBool('downloadOnFav') ?? false;
   }
 
   @override
@@ -50,6 +53,8 @@ class _SettingPageState extends State<SettingPage> {
           _buildLyricMask(),
           _buildTitle('浮动播放器'),
           _buildFloatPlayer(),
+          _buildTitle('收藏单曲时'),
+          _buildAutoDownload(),
           _buildTitle('开发者选项'),
           _buildDebugs(),
         ],
@@ -154,6 +159,35 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
+  Widget _buildAutoDownload() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+      height: 36.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            downloadOnFav ? '下载mp3，无网也可听' : '不下载文件',
+            style: TextStyle(
+                color: downloadOnFav ? mainColor : Colors.black45,
+                fontSize: 15.0),
+          ),
+          Switch(
+            value: downloadOnFav,
+            activeColor: mainColor,
+            onChanged: (selected) {
+              downloadOnFav = selected;
+              SharedPreferenceUtil.getInstance()
+                  .setBool('downloadOnFav', downloadOnFav);
+              setState(() {});
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  
   
   Widget _buildDebugs() {
     bool showPerformanceOverlay = colorStyleProvider.showPerformanceOverlay;
