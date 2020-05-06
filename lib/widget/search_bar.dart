@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class SearchBar extends StatefulWidget {
@@ -9,15 +10,15 @@ class SearchBar extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final Function onSpeechPressed;
   final TextEditingController controller;
-  SearchBar({
-    Key key,
-    this.enable = true,
-    this.autofocus = false,
-    this.text,
-    this.onChanged,
-    this.onSpeechPressed,
-    this.controller
-  }) : super(key: key);
+  SearchBar(
+      {Key key,
+      this.enable = true,
+      this.autofocus = false,
+      this.text,
+      this.onChanged,
+      this.onSpeechPressed,
+      this.controller})
+      : super(key: key);
 
   @override
   _SearchBarState createState() => _SearchBarState();
@@ -33,7 +34,9 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    Color mainColor = Provider.of<ColorStyleProvider>(context).getCurrentColor();
+
+    Color mainColor =
+        Provider.of<ColorStyleProvider>(context).getCurrentColor();
     return Container(
       height: 36.0,
       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -53,15 +56,16 @@ class _SearchBarState extends State<SearchBar> {
                 autofocus: widget.autofocus,
                 textAlignVertical: TextAlignVertical.bottom,
                 style: TextStyle(
-                    fontSize: 14.0,
+                    fontSize: ScreenUtil().setSp(16),
                     color: Colors.black87,
                     fontWeight: FontWeight.w300),
                 //输入文本的样式
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(left:6.0, bottom: 12.0), // 可控制文字在框中的位置
+                  contentPadding:
+                      EdgeInsets.only(left: 6.0, bottom: 12.0), // 可控制文字在框中的位置
                   border: InputBorder.none,
                   hintText: '请输入你想听的',
-                  hintStyle: TextStyle(fontSize: 14.0),
+                  hintStyle: TextStyle(fontSize: ScreenUtil().setSp(16)),
                 )),
           ),
           InkWell(

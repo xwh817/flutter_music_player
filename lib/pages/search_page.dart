@@ -8,6 +8,7 @@ import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 import 'package:flutter_music_player/widget/wave_widget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
@@ -51,7 +52,7 @@ class _SearchPageState extends State<SearchPage> {
           title: SearchBar(
             controller: _textController,
             onChanged: (text) => keywords = text,
-            //autofocus: !widget.startSpeech,
+            autofocus: !widget.startSpeech,
             onSpeechPressed: () {
               _startSpeech();
             },
@@ -61,7 +62,7 @@ class _SearchPageState extends State<SearchPage> {
               minWidth: 68,
               padding: EdgeInsets.all(0.0),
               textColor: Colors.white,
-              child: Text('搜索'),
+              child: Text('搜索', style: TextStyle(fontSize: ScreenUtil().setSp(16))),
               onPressed: () {
                 _search();
               },

@@ -9,7 +9,7 @@ import 'package:flutter_music_player/model/play_list.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/utils/my_icons.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
-import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/utils/screen_size.dart';
 import 'package:flutter_music_player/utils/toast_util.dart';
 import 'package:flutter_music_player/widget/current_play_list.dart';
 import 'package:flutter_music_player/widget/favorite_widget.dart';
@@ -61,7 +61,7 @@ class _PlayerPageState extends State<PlayerPage>
       print("RotationTransition: $status");
     });
 
-    imageSize = ScreenUtil.screenHeight ~/ 3;
+    imageSize = ScreenSize.height ~/ 3;
     if (imageSize == 0) {
       imageSize = 250;
     }

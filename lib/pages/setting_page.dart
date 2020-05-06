@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/model/color_provider.dart';
-import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/utils/screen_size.dart';
 import 'package:flutter_music_player/utils/shared_preference_util.dart';
 import 'package:flutter_music_player/widget/gradient_text.dart';
 import 'package:flutter_music_player/widget/tap_anim_widget.dart';
@@ -24,7 +24,7 @@ class _SettingPageState extends State<SettingPage> {
   void initState() {
     super.initState();
 
-    itemSize = ScreenUtil.screenWidth / ColorStyleProvider.styles.length - 16.0;
+    itemSize = ScreenSize.width / ColorStyleProvider.styles.length - 16.0;
 
     lyricMask = SharedPreferenceUtil.getInstance().getBool('lyricMask') ?? true;
     showFloatPlayer =

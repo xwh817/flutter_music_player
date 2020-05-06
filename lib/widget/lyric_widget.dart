@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
 import 'package:flutter_music_player/model/Lyric.dart';
-import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/utils/screen_size.dart';
 import 'package:flutter_music_player/utils/shared_preference_util.dart';
 
 import 'gradient_text.dart';
@@ -72,7 +72,7 @@ class _LyricPageState extends State<LyricPage> {
   void initState() {
     super.initState();
 
-    visibleItemSize = ScreenUtil.screenHeight < 700 ? 5 : 7;
+    visibleItemSize = ScreenSize.height < 700 ? 5 : 7;
     _controller = ScrollController();
 
     islyricMask = SharedPreferenceUtil.getInstance().get('lyricMask') ?? true;

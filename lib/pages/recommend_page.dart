@@ -6,13 +6,12 @@ import 'package:flutter_music_player/model/music_controller.dart';
 import 'package:flutter_music_player/model/song_util.dart';
 import 'package:flutter_music_player/pages/artist_list_page.dart';
 import 'package:flutter_music_player/pages/history_page.dart';
-import 'package:flutter_music_player/pages/player_page.dart';
 import 'package:flutter_music_player/pages/rank_page.dart';
 import 'package:flutter_music_player/pages/rank_song_list.dart';
 import 'package:flutter_music_player/pages/search_page.dart';
 import 'package:flutter_music_player/pages/setting_page.dart';
 import 'package:flutter_music_player/utils/navigator_util.dart';
-import 'package:flutter_music_player/utils/screen_util.dart';
+import 'package:flutter_music_player/utils/screen_size.dart';
 import 'package:flutter_music_player/widget/mv_item.dart';
 import 'package:flutter_music_player/widget/play_list_item.dart';
 import 'package:flutter_music_player/widget/search_bar.dart';
@@ -46,7 +45,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
   void initState() {
     super.initState();
     // 宽高比2/1
-    _appBarHeight = ScreenUtil.screenWidth / 2;
+    _appBarHeight = ScreenSize.width / 2;
 
     MusicDao.getTopSongs(1).then((re) {
       setState(() {
@@ -83,7 +82,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
       setState(() => this._playList = list);
     });
 
-    //print("imageSize: ${_appBarHeight}, ${ScreenUtil.screenWidth}");
+    //print("imageSize: ${_appBarHeight}, ${ScreenSize.width}");
   }
 
   _onScrolled(ScrollNotification notification) {

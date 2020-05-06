@@ -15,7 +15,7 @@ class PlayListTabPage extends StatefulWidget {
 }
 
 class _PlayListTabPageState extends State<PlayListTabPage> {
-  List _playlist = List();
+  List _playlist;
 
   _getPlaylists() async {
     try {
@@ -50,9 +50,9 @@ class _PlayListTabPageState extends State<PlayListTabPage> {
   @override
   Widget build(BuildContext context) {
     return LoadingContainer(
-        isLoading: this._playlist.length == 0,
+        isLoading: this._playlist == null,
         child: GridView.builder(
-          itemCount: this._playlist.length,
+          itemCount: this._playlist == null ? 0 : this._playlist.length,
           padding: EdgeInsets.all(6.0), // 四周边距，注意Card也有默认的边距
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               // 网格样式

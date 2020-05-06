@@ -1,9 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_music_player/dao/music_163.dart';
-import 'package:flutter_music_player/utils/screen_util.dart';
-import 'package:flutter_music_player/widget/loading_container.dart';
+import 'package:flutter_music_player/utils/screen_size.dart';
 import 'package:flutter_music_player/widget/song_item_tile.dart';
 
 /// 歌单详情页
@@ -23,7 +21,7 @@ class _ArtistDetailPageState extends State<ArtistDetailPage> {
   @override
   void initState() {
     // appBar和图片宽高比相同
-    _appBarHeight = ScreenUtil.screenWidth * 4 / 6;
+    _appBarHeight = ScreenSize.width * 4 / 6;
     _controller = ScrollController();
 
     _getAritistDetailSongs();
