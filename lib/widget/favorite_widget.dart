@@ -68,8 +68,9 @@ class _FavoriteIconState extends State<FavoriteIcon> {
         content: ListTile(
           leading: Icon(icon),
           title: Text(title, style: TextStyle(fontSize: 14.0)),
-          subtitle:
-              Text(subTitle, style: TextStyle(fontSize: 13.0, height: 2.0)),
+          subtitle: subTitle != null && subTitle.length > 0
+              ? Text(subTitle, style: TextStyle(fontSize: 13.0, height: 2.0))
+              : null,
         ),
         duration: Duration(seconds: 3));
     Scaffold.of(context).showSnackBar(snackBar);
@@ -103,7 +104,16 @@ class _FavoriteIconState extends State<FavoriteIcon> {
     });
   }
 
-  void _cancelFavorite(context) {
+  void _cancelFavorite(context) async {
+    int songId = widget.song['id'];
+
+    if (!await SongUtil.isSongDownloaded(songId)) {
+      FavoriteDB().deleteFavorite(songId).then((value) => setState(() {
+            isFavorited = false;
+          }));
+      return;
+    }
+
     bool success = false;
     showDialog(
         context: context,
@@ -121,7 +131,7 @@ class _FavoriteIconState extends State<FavoriteIcon> {
                 new FlatButton(
                   child: new Text("删除", style: TextStyle(color: Colors.red)),
                   onPressed: () {
-                    FavoriteDB().deleteFavorite(widget.song['id']).then((re) {
+                    FavoriteDB().deleteFavorite(songId).then((re) {
                       return FileUtil.deleteLocalSong(widget.song);
                     }).then((re) {
                       success = true;

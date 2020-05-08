@@ -84,7 +84,12 @@ class SongUtil {
     } else {
       return getSongUrl(song);
     }
+  }
 
+  
+  static Future<bool> isSongDownloaded(int id) async{
+    String localPath = await FileUtil.getSongLocalPath(id);
+    return FileUtil.isFileExists(localPath);
   }
 
 

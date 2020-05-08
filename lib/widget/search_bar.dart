@@ -62,7 +62,7 @@ class _SearchBarState extends State<SearchBar> {
                 //输入文本的样式
                 decoration: InputDecoration(
                   contentPadding:
-                      EdgeInsets.only(left: 6.0, bottom: 12.0), // 可控制文字在框中的位置
+                      EdgeInsets.only(left: 6.0, bottom: 24.0-ScreenUtil().setHeight(12)), // 可控制文字在框中的位置
                   border: InputBorder.none,
                   hintText: '请输入你想听的',
                   hintStyle: TextStyle(fontSize: ScreenUtil().setSp(16)),

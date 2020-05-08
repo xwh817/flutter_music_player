@@ -209,38 +209,22 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   Widget _buildCDCover() {
-    return Container(
-        width: 60.0,
-        height: 60.0,
-        child: Container(
-            margin: EdgeInsets.all(18.0),
-            /* decoration: BoxDecoration(
-            color: Colors.black54,
-            border: Border.all(
-              width: 0.5,
-              color: Colors.black45,
-            ),
-            shape: BoxShape.circle) */
-            child: ClipOval(child: Container(color: Colors.black54))
-            /* BlurOvalWidget(
-              sigma: 1.0,
-              color:Colors.grey.shade700,
-              child: SizedBox(width: 20, height: 20,) ),*/
-            ),
+    return IgnorePointer(child:Container(
+        width: imageSize.toDouble()+24,
+        height: imageSize.toDouble()+24,
         decoration: BoxDecoration(
-            color: Colors.white38,
             border: Border.all(
-              width: 0.5,
-              color: Colors.black45,
+              width: 8,
+              color: Colors.black.withOpacity(0.4),
             ),
-            shape: BoxShape.circle));
+            shape: BoxShape.circle)));
   }
 
   Widget _buildProgressIndicator() {
     return playerState == PlayerState.loading
         ? SizedBox(
-            width: imageSize.toDouble() + 2.0,
-            height: imageSize.toDouble() + 2.0,
+            width: imageSize.toDouble() + 10.0,
+            height: imageSize.toDouble() + 10.0,
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation(
                   Provider.of<ColorStyleProvider>(context, listen: false)
@@ -272,18 +256,10 @@ class _PlayerPageState extends State<PlayerPage>
                       tag: 'FloatingPlayer',
                       //child: ClipOval(child: _getSongImage(BoxFit.cover))
                       // 加边框的效果
-                      child:Container(
-                        width: imageSize.toDouble(),
-                        height: imageSize.toDouble(),
-                        child:ClipOval(child: _getSongImage(BoxFit.cover)),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 6.0, color: Colors.black12),
-                          borderRadius: BorderRadius.all(Radius.circular(imageSize/2)),
-                        ),
-                      )
+                      child:ClipOval(child: _getSongImage(BoxFit.cover)),
                       )),
             ),
-            //_buildCDCover(),  // cd控件会挡住点击事件
+            _buildCDCover(),  // cd控件会挡住点击事件
             _buildProgressIndicator(),
           ],
         ));
