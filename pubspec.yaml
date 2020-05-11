@@ -20,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   audioplayer:
+    path: ./audioplayer
   flutter_swiper: ^1.1.6
   cached_network_image: 2.0.0-rc
   video_player: ^0.10.2+5
