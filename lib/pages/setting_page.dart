@@ -19,7 +19,7 @@ class _SettingPageState extends State<SettingPage> {
   double itemSize;
   bool lyricMask = true;
   bool showFloatPlayer = true;
-  bool downloadOnFav = false; // 收藏时自动下载到本地
+  bool downloadOnFav = true; // 收藏时自动下载到本地
 
   @override
   void initState() {
@@ -187,8 +187,6 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  
-  
   Widget _buildDebugs() {
     bool showPerformanceOverlay = colorStyleProvider.showPerformanceOverlay;
     return Container(

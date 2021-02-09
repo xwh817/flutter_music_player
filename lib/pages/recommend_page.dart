@@ -29,7 +29,8 @@ class RecommendPage extends StatefulWidget {
   _RecommendPageState createState() => _RecommendPageState();
 }
 
-class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveClientMixin {
+class _RecommendPageState extends State<RecommendPage>
+    with AutomaticKeepAliveClientMixin {
   List _newSongs = [];
   List _topSongs = [];
   List _mvList = [];
@@ -40,7 +41,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
 
   @override
   bool get wantKeepAlive => true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -49,7 +50,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
 
     MusicDao.getTopSongs(1).then((re) {
       setState(() {
-        _topSongs = re.sublist(0, 15);
+        _topSongs = re.length >= 15 ? re.sublist(0, 15) : re;
       });
       // 第一次进来的时候，设置默认的播放列表
       MusicController musicController = Provider.of<MusicController>(context);
@@ -103,7 +104,7 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
             body: NotificationListener<ScrollNotification>(
             onNotification: (notification) => _onScrolled(notification),
             child: CustomScrollView(
-              cacheExtent: 10.0,  // 缓存区域，滚出多远后回收item，调用其dispose
+              cacheExtent: 10.0, // 缓存区域，滚出多远后回收item，调用其dispose
               slivers: <Widget>[
                 _buildHeader(),
                 _buildCenterGrid(),
@@ -138,9 +139,12 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
         onTap: () {
           NavigatorUtil.pushFade(context, SearchPage());
         },
-        child: SearchBar(enable: false, onSpeechPressed: (){
-          NavigatorUtil.pushFade(context, SearchPage(startSpeech: true));
-        },),
+        child: SearchBar(
+          enable: false,
+          onSpeechPressed: () {
+            NavigatorUtil.pushFade(context, SearchPage(startSpeech: true));
+          },
+        ),
       ),
       flexibleSpace: FlexibleSpaceBar(
         background: _buildSwiper(),
@@ -172,7 +176,8 @@ class _RecommendPageState extends State<RecommendPage> with AutomaticKeepAliveCl
       },
       itemCount: _newSongs.length,
       pagination: new SwiperPagination(
-          builder: DotSwiperPaginationBuilder(size: 8.0, activeSize: 8.0, color: Colors.white60)),
+          builder: DotSwiperPaginationBuilder(
+              size: 8.0, activeSize: 8.0, color: Colors.white60)),
     );
   }
 
