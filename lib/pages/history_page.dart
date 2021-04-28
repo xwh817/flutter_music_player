@@ -30,18 +30,19 @@ class _HistoryPageState extends State<HistoryPage> {
     _getSongs();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0.0,
-        title: Text('历史播放', style: TextStyle(fontSize: 16.0),),
+        title: Text(
+          '历史播放',
+          style: TextStyle(fontSize: 16.0),
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.clear_all),
-            onPressed: (){
+            onPressed: () {
               _clearHistory(context);
             },
           )
@@ -50,7 +51,6 @@ class _HistoryPageState extends State<HistoryPage> {
       body: _buildList(),
     );
   }
-
 
   Widget _buildList() {
     if (_songs == null) {
@@ -72,7 +72,6 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
-  
   void _clearHistory(context) {
     showDialog(
         context: context,
@@ -81,23 +80,21 @@ class _HistoryPageState extends State<HistoryPage> {
               title: Text('确认', style: TextStyle(fontSize: 16.0)),
               content: Text('清除所有播放记录？', style: TextStyle(fontSize: 14.0)),
               actions: <Widget>[
-                new FlatButton(
+                new TextButton(
                   child: new Text("不清除"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
-                new FlatButton(
-                  child: new Text("清除", style: TextStyle(color: Colors.red)),
-                  onPressed: () {
-                    HistoryDB().clearHistory().then((re){
-                      Navigator.of(context).pop();
-                      _getSongs();
-                    });
-                  }
-                ),
+                new TextButton(
+                    child: new Text("清除", style: TextStyle(color: Colors.red)),
+                    onPressed: () {
+                      HistoryDB().clearHistory().then((re) {
+                        Navigator.of(context).pop();
+                        _getSongs();
+                      });
+                    }),
               ],
             ));
   }
-
 }

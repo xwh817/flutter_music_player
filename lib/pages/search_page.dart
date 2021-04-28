@@ -20,7 +20,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List _songs = List();
+  List _songs = [];
   String keywords = '';
   bool isSearching = false;
   bool isAnimRunning = false;
@@ -62,7 +62,8 @@ class _SearchPageState extends State<SearchPage> {
               minWidth: 68,
               padding: EdgeInsets.all(0.0),
               textColor: Colors.white,
-              child: Text('搜索', style: TextStyle(fontSize: ScreenUtil().setSp(16))),
+              child: Text('搜索',
+                  style: TextStyle(fontSize: ScreenUtil().setSp(16))),
               onPressed: () {
                 _search();
               },
@@ -87,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
     Color mainColor = Provider.of<ColorStyleProvider>(context, listen: false)
         .getCurrentColor();
     return Align(
-        alignment: Alignment(0.0, 0.9),  // 自定义对齐位置
+        alignment: Alignment(0.0, 0.9), // 自定义对齐位置
         child: Stack(alignment: Alignment.center, children: <Widget>[
           WaveWidget(isRunning: this.isAnimRunning),
           GestureDetector(

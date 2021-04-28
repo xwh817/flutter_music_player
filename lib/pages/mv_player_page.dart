@@ -28,7 +28,7 @@ class _MVPlayerState extends State<MVPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    bool initialized = _controller != null && _controller.value.initialized;
+    bool initialized = _controller != null && _controller.value.isInitialized;
     bool playing = _controller != null && _controller.value.isPlaying;
 
     return MaterialApp(

@@ -26,7 +26,7 @@ class PlayerPage extends StatefulWidget {
   // 外部跳转统一经过这儿
   static void gotoPlayer(BuildContext context, {List list, int index}) {
     if (list != null) {
-      Provider.of<MusicController>(context).setPlayList(list, index);
+      Provider.of<MusicController>(context, listen: false).setPlayList(list, index);
     }
     NavigatorUtil.push(context, PlayerPage._());
   }

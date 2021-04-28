@@ -53,7 +53,8 @@ class _RecommendPageState extends State<RecommendPage>
         _topSongs = re.length >= 15 ? re.sublist(0, 15) : re;
       });
       // 第一次进来的时候，设置默认的播放列表
-      MusicController musicController = Provider.of<MusicController>(context);
+      MusicController musicController =
+          Provider.of<MusicController>(context, listen: false);
       if (musicController.getCurrentSong() == null) {
         FavoriteDB().getFavoriteList().then((favList) {
           List defaultList = favList.length > 0 ? favList : _topSongs;

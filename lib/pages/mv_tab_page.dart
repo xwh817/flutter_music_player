@@ -11,7 +11,7 @@ class MVTabPage extends StatefulWidget {
 }
 
 class _MVTabPageState extends State<MVTabPage> {
-  List _mvList = List();
+  List _mvList = [];
 
   _getMVList() async {
     await MusicDao.getMVList(widget.url).then((result) {
@@ -37,7 +37,7 @@ class _MVTabPageState extends State<MVTabPage> {
     return _mvList.length == 0
         ? Center(child: CircularProgressIndicator())
         : ListView.builder(
-            cacheExtent: 10.0,  // 缓存区域，滚出多远后回收item，调用其dispose
+            cacheExtent: 10.0, // 缓存区域，滚出多远后回收item，调用其dispose
             itemCount: this._mvList.length,
             //itemExtent: 70.0, // 设定item的高度，这样可以减少高度计算。
             itemBuilder: (context, index) => MVItem(this._mvList[index]),

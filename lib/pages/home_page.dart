@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  List<Widget> pages = List();
+  List<Widget> pages = [];
   final NetworkUtil networkUtil = NetworkUtil();
   DateTime lastBackTime;
   bool showFloatPlayer = true;
@@ -72,7 +72,12 @@ class _HomePageState extends State<HomePage> {
       // 获取屏幕大小,用于界面适配(之前手动弄的，推荐下面的插件)
       ScreenSize.getScreenSize(context);
       // 屏幕适配，原理：设置设计稿尺寸，然后和设备的实际尺寸进行比较，进行缩放
-      ScreenUtil.init(context, width: 360, height: 640);
+      ScreenUtil.init(
+          BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width,
+              maxHeight: MediaQuery.of(context).size.height),
+          designSize: Size(360, 640),
+          orientation: Orientation.portrait);
     }
 
     showFloatPlayer =

@@ -12,7 +12,7 @@ class RankSongList extends StatefulWidget {
 }
 
 class _RankSongListState extends State<RankSongList> {
-  List _songs = List();
+  List _songs = [];
 
   _getSongs() async {
     await MusicDao.getTopSongs(widget.topId).then((result) {

@@ -50,7 +50,9 @@ class HttpUtil {
       } catch (e) {
         /// 如果网络超时，会报 DioErrorType.CONNECT_TIMEOUT
         print(e);
-        if (e == DioErrorType.CONNECT_TIMEOUT) {
+        if (e == DioErrorType.connectTimeout ||
+            e == DioErrorType.sendTimeout ||
+            e == DioErrorType.receiveTimeout) {
           print('网络请求超时');
         }
       }

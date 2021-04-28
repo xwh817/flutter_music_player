@@ -85,12 +85,12 @@ class _VideoDemoState extends State<VideoDemo>
 
   Widget _buildFullScreenVideo() {
     return Center(
-      child: AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: Hero(
-          tag: controller,
-          child: VideoPlayer(controller),
-        ),
+        child: AspectRatio(
+      aspectRatio: controller.value.aspectRatio,
+      child: Hero(
+        tag: controller,
+        child: VideoPlayer(controller),
+      ),
     ));
   }
 
@@ -99,7 +99,7 @@ class _VideoDemoState extends State<VideoDemo>
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
 
     final TransitionRoute<void> route = PageRouteBuilder<void>(
-        settings: RouteSettings(name: "Test", isInitialRoute: false),
+        settings: RouteSettings(name: "Test"),
         pageBuilder: (context, animation, secondaryAnimation) =>
             _buildFullScreenVideo());
 

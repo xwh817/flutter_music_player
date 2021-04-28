@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -49,12 +49,12 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "xwh.flutter.music"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        // 选择打包时选取的so文件，x86时模拟上的环境。尽量只选一个，不然安装包会太大
+        // 选择打包时选取的so文件，x86时模拟上的环境。尽量只选需要的，不然安装包会太大
         ndk {
             abiFilters "arm64-v8a" ,"armeabi-v7a"//,"x86_64","x86"
         }

@@ -24,7 +24,8 @@ class _SongItemTextState extends State<SongItemText> {
 
   @override
   Widget build(BuildContext context) {
-    MusicController musicController = Provider.of<MusicController>(context);
+    MusicController musicController =
+        Provider.of<MusicController>(context, listen: false);
     Map song = widget.songList[widget.index];
     Color itemColor = Colors.black54;
     if (widget.index == musicController.getCurrentIndex()) {
@@ -39,18 +40,17 @@ class _SongItemTextState extends State<SongItemText> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 32),
           child: RichText(
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            text: TextSpan(children: <TextSpan>[
-              TextSpan(
-                text: song['name'],
-                style: TextStyle(fontSize: 15.0, color: itemColor),
-              ),
-              TextSpan(
-                text: ' - ' + SongUtil.getArtistNames(song),
-                style: TextStyle(fontSize: 13.0, color: itemColor)
-              )
-            ])),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(children: <TextSpan>[
+                TextSpan(
+                  text: song['name'],
+                  style: TextStyle(fontSize: 15.0, color: itemColor),
+                ),
+                TextSpan(
+                    text: ' - ' + SongUtil.getArtistNames(song),
+                    style: TextStyle(fontSize: 13.0, color: itemColor))
+              ])),
           /* child: Row(
             children: <Widget>[
               Text(
