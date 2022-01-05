@@ -24,15 +24,17 @@ class _RankPageState extends State<RankPage> {
       ),
       body: ListView.separated(
         itemCount: ranks.length,
-        itemBuilder: (context, index) => _buildItem(ranks.entries.elementAt(index)),
-        separatorBuilder: (context, index) => Divider(height: 0.5, color: Colors.black12),
-      ), 
+        itemBuilder: (context, index) =>
+            _buildItem(ranks.entries.elementAt(index)),
+        separatorBuilder: (context, index) =>
+            Divider(height: 0.5, color: Colors.black12),
+      ),
     );
   }
 
   Widget _buildItem(MapEntry entry) {
     return ListTile(
-      contentPadding: EdgeInsets.only(left:20.0, top:4.0, bottom: 4.0),
+      contentPadding: EdgeInsets.only(left: 20.0, top: 4.0, bottom: 4.0),
       leading: Icon(Icons.whatshot, color: Colors.deepOrangeAccent),
       title: Text(entry.value, style: TextStyle(fontSize: 14.0)),
       onTap: () {
@@ -43,8 +45,8 @@ class _RankPageState extends State<RankPage> {
 }
 
 Map<int, String> ranks = {
-  0: '云音乐新歌榜',
-  1: '云音乐热歌榜',
+  3779629: '云音乐新歌榜',
+  3778678: '云音乐热歌榜',
   2: '网易原创歌曲榜',
   3: '云音乐飙升榜',
   4: '云音乐电音榜',

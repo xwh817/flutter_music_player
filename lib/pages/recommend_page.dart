@@ -48,7 +48,7 @@ class _RecommendPageState extends State<RecommendPage>
     // 宽高比2/1
     _appBarHeight = ScreenSize.width / 2;
 
-    MusicDao.getTopSongs(1).then((re) {
+    MusicDao.getTopSongs(3778678).then((re) {
       setState(() {
         _topSongs = re.length >= 15 ? re.sublist(0, 15) : re;
       });
@@ -61,15 +61,23 @@ class _RecommendPageState extends State<RecommendPage>
           musicController.setPlayList(defaultList, 0);
         });
       }
+    }).onError((error, stackTrace) {
+      print("getTopSongs error: $error");
     });
 
     MusicDao.getNewSongs().then((re) {
+      if (re.isEmpty) {
+        return;
+      }
+      if (re.length > 5) {
+        re = re.sublist(0, 5);
+      }
       setState(() {
-        _newSongs = re.sublist(0, 5);
+        _newSongs = re;
       });
     });
 
-// TODO 后面添加： 下拉刷新，滑到下面才加载更多。
+// // TODO 后面添加： 下拉刷新，滑到下面才加载更多。
     MusicDao.getMVList(MusicDao.URL_MV_PERSONAL).then((list) {
       if (list.length > 10) {
         list = list.sublist(0, 10);
@@ -99,34 +107,32 @@ class _RecommendPageState extends State<RecommendPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _topSongs.length == 0
-        ? Center(child: CircularProgressIndicator())
-        : Scaffold(
-            body: NotificationListener<ScrollNotification>(
-            onNotification: (notification) => _onScrolled(notification),
-            child: CustomScrollView(
-              cacheExtent: 10.0, // 缓存区域，滚出多远后回收item，调用其dispose
-              slivers: <Widget>[
-                _buildHeader(),
-                _buildCenterGrid(),
-                _buildDivider(),
-                _buildSubHeader('推荐单曲', Icons.music_note, onPressed: () {
-                  NavigatorUtil.push(context, RankSongList(0, '推荐单曲'));
-                }),
-                _buildSongGrid(),
-                _buildDivider(),
-                _buildSubHeader('推荐歌单', Icons.library_music, onPressed: () {
-                  widget.tapCallback(1);
-                }),
-                _buildPlayListGrid(),
-                _buildDivider(),
-                _buildSubHeader('推荐MV', Icons.video_library, onPressed: () {
-                  widget.tapCallback(2);
-                }),
-                _buildMVList(),
-              ],
-            ),
-          ));
+    return Scaffold(
+        body: NotificationListener<ScrollNotification>(
+      onNotification: (notification) => _onScrolled(notification),
+      child: CustomScrollView(
+        cacheExtent: 10.0, // 缓存区域，滚出多远后回收item，调用其dispose
+        slivers: <Widget>[
+          _buildHeader(),
+          _buildCenterGrid(),
+          _buildDivider(),
+          _buildSubHeader('推荐单曲', Icons.music_note, onPressed: () {
+            NavigatorUtil.push(context, RankSongList(0, '推荐单曲'));
+          }),
+          _buildSongGrid(),
+          _buildDivider(),
+          _buildSubHeader('推荐歌单', Icons.library_music, onPressed: () {
+            widget.tapCallback(1);
+          }),
+          _buildPlayListGrid(),
+          _buildDivider(),
+          _buildSubHeader('推荐MV', Icons.video_library, onPressed: () {
+            widget.tapCallback(2);
+          }),
+          _buildMVList(),
+        ],
+      ),
+    ));
   }
 
   Widget _buildHeader() {

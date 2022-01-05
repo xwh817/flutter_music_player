@@ -6,12 +6,14 @@ import 'package:flutter_music_player/utils/file_util.dart';
 import 'package:flutter_music_player/utils/http_util.dart';
 
 class MusicDao {
-  static const URL_ROOT = 'http://music.turingmao.com';
+  static const URL_ROOT =
+      'https://cloud-music-api-f494k233x-mgod-monkey.vercel.app';
 
   static const URL_PLAY_LIST = '$URL_ROOT/top/playlist?cat=';
   static const URL_PLAY_LIST_DETAIL = '$URL_ROOT/playlist/detail?id=';
+  static const URL_RECOMMEND_SONGS = '$URL_ROOT//personalized/newsong';
   static const URL_NEW_SONGS = '$URL_ROOT/personalized/newsong';
-  static const URL_TOP_SONGS = '$URL_ROOT/top/list?idx=';
+  static const URL_TOP_SONGS = '$URL_ROOT/playlist/detail?id=';
   static const URL_SONG_DETAIL = '$URL_ROOT/song/detail?ids=';
   static const URL_GET_LYRIC = '$URL_ROOT/lyric?id=';
 
@@ -48,6 +50,13 @@ class MusicDao {
     return songList;
   }
 
+  static Future<List> getRecommendSongs() async {
+    print('$URL_RECOMMEND_SONGS');
+    var data = await HttpUtil.getJsonData('$URL_RECOMMEND_SONGS');
+    List songList = data['playlist']['tracks'];
+    return songList;
+  }
+
   static Future<List> getTopSongs(int listId) async {
     print('$URL_TOP_SONGS$listId');
     var data = await HttpUtil.getJsonData('$URL_TOP_SONGS$listId');
@@ -70,13 +79,13 @@ class MusicDao {
         } else {
           cache.delete();
         }
-      } 
-      
-      if(data == null) {
+      }
+
+      if (data == null) {
         String url = '$URL_GET_LYRIC$songId';
         data = await HttpUtil.getJsonData(url, checkCacheTimeout: false);
-      } 
-      
+      }
+
       if (data.containsKey('nolyric')) {
         // 无歌词
         return Lyric.empty();
